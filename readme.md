@@ -47,6 +47,8 @@ you can customize the quiz by editing the instruction, in this example I use 10 
 
 ![result.png](img/result.png)
 
+![nodejs_file_handling_quiz.png](img/nodejs_file_handling_quiz.png)
+
 You can also download the quiz, it just plain HTML, CSS and Javascript.
 ![download_quiz.png](img/download_quiz.png)
 

@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .quiz-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .question {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+        }
+        .code-block {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            margin: 10px 0;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .option {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .option:hover {
+            background-color: #f0f0f0;
+        }
+        .option.correct {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
+        .option.incorrect {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+        .feedback {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            display: none;
+        }
+        .score {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .submit-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .submit-btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+<div class="quiz-container">
+    <h1>Node.js File System Operations Quiz</h1>
+    <div class="score">Score: <span id="score">0</span> / 10</div>
+    <div id="quiz"></div>
+</div>
+
+<script>
+    const quizData = {
+        questions: [
+            {
+                type: "multiple-choice",
+                question: "Which module is used for file operations in Node.js?",
+                options: [
+                    "fileSystem",
+                    "fs",
+                    "file",
+                    "filesystem"
+                ],
+                correctAnswer: 1
+            },
+            {
+                type: "multiple-choice",
+                question: "What is the correct way to read a file asynchronously in Node.js?",
+                options: [
+                    "fs.readFile('file.txt', callback)",
+                    "fs.read('file.txt', callback)",
+                    "fs.readFileSync('file.txt', callback)",
+                    "fs.openFile('file.txt', callback)"
+                ],
+                correctAnswer: 0
+            },
+            {
+                type: "multiple-choice",
+                question: "Which method is used to check if a file exists asynchronously in Node.js?",
+                options: [
+                    "fs.exists()",
+                    "fs.access()",
+                    "fs.stats()",
+                    "fs.check()"
+                ],
+                correctAnswer: 1
+            },
+            {
+                type: "multiple-choice",
+                question: "What is the correct way to create a directory asynchronously in Node.js?",
+                options: [
+                    "fs.createDirectory()",
+                    "fs.makeDir()",
+                    "fs.mkdir()",
+                    "fs.newDir()"
+                ],
+                correctAnswer: 2
+            },
+            {
+                type: "multiple-choice",
+                question: "Which method is used to append content to a file asynchronously?",
+                options: [
+                    "fs.append()",
+                    "fs.appendFile()",
+                    "fs.writeAppend()",
+                    "fs.addContent()"
+                ],
+                correctAnswer: 1
+            },
+            {
+                type: "fill-in",
+                question: "The _____ method is used to read a file synchronously in Node.js.",
+                correctAnswer: "readFileSync"
+            },
+            {
+                type: "fill-in",
+                question: "To delete a file asynchronously in Node.js, use fs._____('path', callback).",
+                correctAnswer: "unlink"
+            },
+            {
+                type: "fill-in",
+                question: "The _____ method returns information about a file, such as size and modification time.",
+                correctAnswer: "stat"
+            },
+            {
+                type: "fill-in",
+                question: "To rename a file asynchronously in Node.js, use fs._____('oldPath', 'newPath', callback).",
+                correctAnswer: "rename"
+            },
+            {
+                type: "fill-in",
+                question: "The fs._____ method is used to change file permissions in Node.js.",
+                correctAnswer: "chmod"
+            }
+        ]
+    };
+
+    let score = 0;
+    const quizContainer = document.getElementById('quiz');
+
+    function createQuiz() {
+        quizData.questions.forEach((q, index) => {
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'question';
+            questionDiv.innerHTML = `<p>${index + 1}. ${q.question}</p>`;
+
+            if (q.type === "multiple-choice") {
+                const optionsDiv = document.createElement('div');
+                optionsDiv.className = 'options';
+
+                q.options.forEach((option, optIndex) => {
+                    const optionDiv = document.createElement('div');
+                    optionDiv.className = 'option';
+                    optionDiv.textContent = option;
+                    optionDiv.onclick = () => checkAnswer(optIndex, q.correctAnswer, optionDiv, q.type);
+                    optionsDiv.appendChild(optionDiv);
+                });
+
+                questionDiv.appendChild(optionsDiv);
+            } else {
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.placeholder = 'Type your answer here';
+
+                const submitBtn = document.createElement('button');
+                submitBtn.className = 'submit-btn';
+                submitBtn.textContent = 'Submit';
+                submitBtn.onclick = () => checkAnswer(input.value.trim().toLowerCase(), q.correctAnswer.toLowerCase(), input, q.type);
+
+                questionDiv.appendChild(input);
+                questionDiv.appendChild(submitBtn);
+            }
+
+            const feedbackDiv = document.createElement('div');
+            feedbackDiv.className = 'feedback';
+            questionDiv.appendChild(feedbackDiv);
+
+            quizContainer.appendChild(questionDiv);
+        });
+    }
+
+    function checkAnswer(userAnswer, correctAnswer, element, type) {
+        const feedbackDiv = element.parentElement.parentElement.querySelector('.feedback');
+
+        if (type === "multiple-choice") {
+            const options = element.parentElement.children;
+            for (let option of options) {
+                option.onclick = null; // Disable further clicks
+            }
+
+            if (userAnswer === correctAnswer) {
+                element.classList.add('correct');
+                feedbackDiv.style.display = 'block';
+                feedbackDiv.style.backgroundColor = '#d4edda';
+                feedbackDiv.textContent = 'Correct!';
+                updateScore(1);
+            } else {
+                element.classList.add('incorrect');
+                options[correctAnswer].classList.add('correct');
+                feedbackDiv.style.display = 'block';
+                feedbackDiv.style.backgroundColor = '#f8d7da';
+                feedbackDiv.textContent = 'Incorrect. Try again!';
+            }
+        } else {
+            if (userAnswer === correctAnswer) {
+                element.style.backgroundColor = '#d4edda';
+                feedbackDiv.style.display = 'block';
+                feedbackDiv.style.backgroundColor = '#d4edda';
+                feedbackDiv.textContent = 'Correct!';
+                updateScore(1);
+            } else {
+                element.style.backgroundColor = '#f8d7da';
+                feedbackDiv.style.display = 'block';
+                feedbackDiv.style.backgroundColor = '#f8d7da';
+                feedbackDiv.textContent = `Incorrect. The correct answer is: ${correctAnswer}`;
+            }
+            element.disabled = true;
+            element.nextElementSibling.disabled = true;
+        }
+    }
+
+    function updateScore(points) {
+        score += points;
+        document.getElementById('score').textContent = score;
+    }
+
+    createQuiz();
+</script>
+</body>
+</html>
