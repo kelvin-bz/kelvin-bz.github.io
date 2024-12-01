@@ -14,10 +14,11 @@
 ## Setup instructions
 ![instruction.png](img/instruction.png)
 
+you can customize the quiz by editing the instruction, in this example I use 10 questions of single-choice and fill-in-the-blank format.
+
 ```
 1.Quiz Setup:
 - The title and description introduce the topic.
-- A code example showcases key concepts.
 - Questions and answers must be stored in JSON.
 	
 2.Questions:
@@ -44,4 +45,3 @@
 
 ## Enjoy your quiz
 
-![result.png](img/result.png)
