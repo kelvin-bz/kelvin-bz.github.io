@@ -1,9 +1,18 @@
 # Use Claude to generate interactive quiz
 
+![quiz-sample.png](img/quiz-sample.png)
+
+### Why do this?
+- Fun and Private Learning: Studying alone is enjoyable and judgment-free, especially if you’re shy about people. 😊
+- Quick and Easy: No-code solutions let you focus on learning.
+
+![setup-project.png](img/setup-project.png)
+
 ## Create a claude project
 1. Watch this tutorial video: [Anthropic Claude 3.5 Projects in 10 Minutes or Less](https://www.youtube.com/watch?v=YnDyBS3-zuM)
 
 ## Setup instructions
+![instruction.png](img/instruction.png)
 
 ```
 1.Quiz Setup:
@@ -30,3 +39,9 @@
 
 ## Upload sample quiz
 [index.html](index.html)
+
+![add-content.png](img/add-content.png)
+
+## Enjoy your quiz
+
+![result.png](img/result.png)
