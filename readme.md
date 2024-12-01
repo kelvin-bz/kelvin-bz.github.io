@@ -29,4 +29,4 @@
 ```
 
 ## Upload sample quiz
-[javascript.html](javascript.html)
+[index.html](index.html)
