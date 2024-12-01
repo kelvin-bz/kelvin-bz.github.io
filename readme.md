@@ -45,3 +45,9 @@ you can customize the quiz by editing the instruction, in this example I use 10 
 
 ## Enjoy your quiz
 
+![result.png](img/result.png)
+
+You can also download the quiz, it just plain HTML, CSS and Javascript.
+![download_quiz.png](img/download_quiz.png)
+
+More sample quizzes can be found in the [sample folder](sample/)
