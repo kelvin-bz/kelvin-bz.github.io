@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            font-family: system-ui, -apple-system, sans-serif;
+            background-color: #f8f9fa;
+        }
+        .quiz-header {
+            text-align: center;
+            margin-bottom: 30px;
+            background-color: #61dafb;
+            color: #282c34;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .question {
+            margin-bottom: 20px;
+            padding: 20px;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .question-header {
+            font-size: 1.1em;
+            margin-bottom: 15px;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 15px;
+        }
+        .option {
+            padding: 12px 15px;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .option:hover {
+            background-color: #f8f9fa;
+            transform: translateX(5px);
+        }
+        .option code {
+            background-color: #f8f9fa;
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        .correct {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+        .incorrect {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+        .input-answer {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+        .submit-btn {
+            padding: 10px 20px;
+            background-color: #61dafb;
+            color: #282c34;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .submit-btn:hover {
+            background-color: #4fa8c9;
+        }
+        #score {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .feedback {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 6px;
+            display: none;
+            font-size: 0.95em;
+        }
+        code {
+            background-color: #f8f9fa;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            color: #e83e8c;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="quiz-header">
+        <h1>⚛️ ReactJS Master Quiz</h1>
+        <p>Test your knowledge of React concepts, hooks, and best practices!</p>
+    </div>
+    <div id="questions"></div>
+    <div id="score"></div>
+</div>
+
+<script>
+    const quizData = {
+        questions: [
+            {
+                type: "single",
+                question: "Which hook should be used to perform side effects in a function component?",
+                options: [
+                    "useCallback",
+                    "useEffect",
+                    "useMemo",
+                    "useState"
+                ],
+                correct: 1,
+                explanation: "useEffect is used for performing side effects in function components, like data fetching, subscriptions, or manually changing the DOM."
+            },
+            {
+                type: "single",
+                question: "What is the correct way to update state that depends on the previous state?",
+                options: [
+                    "setState(state + 1)",
+                    "setState(prevState => prevState + 1)",
+                    "setState({...state, value: state + 1})",
+                    "setState.update(state + 1)"
+                ],
+                correct: 1,
+                explanation: "When updating state based on previous state, you should use the function form (prevState => newState) to ensure you're working with the latest state value."
+            },
+            {
+                type: "single",
+                question: "What is the purpose of React.memo()?",
+                options: [
+                    "To memoize component state",
+                    "To prevent component re-rendering unless props change",
+                    "To memorize component lifecycle methods",
+                    "To cache component event handlers"
+                ],
+                correct: 1,
+                explanation: "React.memo() is a higher-order component that prevents unnecessary re-renders by memoizing the component and only re-rendering if its props change."
+            },
+            {
+                type: "single",
+                question: "What is the key difference between useEffect and useLayoutEffect?",
+                options: [
+                    "useLayoutEffect runs before browser paint, useEffect runs after",
+                    "useLayoutEffect is for class components, useEffect is for function components",
+                    "useLayoutEffect is synchronous, useEffect is asynchronous",
+                    "useLayoutEffect is deprecated, useEffect is the modern approach"
+                ],
+                correct: 0,
+                explanation: "useLayoutEffect runs synchronously before browser paint, while useEffect runs asynchronously after the browser has painted."
+            },
+            {
+                type: "single",
+                question: "When using the Context API, which component makes the data available?",
+                options: [
+                    "<Context.Consumer>",
+                    "<Context.Provider>",
+                    "<Context.Supply>",
+                    "<Context.Sender>"
+                ],
+                correct: 1,
+                explanation: "Context.Provider is the component that makes data available to all child components in the context tree."
+            },
+            {
+                type: "fill",
+                question: "Complete the code: const [state, setState] = _______(initialState);",
+                answer: "useState",
+                explanation: "useState is the React hook used for adding state to function components."
+            },
+            {
+                type: "fill",
+                question: "What property is required when rendering lists of elements in React? _______",
+                answer: "key",
+                explanation: "The key prop is required for list items to help React efficiently track and update list elements."
+            },
+            {
+                type: "fill",
+                question: "What hook is used to reference a DOM element directly? use_______",
+                answer: "Ref",
+                explanation: "useRef is the hook used to create a mutable ref object that can reference DOM elements or persist values across renders."
+            },
+            {
+                type: "fill",
+                question: "Complete: Custom hooks must start with the word '_______'",
+                answer: "use",
+                explanation: "Custom hooks must start with 'use' to follow React's conventions and enable proper linting support."
+            },
+            {
+                type: "fill",
+                question: "Which lifecycle method is equivalent to: useEffect(() => {}, [])? component_______Mount",
+                answer: "Did",
+                explanation: "componentDidMount is equivalent to useEffect with an empty dependency array, running only once when the component mounts."
+            }
+        ]
+    };
+
+    let score = 0;
+    let answeredQuestions = 0;
+
+    function createQuiz() {
+        const questionsContainer = document.getElementById('questions');
+
+        quizData.questions.forEach((q, index) => {
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'question';
+            questionDiv.innerHTML = `
+                    <div class="question-header">
+                        <strong>Question ${index + 1}:</strong> ${q.question}
+                    </div>`;
+
+            if (q.type === 'single') {
+                const optionsDiv = document.createElement('div');
+                optionsDiv.className = 'options';
+
+                q.options.forEach((option, optIndex) => {
+                    const optionDiv = document.createElement('div');
+                    optionDiv.className = 'option';
+                    optionDiv.textContent = option;
+                    optionDiv.onclick = () => checkAnswer(optIndex, q.correct, optionDiv, questionDiv, q.explanation);
+                    optionsDiv.appendChild(optionDiv);
+                });
+
+                questionDiv.appendChild(optionsDiv);
+            } else {
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.className = 'input-answer';
+                input.placeholder = 'Type your answer here';
+
+                const submitBtn = document.createElement('button');
+                submitBtn.textContent = 'Submit';
+                submitBtn.className = 'submit-btn';
+                submitBtn.onclick = () => checkFillAnswer(input.value, q.answer, questionDiv, q.explanation);
+
+                questionDiv.appendChild(input);
+                questionDiv.appendChild(submitBtn);
+            }
+
+            const feedbackDiv = document.createElement('div');
+            feedbackDiv.className = 'feedback';
+            questionDiv.appendChild(feedbackDiv);
+
+            questionsContainer.appendChild(questionDiv);
+        });
+
+        updateScore();
+    }
+
+    function checkAnswer(selected, correct, optionDiv, questionDiv, explanation) {
+        if (questionDiv.querySelector('.correct') || questionDiv.querySelector('.incorrect')) {
+            return;
+        }
+
+        const options = questionDiv.getElementsByClassName('option');
+        options[correct].classList.add('correct');
+
+        if (selected === correct) {
+            score++;
+            optionDiv.classList.add('correct');
+            showFeedback(questionDiv, `✅ Correct! ${explanation}`, true);
+        } else {
+            optionDiv.classList.add('incorrect');
+            showFeedback(questionDiv, `❌ Incorrect. ${explanation}`, false);
+        }
+
+        answeredQuestions++;
+        updateScore();
+    }
+
+    function checkFillAnswer(input, correct, questionDiv, explanation) {
+        if (questionDiv.querySelector('.feedback').style.display === 'block') {
+            return;
+        }
+
+        if (input.toLowerCase().trim() === correct.toLowerCase().trim()) {
+            score++;
+            showFeedback(questionDiv, `✅ Correct! ${explanation}`, true);
+        } else {
+            showFeedback(questionDiv, `❌ Incorrect. The correct answer is: ${correct}. ${explanation}`, false);
+        }
+
+        answeredQuestions++;
+        updateScore();
+    }
+
+    function showFeedback(questionDiv, message, isCorrect) {
+        const feedbackDiv = questionDiv.querySelector('.feedback');
+        feedbackDiv.style.display = 'block';
+        feedbackDiv.textContent = message;
+        feedbackDiv.style.backgroundColor = isCorrect ? '#d4edda' : '#f8d7da';
+        feedbackDiv.style.color = isCorrect ? '#155724' : '#721c24';
+    }
+
+    function updateScore() {
+        const scoreDiv = document.getElementById('score');
+        const percentage = (score / quizData.questions.length) * 100;
+        const feedback = percentage >= 80 ? '🏆 Amazing! You\'re a React master!' :
+            percentage >= 60 ? '👍 Good job! Keep practicing!' :
+                '📚 Keep learning! Review the React documentation for better understanding.';
+
+        scoreDiv.innerHTML = `
+                <h3>Your Score: ${score}/${quizData.questions.length}</h3>
+                <p>Percentage: ${percentage.toFixed(1)}%</p>
+                ${answeredQuestions === quizData.questions.length ? `<p>${feedback}</p>` : ''}
+            `;
+    }
+
+    // Initialize the quiz
+    createQuiz();
+</script>
+</body>
+</html>
