@@ -39,4 +39,4 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v4
       - name: Update Version File
-        run: echo "1.0.2" > version.txt
+        run: echo "1.0.3" > version.txt
