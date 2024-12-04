@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+        .question {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #fff;
+        }
+        .option {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .option:hover {
+            background: #f0f0f0;
+        }
+        .correct {
+            background: #d4edda;
+            border-color: #c3e6cb;
+        }
+        .incorrect {
+            background: #f8d7da;
+            border-color: #f5c6cb;
+        }
+        #score {
+            font-size: 1.2em;
+            margin: 20px 0;
+            padding: 15px;
+            background: #e9ecef;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .feedback {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            display: none;
+        }
+        .code-block {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 4px;
+            font-family: monospace;
+            margin: 10px 0;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🚂 Express.js Error Handling Quiz</h1>
+    <p>Test your knowledge of Express.js error handling patterns and best practices!</p>
+    <div id="questions"></div>
+    <div id="score"></div>
+</div>
+
+<script>
+const quizData = {
+    "multipleChoice": [
+        {
+            "id": 1,
+            "question": "Which parameter order is correct for an Express error handling middleware?",
+            "options": [
+                { "id": "a", "text": "(err, req, res, next)" },
+                { "id": "b", "text": "(req, res, err, next)" },
+                { "id": "c", "text": "(req, err, res, next)" },
+                { "id": "d", "text": "(next, err, req, res)" }
+            ],
+            "correctAnswer": "a",
+            "explanation": "Error handling middleware in Express must have exactly 4 parameters in the order: (err, req, res, next). Express identifies error handlers by the number of parameters."
+        },
+        {
+            "id": 2,
+            "question": "What is the purpose of calling next() with an argument in Express?",
+            "options": [
+                { "id": "a", "text": "To pass control to the next regular middleware" },
+                { "id": "b", "text": "To skip the remaining middleware stack" },
+                { "id": "c", "text": "To trigger error handling middleware" },
+                { "id": "d", "text": "To end the request-response cycle" }
+            ],
+            "correctAnswer": "c",
+            "explanation": "When next() is called with an argument (e.g., next(err)), Express skips any remaining regular middleware and routes control to error handling middleware."
+        },
+        {
+            "id": 3,
+            "question": "Consider this code block:\n\napp.get('/user/:id', async (req, res) => {\n  const user = await User.findById(req.params.id);\n  res.json(user);\n});\n\nWhat's the best way to handle potential errors?",
+            "options": [
+                { "id": "a", "text": "Add a .catch() block after the await" },
+                { "id": "b", "text": "Wrap the code in try-catch and call next(err)" },
+                { "id": "c", "text": "Let Express handle it automatically" },
+                { "id": "d", "text": "Add a .then() chain with error handling" }
+            ],
+            "correctAnswer": "b",
+            "explanation": "In async route handlers, wrapping the code in try-catch and passing errors to next() is the recommended pattern to ensure proper error handling."
+        },
+        {
+            "id": 4,
+            "question": "Which HTTP status code should typically be used for validation errors?",
+            "options": [
+                { "id": "a", "text": "500 Internal Server Error" },
+                { "id": "b", "text": "400 Bad Request" },
+                { "id": "c", "text": "403 Forbidden" },
+                { "id": "d", "text": "404 Not Found" }
+            ],
+            "correctAnswer": "b",
+            "explanation": "400 Bad Request is appropriate for validation errors as it indicates the client sent invalid data that the server cannot process."
+        },
+        {
+            "id": 5,
+            "question": "What's the best practice for handling errors in Express production environments?",
+            "options": [
+                { "id": "a", "text": "Send detailed error stack traces to the client" },
+                { "id": "b", "text": "Log errors but send generic messages to clients" },
+                { "id": "c", "text": "Disable all error handling" },
+                { "id": "d", "text": "Always use default Express error handler" }
+            ],
+            "correctAnswer": "b",
+            "explanation": "In production, it's best to log detailed errors server-side but send generic error messages to clients to avoid exposing sensitive information."
+        },
+        {
+            "id": 6,
+            "question": "What's the correct way to create a custom error class in Express?",
+            "options": [
+                { "id": "a", "text": "const MyError = new Error()" },
+                { "id": "b", "text": "class MyError extends Error { constructor(message) { this.message = message; } }" },
+                { "id": "c", "text": "class MyError extends Error { constructor(message) { super(message); } }" },
+                { "id": "d", "text": "function MyError(message) { this.message = message; }" }
+            ],
+            "correctAnswer": "c",
+            "explanation": "Custom error classes should extend the built-in Error class and call super() in the constructor to properly inherit error properties."
+        },
+        {
+            "id": 7,
+            "question": "Which statement about synchronous error handling in Express is correct?",
+            "options": [
+                { "id": "a", "text": "Synchronous errors must always be handled with try-catch" },
+                { "id": "b", "text": "Express automatically catches synchronous errors in route handlers" },
+                { "id": "c", "text": "Synchronous errors can only be handled with middleware" },
+                { "id": "d", "text": "Synchronous errors always crash the application" }
+            ],
+            "correctAnswer": "b",
+            "explanation": "Express automatically catches synchronous errors thrown in route handlers and passes them to error handling middleware."
+        },
+        {
+            "id": 8,
+            "question": "What's the recommended way to handle 404 errors in Express?",
+            "options": [
+                { "id": "a", "text": "Let Express handle them automatically" },
+                { "id": "b", "text": "Add a middleware after all routes that sends 404 response" },
+                { "id": "c", "text": "Create a separate error handler for 404s" },
+                { "id": "d", "text": "Add error handling to each route" }
+            ],
+            "correctAnswer": "b",
+            "explanation": "Adding a middleware after all routes to handle unmatched requests is the recommended way to handle 404 errors in Express."
+        }
+    ]
+};
+
+function init() {
+    const questionsContainer = document.getElementById('questions');
+
+    // Multiple Choice Questions
+    quizData.multipleChoice.forEach(q => {
+        const questionDiv = document.createElement('div');
+        questionDiv.className = 'question';
+        
+        let questionText = q.question;
+        if (questionText.includes('\n')) {
+            const parts = questionText.split('\n');
+            questionText = parts[0] + (parts.length > 1 ? `<div class="code-block">${parts.slice(1).join('\n')}</div>` : '');
+        }
+        
+        questionDiv.innerHTML = `
+            <h3>Question ${q.id}:</h3>
+            <p>${questionText}</p>
+            ${q.options.map(opt => `
+                <div class="option" data-question="${q.id}" data-option="${opt.id}">
+                    ${opt.id.toUpperCase()}. ${opt.text}
+                </div>
+            `).join('')}
+            <div id="explanation-${q.id}" class="feedback"></div>
+        `;
+        questionsContainer.appendChild(questionDiv);
+    });
+
+    updateScore();
+
+    // Multiple Choice Event Listeners
+    document.querySelectorAll('.option').forEach(option => {
+        option.addEventListener('click', function() {
+            const questionId = this.dataset.question;
+            const selectedOption = this.dataset.option;
+            const question = quizData.multipleChoice.find(q => q.id === parseInt(questionId));
+            const explanation = document.getElementById(`explanation-${questionId}`);
+
+            // Reset all options in this question
+            document.querySelectorAll(`[data-question="${questionId}"]`)
+                .forEach(opt => opt.classList.remove('correct', 'incorrect'));
+
+            if (selectedOption === question.correctAnswer) {
+                this.classList.add('correct');
+                explanation.style.display = 'block';
+                explanation.className = 'feedback correct';
+                explanation.textContent = "Correct! " + question.explanation;
+                if (!this.dataset.scored) {
+                    this.dataset.scored = 'true';
+                    updateScore();
+                }
+            } else {
+                this.classList.add('incorrect');
+                const correctOption = document.querySelector(
+                    `[data-question="${questionId}"][data-option="${question.correctAnswer}"]`
+                );
+                correctOption.classList.add('correct');
+                explanation.style.display = 'block';
+                explanation.className = 'feedback incorrect';
+                explanation.textContent = "Incorrect. " + question.explanation;
+            }
+        });
+    });
+}
+
+function updateScore() {
+    const totalQuestions = quizData.multipleChoice.length;
+    const correctAnswers = document.querySelectorAll('.option[data-scored="true"]').length;
+    document.getElementById('score').textContent = `Score: ${correctAnswers}/${totalQuestions}`;
+}
+
+init();
+</script>
+</body>
+</html>

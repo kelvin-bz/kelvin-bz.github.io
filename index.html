@@ -2,76 +2,175 @@
 <html>
 <head>
     <style>
+        :root {
+            --primary-color: #4f46e5;
+            --hover-color: #4338ca;
+            --background-color: #f8fafc;
+            --card-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--background-color);
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 20px;
-            font-family: system-ui, -apple-system, sans-serif;
+            padding: 40px 20px;
         }
+
         .header {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 60px;
+            padding: 40px 0;
+            background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+            color: white;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
         }
-        .topics-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-            margin-bottom: 40px;
+
+        .header h1 {
+            font-size: 2.5em;
+            margin: 0 0 16px 0;
         }
-        .topic-card {
-            background: #fff;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 20px;
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-        .topic-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-        .topic-icon {
-            font-size: 2em;
-            margin-bottom: 10px;
-        }
-        .topic-title {
+
+        .header p {
             font-size: 1.2em;
-            font-weight: bold;
-            margin-bottom: 10px;
+            opacity: 0.9;
+            margin: 0 0 24px 0;
         }
-        .quiz-list {
-            list-style: none;
-            padding: 0;
-        }
-        .quiz-item {
-            padding: 8px;
-            margin: 5px 0;
-            border-radius: 4px;
-            transition: background-color 0.3s;
-        }
-        .quiz-item:hover {
-            background: #f0f0f0;
-        }
-        .quiz-link {
-            text-decoration: none;
-            color: #007bff;
-            display: block;
-        }
-        .quiz-link:hover {
-            color: #0056b3;
-        }
+
         .search-bar {
             width: 100%;
             max-width: 600px;
-            margin: 0 auto 30px;
-            padding: 10px 20px;
-            border: 2px solid #ddd;
-            border-radius: 25px;
+            margin: 0 auto;
+            padding: 16px 24px;
+            border: none;
+            border-radius: 12px;
             font-size: 1.1em;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
         }
+
+        .search-bar:focus {
+            outline: none;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .topics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .topic-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: var(--card-shadow);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .topic-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), #3b82f6);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .topic-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        }
+
+        .topic-card:hover::before {
+            opacity: 1;
+        }
+
+        .topic-icon {
+            font-size: 2.5em;
+            margin-bottom: 16px;
+            display: inline-block;
+            padding: 8px;
+            background: rgba(79, 70, 229, 0.1);
+            border-radius: 12px;
+        }
+
+        .topic-title {
+            font-size: 1.4em;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #1e293b;
+        }
+
+        .quiz-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .quiz-item {
+            padding: 8px 0;
+            margin: 8px 0;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .quiz-link {
+            text-decoration: none;
+            color: #64748b;
+            display: block;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: all 0.3s;
+            background: transparent;
+        }
+
+        .quiz-link:hover {
+            color: var(--primary-color);
+            background: rgba(79, 70, 229, 0.05);
+            padding-left: 24px;
+        }
+
         .topic-stats {
             font-size: 0.9em;
-            color: #666;
-            margin-top: 10px;
+            color: #94a3b8;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 20px;
+            }
+
+            .header {
+                padding: 30px 20px;
+                border-radius: 12px;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .topics-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
         }
     </style>
 </head>
@@ -90,10 +189,10 @@
             <div class="topic-title">TypeScript</div>
             <ul class="quiz-list">
                 <li class="quiz-item">
-                    <a href="topics/typescript/typescript-operators-quiz.html" class="quiz-link">Operators </a>
+                    <a href="topics/typescript/typescript-operators-quiz.html" class="quiz-link">Operators</a>
                 </li>
                 <li class="quiz-item">
-                    <a href="topics/typescript/typescript-utility-types-quiz.html" class="quiz-link">Utility Types </a>
+                    <a href="topics/typescript/typescript-utility-types-quiz.html" class="quiz-link">Utility Types</a>
                 </li>
                 <li class="quiz-item">
                     <a href="topics/typescript/advanced-typescript-utils-quiz.html" class="quiz-link">Advanced Utils</a>
@@ -144,10 +243,16 @@
             <div class="topic-title">Express.js</div>
             <ul class="quiz-list">
                 <li class="quiz-item">
-                    <a href="topics/expressjs/expressjs_quiz_1.html" class="quiz-link">Basics</a>
+                    <a href="topics/expressjs/expressjs-quiz-1.html" class="quiz-link">Basic</a>
+                </li>
+                <li class="quiz-item">
+                    <a href="topics/expressjs/express-error-handling-quiz-1.html" class="quiz-link">Error Handling (P1)</a>
+                </li>
+                <li class="quiz-item">
+                    <a href="topics/expressjs/express-error-handling-quiz-2.html" class="quiz-link">Error Handling (P2)</a>
                 </li>
             </ul>
-            <div class="topic-stats">1 quiz</div>
+            <div class="topic-stats">3 quizzes</div>
         </div>
 
         <!-- MongoDB Section -->
@@ -162,8 +267,9 @@
             <div class="topic-stats">1 quiz</div>
         </div>
 
+        <!-- English Section -->
         <div class="topic-card">
-            <div class="topic-icon">🌐</div>
+            <div class="topic-icon">📚</div>
             <div class="topic-title">English</div>
             <ul class="quiz-list">
                 <li class="quiz-item">
@@ -176,7 +282,6 @@
 </div>
 
 <script>
-    // Simple search functionality
     const searchBar = document.querySelector('.search-bar');
     const topicCards = document.querySelectorAll('.topic-card');
 

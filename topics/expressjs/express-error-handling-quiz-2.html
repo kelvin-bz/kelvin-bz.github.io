@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            color: white;
+            border-radius: 8px;
+        }
+        .question {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .option {
+            margin: 10px 0;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .option:hover {
+            background: #f8fafc;
+            transform: translateX(5px);
+        }
+        .correct {
+            background: #dcfce7;
+            border-color: #86efac;
+        }
+        .incorrect {
+            background: #fee2e2;
+            border-color: #fca5a5;
+        }
+        #score {
+            font-size: 1.2em;
+            margin: 20px 0;
+            padding: 15px;
+            background: #f1f5f9;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .feedback {
+            margin-top: 10px;
+            padding: 12px;
+            border-radius: 4px;
+            display: none;
+        }
+        .code-block {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: monospace;
+            margin: 10px 0;
+            white-space: pre-wrap;
+            border-left: 4px solid #3b82f6;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>🚂 Express.js Error Handling Quiz</h1>
+        <p>Test your knowledge of Express.js error handling patterns, middleware, and best practices!</p>
+    </div>
+    <div id="questions"></div>
+    <div id="score"></div>
+</div>
+
+<script>
+const quizData = {
+    "multipleChoice": [
+        {
+            "id": 1,
+            "question": "In an Express application, where should error handling middleware be placed?",
+            "options": [
+                { "id": "a", "text": "At the beginning of the middleware stack" },
+                { "id": "b", "text": "After all route handlers and middleware" },
+                { "id": "c", "text": "Right after express.json() middleware" },
+                { "id": "d", "text": "The order doesn't matter" }
+            ],
+            "correctAnswer": "b",
+            "explanation": "Error handling middleware should be placed after all other middleware and routes to catch any errors that occur in them. This ensures all potential errors are captured."
+        },
+        {
+            "id": 2,
+            "question": "Consider this async route handler:\n\napp.get('/data', async (req, res) => {\n  const data = await fetchData();\n  res.json(data);\n});\n\nWhat's wrong with this code?",
+            "options": [
+                { "id": "a", "text": "Nothing, it's correctly written" },
+                { "id": "b", "text": "It's missing error handling for the async operation" },
+                { "id": "c", "text": "The response should be awaited" },
+                { "id": "d", "text": "async handlers aren't supported in Express" }
+            ],
+            "correctAnswer": "b",
+            "explanation": "This code lacks error handling for the async operation. It should be wrapped in try-catch or use .catch() to handle potential errors from fetchData()."
+        },
+        {
+            "id": 3,
+            "question": "What's the best way to handle database connection errors in Express?",
+            "options": [
+                { "id": "a", "text": "Let the application crash and restart" },
+                { "id": "b", "text": "Use global error handling middleware" },
+                { "id": "c", "text": "Create a specific error handler for database errors" },
+                { "id": "d", "text": "Log the error and ignore it" }
+            ],
+            "correctAnswer": "c",
+            "explanation": "Creating a specific error handler for database errors allows you to handle them appropriately, implement retry logic if needed, and provide meaningful feedback to clients."
+        },
+        {
+            "id": 4,
+            "question": "What's the correct implementation of a custom error class with a status code?\n\nclass CustomError _____ {\n  constructor(message, statusCode) {\n    _____\n    this.statusCode = statusCode;\n    this.status = statusCode >= 400 && statusCode < 500 ? 'fail' : 'error';\n  }\n}",
+            "options": [
+                { "id": "a", "text": "extends Error { ... super(); ... }" },
+                { "id": "b", "text": "extends Error { ... super(message); ... }" },
+                { "id": "c", "text": "{ ... this.message = message; ... }" },
+                { "id": "d", "text": "extends Error { ... this.message = message; ... }" }
+            ],
+            "correctAnswer": "b",
+            "explanation": "The correct implementation extends Error and calls super(message) to properly inherit Error properties while adding custom properties like statusCode."
+        },
+        {
+            "id": 5,
+            "question": "Which method should be used to handle errors in Express routes that use promises?",
+            "options": [
+                { "id": "a", "text": "Use .then() and .catch()" },
+                { "id": "b", "text": "Use async/await with try-catch" },
+                { "id": "c", "text": "Both A and B are correct" },
+                { "id": "d", "text": "Neither approach is correct" }
+            ],
+            "correctAnswer": "c",
+            "explanation": "Both .then()/.catch() chains and async/await with try-catch are valid approaches to handle promises in Express routes. Choose based on your code style preference."
+        },
+        {
+            "id": 6,
+            "question": "Given this error handler:\n\napp.use((err, req, res, next) => {\n  console.error(err.stack);\n  res.status(500).send('Something broke!');\n});\n\nWhat's missing from this implementation?",
+            "options": [
+                { "id": "a", "text": "Error logging to a file" },
+                { "id": "b", "text": "Environment-specific error responses" },
+                { "id": "c", "text": "Custom error status codes" },
+                { "id": "d", "text": "All of the above" }
+            ],
+            "correctAnswer": "d",
+            "explanation": "A production-ready error handler should include proper error logging, environment-specific responses (detailed in development, generic in production), and respect custom error status codes."
+        },
+        {
+            "id": 7,
+            "question": "How should validation errors from a middleware be handled?",
+            "options": [
+                { "id": "a", "text": "Throw a new Error in the middleware" },
+                { "id": "b", "text": "Call next() with a validation error object" },
+                { "id": "c", "text": "Send response directly from middleware" },
+                { "id": "d", "text": "Log the error and continue" }
+            ],
+            "correctAnswer": "b",
+            "explanation": "Passing errors to next() allows them to be handled by error handling middleware, maintaining consistent error handling throughout the application."
+        },
+        {
+            "id": 8,
+            "question": "What's the best practice for handling uncaught exceptions in Express?",
+            "options": [
+                { "id": "a", "text": "Let the application crash" },
+                { "id": "b", "text": "Use process.on('uncaughtException')" },
+                { "id": "c", "text": "Use domain middleware" },
+                { "id": "d", "text": "Use multiple try-catch blocks" }
+            ],
+            "correctAnswer": "b",
+            "explanation": "Using process.on('uncaughtException') allows you to log the error and gracefully shut down the application, though you should still aim to handle errors properly in your routes."
+        },
+        {
+            "id": 9,
+            "question": "What's wrong with this error handling code?\n\napp.use((err, req, res, next) => {\n  res.status(err.status).json({\n    message: err.message,\n    stack: err.stack\n  });\n});",
+            "options": [
+                { "id": "a", "text": "It exposes sensitive error details" },
+                { "id": "b", "text": "It doesn't check if status exists" },
+                { "id": "c", "text": "It doesn't log the error" },
+                { "id": "d", "text": "All of the above" }
+            ],
+            "correctAnswer": "d",
+            "explanation": "This handler exposes sensitive stack traces, doesn't verify if status exists (could cause errors), and lacks error logging - all of which are important for production applications."
+        },
+        {
+            "id": 10,
+            "question": "How should rate limiting errors be handled in Express?",
+            "options": [
+                { "id": "a", "text": "Send 429 Too Many Requests status" },
+                { "id": "b", "text": "Send 403 Forbidden status" },
+                { "id": "c", "text": "Send 500 Internal Server Error" },
+                { "id": "d", "text": "Send 400 Bad Request" }
+            ],
+            "correctAnswer": "a",
+            "explanation": "Rate limiting errors should return 429 Too Many Requests status code, optionally with headers indicating when the client can retry the request."
+        }
+    ]
+};
+
+function init() {
+    const questionsContainer = document.getElementById('questions');
+
+    // Multiple Choice Questions
+    quizData.multipleChoice.forEach(q => {
+        const questionDiv = document.createElement('div');
+        questionDiv.className = 'question';
+        
+        let questionText = q.question;
+        if (questionText.includes('\n')) {
+            const parts = questionText.split('\n');
+            questionText = parts[0] + (parts.length > 1 ? `<div class="code-block">${parts.slice(1).join('\n')}</div>` : '');
+        }
+        
+        questionDiv.innerHTML = `
+            <h3>Question ${q.id}:</h3>
+            <p>${questionText}</p>
+            ${q.options.map(opt => `
+                <div class="option" data-question="${q.id}" data-option="${opt.id}">
+                    ${opt.id.toUpperCase()}. ${opt.text}
+                </div>
+            `).join('')}
+            <div id="explanation-${q.id}" class="feedback"></div>
+        `;
+        questionsContainer.appendChild(questionDiv);
+    });
+
+    updateScore();
+
+    // Multiple Choice Event Listeners
+    document.querySelectorAll('.option').forEach(option => {
+        option.addEventListener('click', function() {
+            const questionId = this.dataset.question;
+            const selectedOption = this.dataset.option;
+            const question = quizData.multipleChoice.find(q => q.id === parseInt(questionId));
+            const explanation = document.getElementById(`explanation-${questionId}`);
+
+            // Reset all options in this question
+            document.querySelectorAll(`[data-question="${questionId}"]`)
+                .forEach(opt => opt.classList.remove('correct', 'incorrect'));
+
+            if (selectedOption === question.correctAnswer) {
+                this.classList.add('correct');
+                explanation.style.display = 'block';
+                explanation.className = 'feedback correct';
+                explanation.textContent = "Correct! " + question.explanation;
+                if (!this.dataset.scored) {
+                    this.dataset.scored = 'true';
+                    updateScore();
+                }
+            } else {
+                this.classList.add('incorrect');
+                const correctOption = document.querySelector(
+                    `[data-question="${questionId}"][data-option="${question.correctAnswer}"]`
+                );
+                correctOption.classList.add('correct');
+                explanation.style.display = 'block';
+                explanation.className = 'feedback incorrect';
+                explanation.textContent = "Incorrect. " + question.explanation;
+            }
+        });
+    });
+}
+
+function updateScore() {
+    const totalQuestions = quizData.multipleChoice.length;
+    const correctAnswers = document.querySelectorAll('.option[data-scored="true"]').length;
+    document.getElementById('score').textContent = `Score: ${correctAnswers}/${totalQuestions}`;
+}
+
+init();
+</script>
+</body>
+</html>
