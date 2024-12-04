@@ -27,6 +27,8 @@ jobs:
         uses: actions/configure-pages@v5
       - name: Create .nojekyll
         run: echo > .nojekyll
+      - name: Update Version File
+        run: echo "1.0.4" > version.txt  # Moved this BEFORE the upload step
       - name: Cache-Busting
         run: |
           find . -type f -name "*.css" -exec mv {} {}-$(date +%s) \;
@@ -38,5 +40,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-      - name: Update Version File
-        run: echo "1.0.3" > version.txt

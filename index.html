@@ -302,28 +302,38 @@
 
     const checkForUpdates = async () => {
         try {
-            const response = await fetch('./version.txt', { cache: 'no-cache' }); // Fetch the latest version
-            const latestVersion = await response.text();
-
-            console.log('Latest version:', latestVersion);
-
+            const response = await fetch('./version.txt?' + new Date().getTime());
+            const latestVersion = await response.text().then(v => v.trim());
             const currentVersion = localStorage.getItem('appVersion');
-            if (currentVersion && currentVersion !== latestVersion) {
-                // Notify the user about the update
-                if (confirm('The page has been updated. Click "OK" to refresh and see the latest changes.')) {
-                    localStorage.setItem('appVersion', latestVersion);
-                    location.reload(); // Reload the page to apply updates
-                }
-            } else {
-                // Save the version in localStorage
+
+            // Debug logs
+            console.log('Current stored version:', currentVersion);
+            console.log('Latest version from server:', latestVersion);
+
+            if (!currentVersion) {
+                // First time visit, just store the version
                 localStorage.setItem('appVersion', latestVersion);
+            } else if (currentVersion !== latestVersion) {
+                // Show alert for update
+                const shouldUpdate = confirm('A new version is available.\n' +
+                    `Current: ${currentVersion}\n` +
+                    `Latest: ${latestVersion}\n\n` +
+                    'Click OK to reload and get the latest updates.');
+
+                if (shouldUpdate) {
+                    localStorage.setItem('appVersion', latestVersion);
+                    window.location.reload();
+                }
             }
         } catch (error) {
             console.error('Error checking for updates:', error);
         }
     };
 
-    // Check for updates every 30 seconds
+    // Initial check when page loads
+    checkForUpdates();
+
+    // Check every 5 minutes (300000 ms)
     setInterval(checkForUpdates, 2000);
 </script>
 </body>
