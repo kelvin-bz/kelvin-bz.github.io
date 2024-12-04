@@ -316,13 +316,11 @@
             } else if (currentVersion !== latestVersion) {
                 // Show alert for update
                 const shouldUpdate = confirm('A new version is available.\n' +
-                    `Current: ${currentVersion}\n` +
-                    `Latest: ${latestVersion}\n\n` +
                     'Click OK to reload and get the latest updates.');
 
                 if (shouldUpdate) {
                     localStorage.setItem('appVersion', latestVersion);
-                    window.location.reload();
+                    window.location.href = window.location.href.split('?')[0] + '?t=' + new Date().getTime();
                 }
             }
         } catch (error) {

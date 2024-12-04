@@ -28,7 +28,8 @@ jobs:
       - name: Create .nojekyll
         run: echo > .nojekyll
       - name: Update Version File
-        run: echo "1.0.5" > version.txt  # Moved this BEFORE the upload step
+        run: |
+          echo "$(date +%Y%m%d.%H%M)" > version.txt
       - name: Cache-Busting
         run: |
           find . -type f -name "*.css" -exec mv {} {}-$(date +%s) \;
