@@ -299,6 +299,32 @@
             card.style.display = matches ? 'block' : 'none';
         });
     });
+
+    const checkForUpdates = async () => {
+        try {
+            const response = await fetch('./version.txt', { cache: 'no-cache' }); // Fetch the latest version
+            const latestVersion = await response.text();
+
+            console.log('Latest version:', latestVersion);
+
+            const currentVersion = localStorage.getItem('appVersion');
+            if (currentVersion && currentVersion !== latestVersion) {
+                // Notify the user about the update
+                if (confirm('The page has been updated. Click "OK" to refresh and see the latest changes.')) {
+                    localStorage.setItem('appVersion', latestVersion);
+                    location.reload(); // Reload the page to apply updates
+                }
+            } else {
+                // Save the version in localStorage
+                localStorage.setItem('appVersion', latestVersion);
+            }
+        } catch (error) {
+            console.error('Error checking for updates:', error);
+        }
+    };
+
+    // Check for updates every 30 seconds
+    setInterval(checkForUpdates, 1000);
 </script>
 </body>
 </html>
