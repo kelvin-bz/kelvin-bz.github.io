@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+        .question {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .option {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .option:hover {
+            background-color: #f5f5f5;
+            transform: translateX(5px);
+        }
+        .selected {
+            background-color: #e3f2fd;
+        }
+        .correct {
+            background-color: #c8e6c9;
+            border-color: #81c784;
+        }
+        .incorrect {
+            background-color: #ffcdd2;
+            border-color: #e57373;
+        }
+        .input-answer {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            margin-top: 10px;
+            padding: 8px 16px;
+            background-color: #2196f3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #1976d2;
+        }
+        #score {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.2em;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .feedback {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            display: none;
+        }
+        code {
+            background-color: #f5f5f5;
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 MongoDB $facet Master Quiz</h1>
+        <p>Test your knowledge of MongoDB's $facet operator and aggregation pipelines!</p>
+        <div id="questions"></div>
+        <div id="score"></div>
+    </div>
+
+    <script>
+        const quizData = {
+            questions: [
+                {
+                    type: "single",
+                    question: "What is the main purpose of the $facet stage in MongoDB aggregation?",
+                    options: [
+                        "To filter documents based on a condition",
+                        "To process multiple aggregation pipelines within a single stage",
+                        "To sort documents in ascending or descending order",
+                        "To join documents from different collections"
+                    ],
+                    correct: 1,
+                    explanation: "The $facet stage allows you to create multi-faceted aggregations that process multiple aggregation pipelines within a single stage on the same set of input documents."
+                },
+                {
+                    type: "single",
+                    question: "Which statement about the $facet stage is true?",
+                    options: [
+                        "It cannot process more than 1000 documents",
+                        "It cannot contain nested $facet stages within its sub-pipelines",
+                        "It cannot use multiple pipeline stages",
+                        "It cannot perform parallel operations"
+                    ],
+                    correct: 1,
+                    explanation: "While $facet stages cannot be nested within each other, this isn't typically a limitation since $facet is designed to run multiple independent sub-pipelines in parallel at the same level. The stage's primary purpose is to compute multiple aggregations in a single stage, and nested facets are rarely needed in practice. You can achieve complex aggregations by using separate $facet branches or other aggregation stages."
+                },
+                {
+                    type: "single",
+                    question: "Where must the $facet stage appear in an aggregation pipeline?",
+                    options: [
+                        "It must be the first stage",
+                        "It must be the last stage",
+                        "It can appear anywhere in the pipeline",
+                        "It must be immediately after $match"
+                    ],
+                    correct: 2,
+                    explanation: "The $facet stage can appear anywhere in the aggregation pipeline. Its position depends on your specific requirements."
+                },
+                {
+                    type: "single",
+                    question: "What happens if a facet's pipeline is empty in a $facet stage?",
+                    options: [
+                        "It returns an error",
+                        "It returns null",
+                        "It returns an empty array",
+                        "It returns the original documents"
+                    ],
+                    correct: 2,
+                    explanation: "When a facet's pipeline is empty, it returns an empty array [] for that facet output."
+                },
+                {
+                    type: "single",
+                    question: "Which of these is NOT a valid use case for $facet?",
+                    options: [
+                        "Computing different aggregations on a collection",
+                        "Creating multiple views of the same data",
+                        "Modifying documents in the collection",
+                        "Generating analytics reports"
+                    ],
+                    correct: 2,
+                    explanation: "$facet is for reading and analyzing data, not modifying documents. Use update operations for modifications."
+                },
+                {
+                    type: "fill",
+                    question: "The operator used within $facet to count documents is: $_____",
+                    answer: "count",
+                    explanation: "$count is used to count the number of documents in a facet pipeline."
+                },
+                {
+                    type: "fill",
+                    question: "To limit the number of documents in a facet pipeline, use: $_____",
+                    answer: "limit",
+                    explanation: "$limit is used to restrict the number of documents passed to the next stage in the pipeline."
+                },
+                {
+                    type: "fill",
+                    question: "The stage used to group documents within a facet pipeline is: $_____",
+                    answer: "group",
+                    explanation: "$group is used to group documents by a specified expression and perform aggregations."
+                },
+                {
+                    type: "fill",
+                    question: "To skip documents in a facet pipeline, use: $_____",
+                    answer: "skip",
+                    explanation: "$skip is used to skip a specified number of documents and pass the remaining documents to the next stage."
+                },
+                {
+                    type: "fill",
+                    question: "To add new fields to documents in a facet pipeline, use: $_____",
+                    answer: "addFields",
+                    explanation: "$addFields is used to add new fields to documents while preserving existing fields."
+                }
+            ]
+        };
+
+        let score = 0;
+        let answeredQuestions = 0;
+
+        function createQuiz() {
+            const questionsContainer = document.getElementById('questions');
+
+            quizData.questions.forEach((q, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question';
+                questionDiv.innerHTML = `<div><strong>Question ${index + 1}:</strong> ${q.question}</div>`;
+
+                if (q.type === 'single') {
+                    const optionsDiv = document.createElement('div');
+                    optionsDiv.className = 'options';
+
+                    q.options.forEach((option, optIndex) => {
+                        const optionDiv = document.createElement('div');
+                        optionDiv.className = 'option';
+                        optionDiv.textContent = option;
+                        optionDiv.onclick = () => checkAnswer(optIndex, q.correct, optionDiv, questionDiv, q.explanation);
+                        optionsDiv.appendChild(optionDiv);
+                    });
+
+                    questionDiv.appendChild(optionsDiv);
+                } else {
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.className = 'input-answer';
+                    input.placeholder = 'Type your answer here';
+
+                    const submitBtn = document.createElement('button');
+                    submitBtn.textContent = 'Submit';
+                    submitBtn.onclick = () => checkFillAnswer(input.value, q.answer, questionDiv, q.explanation);
+
+                    questionDiv.appendChild(input);
+                    questionDiv.appendChild(submitBtn);
+                }
+
+                const feedbackDiv = document.createElement('div');
+                feedbackDiv.className = 'feedback';
+                questionDiv.appendChild(feedbackDiv);
+
+                questionsContainer.appendChild(questionDiv);
+            });
+
+            updateScore();
+        }
+
+        function checkAnswer(selected, correct, optionDiv, questionDiv, explanation) {
+            if (questionDiv.querySelector('.correct') || questionDiv.querySelector('.incorrect')) {
+                return; // Already answered
+            }
+
+            const options = questionDiv.getElementsByClassName('option');
+            options[correct].classList.add('correct');
+
+            if (selected === correct) {
+                score++;
+                optionDiv.classList.add('correct');
+                showFeedback(questionDiv, `Correct! 🎉 ${explanation}`, true);
+            } else {
+                optionDiv.classList.add('incorrect');
+                showFeedback(questionDiv, `Incorrect. ${explanation}`, false);
+            }
+
+            answeredQuestions++;
+            updateScore();
+        }
+
+        function checkFillAnswer(input, correct, questionDiv, explanation) {
+            if (questionDiv.querySelector('.feedback').style.display === 'block') {
+                return; // Already answered
+            }
+
+            if (input.toLowerCase().trim() === correct.toLowerCase().trim()) {
+                score++;
+                showFeedback(questionDiv, `Correct! 🎉 ${explanation}`, true);
+            } else {
+                showFeedback(questionDiv, `Incorrect. The correct answer is: $${correct}. ${explanation}`, false);
+            }
+
+            answeredQuestions++;
+            updateScore();
+        }
+
+        function showFeedback(questionDiv, message, isCorrect) {
+            const feedbackDiv = questionDiv.querySelector('.feedback');
+            feedbackDiv.style.display = 'block';
+            feedbackDiv.textContent = message;
+            feedbackDiv.style.backgroundColor = isCorrect ? '#c8e6c9' : '#ffcdd2';
+        }
+
+        function updateScore() {
+            const scoreDiv = document.getElementById('score');
+            const percentage = (score / quizData.questions.length) * 100;
+            scoreDiv.innerHTML = `
+                <h3>Your Score: ${score}/${quizData.questions.length}</h3>
+                <p>Percentage: ${percentage.toFixed(1)}%</p>
+                ${answeredQuestions === quizData.questions.length ?
+                    `<p>${percentage >= 70 ? '🎉 Great job! You have a solid understanding of MongoDB $facet!' :
+                    'Keep learning! Review the explanations to strengthen your MongoDB knowledge.'}</p>` : ''}
+            `;
+        }
+
+        // Initialize the quiz
+        createQuiz();
+    </script>
+</body>
+</html>

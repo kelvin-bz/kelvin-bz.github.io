@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+        .question {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .option {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .option:hover {
+            background-color: #f5f5f5;
+            transform: translateX(5px);
+        }
+        .selected {
+            background-color: #e3f2fd;
+        }
+        .correct {
+            background-color: #c8e6c9;
+            border-color: #81c784;
+        }
+        .incorrect {
+            background-color: #ffcdd2;
+            border-color: #e57373;
+        }
+        .input-answer {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            margin-top: 10px;
+            padding: 8px 16px;
+            background-color: #2196f3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #1976d2;
+        }
+        #score {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.2em;
+        }
+        .feedback {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            display: none;
+        }
+        code {
+            background-color: #f5f5f5;
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 TypeScript Utility Types Quiz</h1>
+        <p>Test your knowledge of TypeScript's utility types!</p>
+        <div id="questions"></div>
+        <div id="score"></div>
+    </div>
+
+    <script>
+        const quizData = {
+            questions: [
+                {
+                    type: "single",
+                    question: "What does Pick<T, K> do in TypeScript?",
+                    options: [
+                        "Creates a new type by selecting specific properties from type T",
+                        "Removes specific properties from type T",
+                        "Makes all properties optional in type T",
+                        "Combines multiple types into one"
+                    ],
+                    correct: 0,
+                    explanation: "Pick<T, K> constructs a type by picking the properties specified in K from type T."
+                },
+                {
+                    type: "single",
+                    question: "Given an interface User { name: string; age: number; email: string; }, what will Pick<User, 'name' | 'email'> include?",
+                    options: [
+                        "Only age",
+                        "name and age",
+                        "name and email",
+                        "email only"
+                    ],
+                    correct: 2,
+                    explanation: "Pick<User, 'name' | 'email'> will create a new type with only the name and email properties from User."
+                },
+                {
+                    type: "single",
+                    question: "What is the main difference between Pick<T, K> and Omit<T, K>?",
+                    options: [
+                        "Pick selects properties to keep, Omit selects properties to remove",
+                        "Pick removes properties, Omit keeps properties",
+                        "They are identical in functionality",
+                        "Pick is for strings, Omit is for numbers"
+                    ],
+                    correct: 0,
+                    explanation: "Pick<T, K> selects properties to include, while Omit<T, K> specifies properties to exclude."
+                },
+                {
+                    type: "single",
+                    question: "What happens when you use Partial<T>?",
+                    options: [
+                        "All properties become readonly",
+                        "All properties become required",
+                        "All properties become optional",
+                        "All properties are removed"
+                    ],
+                    correct: 2,
+                    explanation: "Partial<T> makes all properties in the resulting type optional by adding ? to each property."
+                },
+                {
+                    type: "single",
+                    question: "Which utility type should you use to make certain properties optional while keeping others required?",
+                    options: [
+                        "Required<T>",
+                        "Partial<Pick<T, K>>",
+                        "Optional<T>",
+                        "Pick<Partial<T>>"
+                    ],
+                    correct: 1,
+                    explanation: "Combining Partial with Pick allows you to make specific properties optional while leaving others unchanged."
+                },
+                {
+                    type: "fill",
+                    question: "To select specific properties from a type T, use: _____<T, K>",
+                    answer: "Pick",
+                    explanation: "Pick<T, K> is the utility type used to select specific properties from a type."
+                },
+                {
+                    type: "fill",
+                    question: "To remove specific properties from a type T, use: _____<T, K>",
+                    answer: "Omit",
+                    explanation: "Omit<T, K> is the utility type used to remove specific properties from a type."
+                },
+                {
+                    type: "fill",
+                    question: "To make all properties optional in a type T, use: _____<T>",
+                    answer: "Partial",
+                    explanation: "Partial<T> makes all properties in type T optional."
+                },
+                {
+                    type: "fill",
+                    question: "The opposite of Partial<T> is: _____<T>",
+                    answer: "Required",
+                    explanation: "Required<T> makes all properties in type T required, removing optional modifiers."
+                },
+                {
+                    type: "fill",
+                    question: "To make all properties in T readonly, use: _____<T>",
+                    answer: "Readonly",
+                    explanation: "Readonly<T> makes all properties in type T readonly, preventing modification after initialization."
+                }
+            ]
+        };
+
+        let score = 0;
+        let answeredQuestions = 0;
+
+        function createQuiz() {
+            const questionsContainer = document.getElementById('questions');
+            
+            quizData.questions.forEach((q, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question';
+                questionDiv.innerHTML = `<div><strong>Question ${index + 1}:</strong> ${q.question}</div>`;
+
+                if (q.type === 'single') {
+                    const optionsDiv = document.createElement('div');
+                    optionsDiv.className = 'options';
+                    
+                    q.options.forEach((option, optIndex) => {
+                        const optionDiv = document.createElement('div');
+                        optionDiv.className = 'option';
+                        optionDiv.textContent = option;
+                        optionDiv.onclick = () => checkAnswer(optIndex, q.correct, optionDiv, questionDiv, q.explanation);
+                        optionsDiv.appendChild(optionDiv);
+                    });
+
+                    questionDiv.appendChild(optionsDiv);
+                } else {
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.className = 'input-answer';
+                    input.placeholder = 'Type your answer here';
+                    
+                    const submitBtn = document.createElement('button');
+                    submitBtn.textContent = 'Submit';
+                    submitBtn.onclick = () => checkFillAnswer(input.value, q.answer, questionDiv, q.explanation);
+                    
+                    questionDiv.appendChild(input);
+                    questionDiv.appendChild(submitBtn);
+                }
+
+                const feedbackDiv = document.createElement('div');
+                feedbackDiv.className = 'feedback';
+                questionDiv.appendChild(feedbackDiv);
+                
+                questionsContainer.appendChild(questionDiv);
+            });
+
+            updateScore();
+        }
+
+        function checkAnswer(selected, correct, optionDiv, questionDiv, explanation) {
+            if (questionDiv.querySelector('.correct') || questionDiv.querySelector('.incorrect')) {
+                return;
+            }
+
+            const options = questionDiv.getElementsByClassName('option');
+            options[correct].classList.add('correct');
+            
+            if (selected === correct) {
+                score++;
+                optionDiv.classList.add('correct');
+                showFeedback(questionDiv, `Correct! 🎉 ${explanation}`, true);
+            } else {
+                optionDiv.classList.add('incorrect');
+                showFeedback(questionDiv, `Incorrect. ${explanation}`, false);
+            }
+
+            answeredQuestions++;
+            updateScore();
+        }
+
+        function checkFillAnswer(input, correct, questionDiv, explanation) {
+            if (questionDiv.querySelector('.feedback').style.display === 'block') {
+                return;
+            }
+
+            if (input.toLowerCase().trim() === correct.toLowerCase().trim()) {
+                score++;
+                showFeedback(questionDiv, `Correct! 🎉 ${explanation}`, true);
+            } else {
+                showFeedback(questionDiv, `Incorrect. The correct answer is: ${correct}. ${explanation}`, false);
+            }
+
+            answeredQuestions++;
+            updateScore();
+        }
+
+        function showFeedback(questionDiv, message, isCorrect) {
+            const feedbackDiv = questionDiv.querySelector('.feedback');
+            feedbackDiv.style.display = 'block';
+            feedbackDiv.textContent = message;
+            feedbackDiv.style.backgroundColor = isCorrect ? '#c8e6c9' : '#ffcdd2';
+        }
+
+        function updateScore() {
+            const scoreDiv = document.getElementById('score');
+            const percentage = (score / quizData.questions.length) * 100;
+            scoreDiv.innerHTML = `
+                <h3>Your Score: ${score}/${quizData.questions.length}</h3>
+                <p>Percentage: ${percentage.toFixed(1)}%</p>
+                ${answeredQuestions === quizData.questions.length ? 
+                    `<p>${percentage >= 70 ? '🎉 Great job! You have a solid understanding of TypeScript utility types!' : 
+                    'Keep learning! Review the explanations to strengthen your TypeScript knowledge.'}</p>` : ''}
+            `;
+        }
+
+        createQuiz();
+    </script>
+</body>
+</html>

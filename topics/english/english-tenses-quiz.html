@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+        .question {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #fff;
+        }
+        .option {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .option:hover {
+            background: #f0f0f0;
+        }
+        .correct {
+            background: #d4edda;
+            border-color: #c3e6cb;
+        }
+        .incorrect {
+            background: #f8d7da;
+            border-color: #f5c6cb;
+        }
+        #score {
+            font-size: 1.2em;
+            margin: 20px 0;
+            padding: 15px;
+            background: #e9ecef;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .fill-blank {
+            margin: 10px 0;
+        }
+        .fill-blank input {
+            width: 200px;
+            padding: 8px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            margin: 5px 0;
+        }
+        .check-answer {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .check-answer:hover {
+            background: #0056b3;
+        }
+        .feedback {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            display: none;
+        }
+        .hint {
+            color: #666;
+            font-style: italic;
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>📚 English Tenses Master Quiz</h1>
+    <p>Test your knowledge of English tenses with this interactive quiz!</p>
+    <div id="questions"></div>
+    <div id="score"></div>
+</div>
+
+<script>
+    const quizData = {
+        "title": "English Tenses Master Quiz",
+        "description": "Test your understanding of English tenses and their usage!",
+        "multipleChoice": [
+            {
+                "id": 1,
+                "question": "Which tense is used in: 'I have been studying English for five years'?",
+                "options": [
+                    { "id": "a", "text": "Present Perfect" },
+                    { "id": "b", "text": "Present Perfect Continuous" },
+                    { "id": "c", "text": "Past Perfect" },
+                    { "id": "d", "text": "Past Continuous" }
+                ],
+                "correctAnswer": "b",
+                "explanation": "Present Perfect Continuous is used for actions that began in the past and continue until now."
+            },
+            {
+                "id": 2,
+                "question": "Identify the tense: 'By the time she arrived, we had already left.'",
+                "options": [
+                    { "id": "a", "text": "Past Simple" },
+                    { "id": "b", "text": "Past Continuous" },
+                    { "id": "c", "text": "Past Perfect" },
+                    { "id": "d", "text": "Present Perfect" }
+                ],
+                "correctAnswer": "c",
+                "explanation": "Past Perfect is used for an action completed before another action in the past."
+            },
+            {
+                "id": 3,
+                "question": "What tense shows a future plan: 'I am meeting John tomorrow'?",
+                "options": [
+                    { "id": "a", "text": "Present Continuous" },
+                    { "id": "b", "text": "Simple Present" },
+                    { "id": "c", "text": "Future Simple" },
+                    { "id": "d", "text": "Present Perfect" }
+                ],
+                "correctAnswer": "a",
+                "explanation": "Present Continuous can be used for fixed future arrangements."
+            },
+            {
+                "id": 4,
+                "question": "Which sentence uses the Future Perfect tense?",
+                "options": [
+                    { "id": "a", "text": "I will study tomorrow" },
+                    { "id": "b", "text": "I will have studied for six hours by midnight" },
+                    { "id": "c", "text": "I am going to study" },
+                    { "id": "d", "text": "I will be studying" }
+                ],
+                "correctAnswer": "b",
+                "explanation": "Future Perfect describes an action that will be completed before a specific time in the future."
+            },
+            {
+                "id": 5,
+                "question": "What tense is: 'She was watching TV when the phone rang'?",
+                "options": [
+                    { "id": "a", "text": "Past Simple" },
+                    { "id": "b", "text": "Past Continuous" },
+                    { "id": "c", "text": "Past Perfect" },
+                    { "id": "d", "text": "Present Continuous" }
+                ],
+                "correctAnswer": "b",
+                "explanation": "Past Continuous is used for an action in progress when another action interrupted it."
+            }
+        ],
+        "fillInBlank": [
+            {
+                "id": 6,
+                "question": "Complete with the correct form of 'to work': He _____ for this company since 2010. (Present Perfect)",
+                "correctAnswer": "has worked",
+                "hint": "Use Present Perfect for actions starting in the past and continuing to the present"
+            },
+            {
+                "id": 7,
+                "question": "Use 'to study': When she called, I _____ for my exam. (Past Continuous)",
+                "correctAnswer": "was studying",
+                "hint": "Past Continuous describes an action in progress at a specific time in the past"
+            },
+            {
+                "id": 8,
+                "question": "Complete with 'to go': By next month, I _____ to ten different countries. (Future Perfect)",
+                "correctAnswer": "will have gone",
+                "hint": "Future Perfect is for actions that will be completed before a future time"
+            },
+            {
+                "id": 9,
+                "question": "Use 'to rain': It _____ all week. (Present Perfect Continuous)",
+                "correctAnswer": "has been raining",
+                "hint": "Present Perfect Continuous shows an ongoing action from the past until now"
+            },
+            {
+                "id": 10,
+                "question": "Complete with 'to finish': They _____ the project before the deadline. (Future Simple)",
+                "correctAnswer": "will finish",
+                "hint": "Future Simple uses 'will' + base form of the verb"
+            }
+        ]
+    };
+
+    function init() {
+        const questionsContainer = document.getElementById('questions');
+
+        // Multiple Choice Questions
+        quizData.multipleChoice.forEach(q => {
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'question';
+            questionDiv.innerHTML = `
+            <h3>Question ${q.id}: ${q.question}</h3>
+            ${q.options.map(opt => `
+                <div class="option" data-question="${q.id}" data-option="${opt.id}">
+                    ${opt.id.toUpperCase()}. ${opt.text}
+                </div>
+            `).join('')}
+            <div id="explanation-${q.id}" class="feedback"></div>
+        `;
+            questionsContainer.appendChild(questionDiv);
+        });
+
+        // Fill in the Blank Questions
+        quizData.fillInBlank.forEach(q => {
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'question';
+            questionDiv.innerHTML = `
+            <h3>Question ${q.id}: Fill in the blank</h3>
+            <p>${q.question}</p>
+            <div class="fill-blank">
+                <input type="text" id="q${q.id}" placeholder="Type your answer">
+                <p class="hint"><em>Hint: ${q.hint}</em></p>
+                <button class="check-answer" onclick="checkFillBlank(${q.id})">Check Answer</button>
+                <div id="feedback-${q.id}" class="feedback"></div>
+            </div>
+        `;
+            questionsContainer.appendChild(questionDiv);
+        });
+
+        updateScore();
+
+        // Multiple Choice Event Listeners
+        document.querySelectorAll('.option').forEach(option => {
+            option.addEventListener('click', function() {
+                const questionId = this.dataset.question;
+                const selectedOption = this.dataset.option;
+                const question = quizData.multipleChoice.find(q => q.id === parseInt(questionId));
+                const explanation = document.getElementById(`explanation-${questionId}`);
+
+                // Reset all options in this question
+                document.querySelectorAll(`[data-question="${questionId}"]`)
+                    .forEach(opt => opt.classList.remove('correct', 'incorrect'));
+
+                if (selectedOption === question.correctAnswer) {
+                    this.classList.add('correct');
+                    explanation.style.display = 'block';
+                    explanation.className = 'feedback correct';
+                    explanation.textContent = "Correct! " + question.explanation;
+                    if (!this.dataset.scored) {
+                        this.dataset.scored = 'true';
+                        updateScore();
+                    }
+                } else {
+                    this.classList.add('incorrect');
+                    const correctOption = document.querySelector(
+                        `[data-question="${questionId}"][data-option="${question.correctAnswer}"]`
+                    );
+                    correctOption.classList.add('correct');
+                    explanation.style.display = 'block';
+                    explanation.className = 'feedback incorrect';
+                    explanation.textContent = "Incorrect. " + question.explanation;
+                }
+            });
+        });
+    }
+
+    function checkFillBlank(questionId) {
+        const input = document.getElementById(`q${questionId}`);
+        const feedback = document.getElementById(`feedback-${questionId}`);
+        const question = quizData.fillInBlank.find(q => q.id === questionId);
+
+        if (input.value.trim().toLowerCase() === question.correctAnswer.toLowerCase()) {
+            input.classList.remove('incorrect');
+            input.classList.add('correct');
+            feedback.style.display = 'block';
+            feedback.className = 'feedback correct';
+            feedback.textContent = "Correct! 🎉";
+            if (!input.dataset.scored) {
+                input.dataset.scored = 'true';
+                updateScore();
+            }
+        } else {
+            input.classList.remove('correct');
+            input.classList.add('incorrect');
+            feedback.style.display = 'block';
+            feedback.className = 'feedback incorrect';
+            feedback.textContent = "Try again! Remember: " + question.hint;
+        }
+    }
+
+    function updateScore() {
+        const totalQuestions = quizData.multipleChoice.length + quizData.fillInBlank.length;
+        const correctMultipleChoice = document.querySelectorAll('.option[data-scored="true"]').length;
+        const correctFillBlank = document.querySelectorAll('input[data-scored="true"]').length;
+        const score = correctMultipleChoice + correctFillBlank;
+
+        document.getElementById('score').textContent = `Score: ${score}/${totalQuestions}`;
+    }
+
+    init();
+</script>
+</body>
+</html>

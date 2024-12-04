@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+        .question {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .option {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .option:hover {
+            background-color: #f5f5f5;
+            transform: translateX(5px);
+        }
+        .selected {
+            background-color: #e3f2fd;
+        }
+        .correct {
+            background-color: #c8e6c9;
+            border-color: #81c784;
+        }
+        .incorrect {
+            background-color: #ffcdd2;
+            border-color: #e57373;
+        }
+        .input-answer {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            margin-top: 10px;
+            padding: 8px 16px;
+            background-color: #2196f3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #1976d2;
+        }
+        #score {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.2em;
+        }
+        .feedback {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            display: none;
+        }
+        code {
+            background-color: #f5f5f5;
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 TypeScript Operators & Keywords Quiz</h1>
+        <p>Test your knowledge of TypeScript operators and keywords!</p>
+        <div id="questions"></div>
+        <div id="score"></div>
+    </div>
+
+    <script>
+        const quizData = {
+            questions: [
+                {
+                    type: "single",
+                    question: "What does the '|' (union) operator do in TypeScript?",
+                    options: [
+                        "Combines two types where a value must satisfy both types",
+                        "Creates a type that can be one of several types",
+                        "Removes common types between two types",
+                        "Creates an intersection of two types"
+                    ],
+                    correct: 1,
+                    explanation: "The union operator (|) creates a type that allows a value to be any one of the specified types. Example: type StringOrNumber = string | number;"
+                },
+                {
+                    type: "single",
+                    question: "What is the purpose of the '&' (intersection) operator?",
+                    options: [
+                        "Combines two types where a value must satisfy both types",
+                        "Selects common properties between two types",
+                        "Creates a union type",
+                        "Removes properties from a type"
+                    ],
+                    correct: 0,
+                    explanation: "The intersection operator (&) creates a type that combines all properties from both types. Example: type AdminUser = User & AdminPermissions;"
+                },
+                {
+                    type: "single",
+                    question: "In 'interface Child extends Parent', what does 'extends' do?",
+                    options: [
+                        "Copies only some properties from Parent",
+                        "Removes properties from Parent",
+                        "Inherits all properties from Parent",
+                        "Creates a union with Parent"
+                    ],
+                    correct: 2,
+                    explanation: "The extends keyword creates an inheritance relationship where Child includes all properties from Parent plus its own properties."
+                },
+                {
+                    type: "single",
+                    question: "What's the difference between type A = B and interface A extends B?",
+                    options: [
+                        "They are exactly the same",
+                        "Type aliases can't be extended, interfaces can",
+                        "Interfaces can't be union types, type aliases can",
+                        "Type aliases are faster at runtime"
+                    ],
+                    correct: 2,
+                    explanation: "While both can be used for object types, type aliases can represent unions, intersections, and more complex types that interfaces cannot."
+                },
+                {
+                    type: "single",
+                    question: "What does 'keyof' operator return?",
+                    options: [
+                        "All values in a type",
+                        "Union of all property keys",
+                        "Intersection of properties",
+                        "List of methods"
+                    ],
+                    correct: 1,
+                    explanation: "keyof operator returns a union type of all property names. Example: type Keys = keyof {x: number, y: string} results in 'x' | 'y'"
+                },
+                {
+                    type: "fill",
+                    question: "To create a type that can be either string or number, use: type StringOrNumber = string _____ number",
+                    answer: "|",
+                    explanation: "The union operator | creates a type that can be either of the specified types."
+                },
+                {
+                    type: "fill",
+                    question: "To combine properties of two types, use: type Combined = Type1 _____ Type2",
+                    answer: "&",
+                    explanation: "The intersection operator & combines all properties from both types into a new type."
+                },
+                {
+                    type: "fill",
+                    question: "Interface Child _____ Parent { newProp: string }",
+                    answer: "extends",
+                    explanation: "The extends keyword is used to create an inheritance relationship between interfaces."
+                },
+                {
+                    type: "fill",
+                    question: "To get a union of all property keys, use: type Keys = _____ ObjectType",
+                    answer: "keyof",
+                    explanation: "The keyof operator extracts a union type of all property keys from a type."
+                },
+                {
+                    type: "fill",
+                    question: "To make a property optional in an interface, use: interface User { name: string; age_____ number }",
+                    answer: "?:",
+                    explanation: "The ?: syntax makes a property optional in an interface or type."
+                }
+            ]
+        };
+
+        let score = 0;
+        let answeredQuestions = 0;
+
+        function createQuiz() {
+            const questionsContainer = document.getElementById('questions');
+            
+            quizData.questions.forEach((q, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question';
+                questionDiv.innerHTML = `<div><strong>Question ${index + 1}:</strong> ${q.question}</div>`;
+
+                if (q.type === 'single') {
+                    const optionsDiv = document.createElement('div');
+                    optionsDiv.className = 'options';
+                    
+                    q.options.forEach((option, optIndex) => {
+                        const optionDiv = document.createElement('div');
+                        optionDiv.className = 'option';
+                        optionDiv.textContent = option;
+                        optionDiv.onclick = () => checkAnswer(optIndex, q.correct, optionDiv, questionDiv, q.explanation);
+                        optionsDiv.appendChild(optionDiv);
+                    });
+
+                    questionDiv.appendChild(optionsDiv);
+                } else {
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.className = 'input-answer';
+                    input.placeholder = 'Type your answer here';
+                    
+                    const submitBtn = document.createElement('button');
+                    submitBtn.textContent = 'Submit';
+                    submitBtn.onclick = () => checkFillAnswer(input.value, q.answer, questionDiv, q.explanation);
+                    
+                    questionDiv.appendChild(input);
+                    questionDiv.appendChild(submitBtn);
+                }
+
+                const feedbackDiv = document.createElement('div');
+                feedbackDiv.className = 'feedback';
+                questionDiv.appendChild(feedbackDiv);
+                
+                questionsContainer.appendChild(questionDiv);
+            });
+
+            updateScore();
+        }
+
+        function checkAnswer(selected, correct, optionDiv, questionDiv, explanation) {
+            if (questionDiv.querySelector('.correct') || questionDiv.querySelector('.incorrect')) {
+                return;
+            }
+
+            const options = questionDiv.getElementsByClassName('option');
+            options[correct].classList.add('correct');
+            
+            if (selected === correct) {
+                score++;
+                optionDiv.classList.add('correct');
+                showFeedback(questionDiv, `Correct! 🎉 ${explanation}`, true);
+            } else {
+                optionDiv.classList.add('incorrect');
+                showFeedback(questionDiv, `Incorrect. ${explanation}`, false);
+            }
+
+            answeredQuestions++;
+            updateScore();
+        }
+
+        function checkFillAnswer(input, correct, questionDiv, explanation) {
+            if (questionDiv.querySelector('.feedback').style.display === 'block') {
+                return;
+            }
+
+            if (input.toLowerCase().trim() === correct.toLowerCase().trim()) {
+                score++;
+                showFeedback(questionDiv, `Correct! 🎉 ${explanation}`, true);
+            } else {
+                showFeedback(questionDiv, `Incorrect. The correct answer is: ${correct}. ${explanation}`, false);
+            }
+
+            answeredQuestions++;
+            updateScore();
+        }
+
+        function showFeedback(questionDiv, message, isCorrect) {
+            const feedbackDiv = questionDiv.querySelector('.feedback');
+            feedbackDiv.style.display = 'block';
+            feedbackDiv.textContent = message;
+            feedbackDiv.style.backgroundColor = isCorrect ? '#c8e6c9' : '#ffcdd2';
+        }
+
+        function updateScore() {
+            const scoreDiv = document.getElementById('score');
+            const percentage = (score / quizData.questions.length) * 100;
+            scoreDiv.innerHTML = `
+                <h3>Your Score: ${score}/${quizData.questions.length}</h3>
+                <p>Percentage: ${percentage.toFixed(1)}%</p>
+                ${answeredQuestions === quizData.questions.length ? 
+                    `<p>${percentage >= 70 ? '🎉 Great job! You have a solid understanding of TypeScript operators!' : 
+                    'Keep learning! Review the explanations to strengthen your TypeScript knowledge.'}</p>` : ''}
+            `;
+        }
+
+        createQuiz();
+    </script>
+</body>
+</html>
