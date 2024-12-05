@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+        .code-block {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            white-space: pre;
+            font-family: monospace;
+        }
+        .question {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .option {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .option:hover {
+            background: #f0f0f0;
+        }
+        .correct {
+            background: #d4edda;
+            border-color: #c3e6cb;
+        }
+        .incorrect {
+            background: #f8d7da;
+            border-color: #f5c6cb;
+        }
+        #score {
+            font-size: 1.2em;
+            margin: 20px 0;
+            padding: 15px;
+            background: #e9ecef;
+            border-radius: 8px;
+        }
+        .fill-blank {
+            display: inline-block;
+            margin: 0 5px;
+        }
+        .fill-blank input {
+            width: 150px;
+            padding: 5px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+        }
+        .fill-blank input.correct {
+            border-color: #28a745;
+        }
+        .fill-blank input.incorrect {
+            border-color: #dc3545;
+        }
+        .check-answer {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .check-answer:hover {
+            background: #0056b3;
+        }
+        .feedback {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🐒 MonkeyScript: OOP Adventure Quiz 🍌</h1>
+    <p>Test your understanding of Object-Oriented Programming with our playful monkey examples!</p>
+
+    <div id="code-example" class="code-block"></div>
+    <div id="questions"></div>
+    <div id="score"></div>
+</div>
+
+<script>
+    const quizData = {
+        "title": "MonkeyScript: OOP Adventure Quiz 🐒",
+        "description": "Test your understanding of Object-Oriented Programming with our playful monkey examples! 🍌",
+        "codeExample": `class Monkey {
+    constructor(name, favoriteFood) {
+        this.name = name;
+        this.favoriteFood = favoriteFood;
+        this.energy = 100;
+    }
+
+    makeSound() {
+        this.energy -= 10;
+        return "Ooh ooh ah ah! 🐒";
+    }
+
+    eat(food) {
+        if (food === this.favoriteFood) {
+            this.energy += 20;
+            return "Yummy! " + "🍌".repeat(3);
+        }
+        return "Meh... 😕";
+    }
+}
+
+class FlyingMonkey extends Monkey {
+    constructor(name, favoriteFood) {
+        super(name, favoriteFood);
+        this.hasWings = true;
+    }
+
+    fly() {
+        if (this.energy >= 50) {
+            this.energy -= 50;
+            return "Wheee! ✈️ 🐒";
+        }
+        return "Too tired to fly... 😴";
+    }
+}
+
+class SmartMonkey extends Monkey {
+    #bananaStash = 0;  // Private field
+
+    constructor(name, favoriteFood) {
+        super(name, favoriteFood);
+        this.intelligence = 100;
+    }
+
+    addToBananaStash(count) {
+        this.#bananaStash += count;
+        this.energy += Math.floor(count / 2);  // Get energy from storing bananas
+    }
+
+    shareBananas(count) {
+        if (count <= this.#bananaStash) {
+            this.#bananaStash -= count;
+            return \`Sharing \${count} bananas! 🍌\`;
+        }
+        return "No bananas to share! 😢";
+    }
+
+    solveProblems() {
+        if (this.energy >= 30) {
+            this.energy -= 30;
+            return "Solving complex problems! 🧠";
+        }
+        return "Too tired to think... 💤";
+    }
+}`,
+        "multipleChoice": [
+            {
+                "id": 1,
+                "question": "What happens when a FlyingMonkey tries to fly with only 30 energy?",
+                "options": [
+                    { "id": "a", "text": "Returns 'Wheee! ✈️ 🐒'" },
+                    { "id": "b", "text": "Returns 'Too tired to fly... 😴'" },
+                    { "id": "c", "text": "Throws an error" },
+                    { "id": "d", "text": "Sets energy to 0" }
+                ],
+                "correctAnswer": "b"
+            },
+            {
+                "id": 2,
+                "question": "How would you access the bananaStash of a SmartMonkey instance?",
+                "options": [
+                    { "id": "a", "text": "monkey.bananaStash" },
+                    { "id": "b", "text": "monkey.#bananaStash" },
+                    { "id": "c", "text": "You can't - it's a private field" },
+                    { "id": "d", "text": "monkey.getBananaStash()" }
+                ],
+                "correctAnswer": "c"
+            },
+            {
+                "id": 3,
+                "question": "What happens when a SmartMonkey adds bananas to its stash?",
+                "options": [
+                    { "id": "a", "text": "Only increases the private bananaStash" },
+                    { "id": "b", "text": "Increases bananaStash and energy" },
+                    { "id": "c", "text": "Decreases energy" },
+                    { "id": "d", "text": "Nothing - it's just a counter" }
+                ],
+                "correctAnswer": "b"
+            },
+            {
+                "id": 4,
+                "question": "Which methods do SmartMonkey instances inherit from the Monkey class?",
+                "options": [
+                    { "id": "a", "text": "Only constructor" },
+                    { "id": "b", "text": "makeSound and eat" },
+                    { "id": "c", "text": "solveProblems and shareBananas" },
+                    { "id": "d", "text": "fly and makeSound" }
+                ],
+                "correctAnswer": "b"
+            },
+            {
+                "id": 5,
+                "question": "What OOP concepts are demonstrated by the SmartMonkey class?",
+                "options": [
+                    { "id": "a", "text": "Only Inheritance" },
+                    { "id": "b", "text": "Inheritance and Encapsulation" },
+                    { "id": "c", "text": "Only Encapsulation" },
+                    { "id": "d", "text": "Polymorphism only" }
+                ],
+                "correctAnswer": "b"
+            }
+        ],
+        "fillInBlank": [
+            {
+                "id": 6,
+                "question": "To create a new instance of FlyingMonkey, you would write: const monkey = new FlyingMonkey(_____,'banana');",
+                "correctAnswer": "name",
+                "hint": "This parameter is used to identify the monkey instance"
+            },
+            {
+                "id": 7,
+                "question": "The keyword _____ is used to call the parent class constructor in JavaScript.",
+                "correctAnswer": "super",
+                "hint": "It's used in both FlyingMonkey and SmartMonkey constructors"
+            },
+            {
+                "id": 8,
+                "question": "Private fields in JavaScript classes are declared using the _____ prefix.",
+                "correctAnswer": "#",
+                "hint": "Look at the bananaStash declaration in SmartMonkey"
+            },
+            {
+                "id": 9,
+                "question": "The _____ keyword is used to create a new class that inherits from another class.",
+                "correctAnswer": "extends",
+                "hint": "Both FlyingMonkey and SmartMonkey use this keyword"
+            },
+            {
+                "id": 10,
+                "question": "Inside the eat method, _____ refers to the current instance of the class.",
+                "correctAnswer": "this",
+                "hint": "It's used to access instance properties like energy and favoriteFood"
+            }
+        ]
+    };
+
+    function init() {
+        document.getElementById('code-example').textContent = quizData.codeExample;
+
+        const questionsContainer = document.getElementById('questions');
+
+        // Multiple Choice Questions
+        quizData.multipleChoice.forEach(q => {
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'question';
+            questionDiv.innerHTML = `
+                    <h3>Question ${q.id}: ${q.question}</h3>
+                    ${q.options.map(opt => `
+                        <div class="option" data-question="${q.id}" data-option="${opt.id}">
+                            ${opt.id.toUpperCase()}. ${opt.text}
+                        </div>
+                    `).join('')}
+                `;
+            questionsContainer.appendChild(questionDiv);
+        });
+
+        // Fill in the Blank Questions
+        quizData.fillInBlank.forEach(q => {
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'question';
+            questionDiv.innerHTML = `
+                    <h3>Question ${q.id}: Fill in the blank</h3>
+                    <p>${q.question}</p>
+                    <div class="fill-blank">
+                        <input type="text" id="q${q.id}" placeholder="Type your answer">
+                        <p class="hint"><em>Hint: ${q.hint}</em></p>
+                        <button class="check-answer" onclick="checkFillBlank(${q.id})">Check Answer</button>
+                        <div id="feedback-${q.id}" class="feedback"></div>
+                    </div>
+                `;
+            questionsContainer.appendChild(questionDiv);
+        });
+
+        let score = 0;
+        const scoreDiv = document.getElementById('score');
+        scoreDiv.textContent = `Score: ${score}/${quizData.multipleChoice.length + quizData.fillInBlank.length}`;
+
+        // Multiple Choice Event Listeners
+        document.querySelectorAll('.option').forEach(option => {
+            option.addEventListener('click', function() {
+                const questionId = this.dataset.question;
+                const selectedOption = this.dataset.option;
+                const question = quizData.multipleChoice.find(q => q.id === parseInt(questionId));
+
+                document.querySelectorAll(`[data-question="${questionId}"]`)
+                    .forEach(opt => {
+                        opt.classList.remove('correct', 'incorrect');
+                    });
+
+                if (selectedOption === question.correctAnswer) {
+                    this.classList.add('correct');
+                    if (!this.dataset.scored) {
+                        score++;
+                        this.dataset.scored = 'true';
+                    }
+                } else {
+                    this.classList.add('incorrect');
+                    document.querySelector(`[data-question="${questionId}"][data-option="${question.correctAnswer}"]`)
+                        .classList.add('correct');
+                }
+
+                updateScore();
+            });
+        });
+    }
+
+    function checkFillBlank(questionId) {
+        const input = document.getElementById(`q${questionId}`);
+        const feedback = document.getElementById(`feedback-${questionId}`);
+        const question = quizData.fillInBlank.find(q => q.id === questionId);
+
+        if (input.value.trim().toLowerCase() === question.correctAnswer.toLowerCase()) {
+            input.classList.remove('incorrect');
+            input.classList.add('correct');
+            feedback.style.display = 'block';
+            feedback.className = 'feedback correct';
+            feedback.textContent = "Correct! 🎉";
+            if (!input.dataset.scored) {
+                input.dataset.scored = 'true';
+                updateScore();
+            }
+        } else {
+            input.classList.remove('correct');
+            input.classList.add('incorrect');
+            feedback.style.display = 'block';
+            feedback.className = 'feedback incorrect';
+            feedback.textContent = "Try again! Remember: " + question.hint;
+        }
+    }
+
+    function updateScore() {
+        const totalQuestions = quizData.multipleChoice.length + quizData.fillInBlank.length;
+        const correctMultipleChoice = document.querySelectorAll('.option[data-scored="true"]').length;
+        const correctFillBlank = document.querySelectorAll('input[data-scored="true"]').length;
+        const score = correctMultipleChoice + correctFillBlank;
+
+        document.getElementById('score').textContent = `Score: ${score}/${totalQuestions}`;
+    }
+
+    init();
+</script>
+</body>
+</html>
