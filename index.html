@@ -334,8 +334,19 @@
                     'Click OK to reload and get the latest updates.');
 
                 if (shouldUpdate) {
-                    localStorage.setItem('appVersion', latestVersion);
-                    window.location.href = window.location.href.split('?')[0] + '?t=' + new Date().getTime();
+                    try {
+                        // Clear all caches
+                        const cacheKeys = await caches.keys();
+                        await Promise.all(cacheKeys.map(key => caches.delete(key)));
+                        localStorage.clear();
+                        sessionStorage.clear();
+                        if (window.applicationCache) {
+                            window.applicationCache.abort();
+                        }
+                        window.location.reload(true);
+                    } catch (error) {
+                        console.error('Error clearing cache:', error);
+                    }
                 }
             }
         } catch (error) {
