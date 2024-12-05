@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+        .question {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .option {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .option:hover {
+            background-color: #f5f5f5;
+            transform: translateX(5px);
+        }
+        .selected {
+            background-color: #e3f2fd;
+        }
+        .correct {
+            background-color: #c8e6c9;
+            border-color: #81c784;
+        }
+        .incorrect {
+            background-color: #ffcdd2;
+            border-color: #e57373;
+        }
+        .input-answer {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            margin-top: 10px;
+            padding: 8px 16px;
+            background-color: #2196f3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #1976d2;
+        }
+        #score {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.2em;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .feedback {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            display: none;
+        }
+        code {
+            background-color: #f5f5f5;
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-areas:
+                'header header header'
+                'concepts images containers'
+                'commands networking volumes';
+            grid-template-rows: auto 1fr 1fr;
+            grid-template-columns: 1fr 1fr 1fr;
+            grid-gap: 15px;
+            padding: 15px;
+            box-sizing: border-box;
+            width: 100%;
+            height: auto;
+        }
+
+        .grid-container > div {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #000;
+            page-break-inside: avoid;
+        }
+
+        .header {
+            grid-area: header;
+            text-align: center;
+            background-color: #d3e4f5;
+        }
+
+        .concepts { grid-area: concepts; background-color: #e1f5fe; }
+        .images { grid-area: images; background-color: #e8f5e9; }
+        .containers { grid-area: containers; background-color: #fff9c4; }
+        .commands { grid-area: commands; background-color: #fce4ec; }
+        .networking { grid-area: networking; background-color: #f3e5f5; }
+        .volumes { grid-area: volumes; background-color: #ffebee; }
+
+        code {
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-family: monospace;
+            background-color: #f4f4f4;
+        }
+
+        pre {
+            background-color: #f4f4f4;
+            padding: 15px;
+            border-radius: 8px;
+            overflow: auto;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #333;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .output {
+            color: #0a7a0a;
+            margin-left: 20px;
+            border-left: 3px solid #0a7a0a;
+            padding-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🐳 Docker Master Quiz</h1>
+        <p>Test your knowledge of Docker with this comprehensive quiz!</p>
+        <div id="questions"></div>
+        <div id="score"></div>
+    </div>
+
+
+    <script>
+        const quizData = {
+            questions: [
+                {
+                    type: "single",
+                    question: "Which command is used to create and start a container from an image?",
+                    options: [
+                        "docker create",
+                        "docker run",
+                        "docker start",
+                        "docker launch"
+                    ],
+                    correct: 1,
+                    explanation: "docker run is used to create and start a container. It combines the functionality of docker create and docker start."
+                },
+                {
+                    type: "single",
+                    question: "What is the purpose of a Dockerfile?",
+                    options: [
+                        "To store Docker images",
+                        "To run Docker containers",
+                        "To define how to build an image",
+                        "To manage Docker networks"
+                    ],
+                    correct: 2,
+                    explanation: "A Dockerfile is a text document containing instructions for building a Docker image automatically."
+                },
+                {
+                    type: "single",
+                    question: "Which command shows all running containers?",
+                    options: [
+                        "docker ps",
+                        "docker ls",
+                        "docker list",
+                        "docker show"
+                    ],
+                    correct: 0,
+                    explanation: "docker ps shows all currently running containers. Use docker ps -a to show all containers, including stopped ones."
+                },
+                {
+                    type: "single",
+                    question: "What is Docker Compose used for?",
+                    options: [
+                        "To build single containers",
+                        "To define and run multi-container applications",
+                        "To store Docker images",
+                        "To scan Docker images for vulnerabilities"
+                    ],
+                    correct: 1,
+                    explanation: "Docker Compose is a tool for defining and running multi-container Docker applications using a YAML file."
+                },
+                {
+                    type: "single",
+                    question: "Which of these is NOT a valid Dockerfile instruction?",
+                    options: [
+                        "FROM",
+                        "RUN",
+                        "EXECUTE",
+                        "COPY"
+                    ],
+                    correct: 2,
+                    explanation: "EXECUTE is not a valid Dockerfile instruction. RUN is used to execute commands in a Dockerfile."
+                },
+                {
+                    type: "fill",
+                    question: "The command to remove a Docker image is: docker _____ <image-name>",
+                    answer: "rmi",
+                    explanation: "docker rmi is used to remove one or more Docker images."
+                },
+                {
+                    type: "fill",
+                    question: "The Dockerfile instruction to set environment variables is: _______",
+                    answer: "ENV",
+                    explanation: "ENV instruction is used to set environment variables in a Dockerfile."
+                },
+                {
+                    type: "fill",
+                    question: "To expose a port in a Dockerfile, use the _______ instruction",
+                    answer: "EXPOSE",
+                    explanation: "EXPOSE instruction informs Docker that the container listens on specified network ports at runtime."
+                },
+                {
+                    type: "fill",
+                    question: "The file that defines Docker Compose services is typically named: docker-compose._____",
+                    answer: "yml",
+                    explanation: "Docker Compose typically uses docker-compose.yml or docker-compose.yaml as the configuration file."
+                },
+                {
+                    type: "fill",
+                    question: "To specify the base image in a Dockerfile, use the ______ instruction",
+                    answer: "FROM",
+                    explanation: "FROM instruction specifies the base image from which you are building your custom image."
+                }
+            ]
+        };
+
+        let score = 0;
+        let answeredQuestions = 0;
+
+        function createQuiz() {
+            const questionsContainer = document.getElementById('questions');
+
+            quizData.questions.forEach((q, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question';
+                questionDiv.innerHTML = `<div><strong>Question ${index + 1}:</strong> ${q.question}</div>`;
+
+                if (q.type === 'single') {
+                    const optionsDiv = document.createElement('div');
+                    optionsDiv.className = 'options';
+
+                    q.options.forEach((option, optIndex) => {
+                        const optionDiv = document.createElement('div');
+                        optionDiv.className = 'option';
+                        optionDiv.textContent = option;
+                        optionDiv.onclick = () => checkAnswer(optIndex, q.correct, optionDiv, questionDiv, q.explanation);
+                        optionsDiv.appendChild(optionDiv);
+                    });
+
+                    questionDiv.appendChild(optionsDiv);
+                } else {
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.className = 'input-answer';
+                    input.placeholder = 'Type your answer here';
+
+                    const submitBtn = document.createElement('button');
+                    submitBtn.textContent = 'Submit';
+                    submitBtn.onclick = () => checkFillAnswer(input.value, q.answer, questionDiv, q.explanation);
+
+                    questionDiv.appendChild(input);
+                    questionDiv.appendChild(submitBtn);
+                }
+
+                const feedbackDiv = document.createElement('div');
+                feedbackDiv.className = 'feedback';
+                questionDiv.appendChild(feedbackDiv);
+
+                questionsContainer.appendChild(questionDiv);
+            });
+
+            updateScore();
+        }
+
+        function checkAnswer(selected, correct, optionDiv, questionDiv, explanation) {
+            if (questionDiv.querySelector('.correct') || questionDiv.querySelector('.incorrect')) {
+                return; // Already answered
+            }
+
+            const options = questionDiv.getElementsByClassName('option');
+            options[correct].classList.add('correct');
+
+            if (selected === correct) {
+                score++;
+                optionDiv.classList.add('correct');
+                showFeedback(questionDiv, `Correct! 🎉 ${explanation}`, true);
+            } else {
+                optionDiv.classList.add('incorrect');
+                showFeedback(questionDiv, `Incorrect. ${explanation}`, false);
+            }
+
+            answeredQuestions++;
+            updateScore();
+        }
+
+        function checkFillAnswer(input, correct, questionDiv, explanation) {
+            if (questionDiv.querySelector('.feedback').style.display === 'block') {
+                return; // Already answered
+            }
+
+            if (input.toLowerCase().trim() === correct.toLowerCase().trim()) {
+                score++;
+                showFeedback(questionDiv, `Correct! 🎉 ${explanation}`, true);
+            } else {
+                showFeedback(questionDiv, `Incorrect. The correct answer is: ${correct}. ${explanation}`, false);
+            }
+
+            answeredQuestions++;
+            updateScore();
+        }
+
+        function showFeedback(questionDiv, message, isCorrect) {
+            const feedbackDiv = questionDiv.querySelector('.feedback');
+            feedbackDiv.style.display = 'block';
+            feedbackDiv.textContent = message;
+            feedbackDiv.style.backgroundColor = isCorrect ? '#c8e6c9' : '#ffcdd2';
+        }
+
+        function updateScore() {
+            const scoreDiv = document.getElementById('score');
+            const percentage = (score / quizData.questions.length) * 100;
+            scoreDiv.innerHTML = `
+                <h3>Your Score: ${score}/${quizData.questions.length}</h3>
+                <p>Percentage: ${percentage.toFixed(1)}%</p>
+                ${answeredQuestions === quizData.questions.length ?
+                    `<p>${percentage >= 70 ? '🎉 Great job! You have a solid understanding of Docker!' :
+                    'Keep learning! Review the explanations to strengthen your Docker knowledge.'}</p>` : ''}
+            `;
+        }
+
+        // Initialize the quiz
+        createQuiz();
+    </script>
+</body>
+</html>
