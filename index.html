@@ -345,6 +345,7 @@
                         const cacheKeys = await caches.keys();
                         await Promise.all(cacheKeys.map(key => caches.delete(key)));
                         localStorage.clear();
+                        localStorage.setItem('appVersion', latestVersion);
                         sessionStorage.clear();
                         if (window.applicationCache) {
                             window.applicationCache.abort();
