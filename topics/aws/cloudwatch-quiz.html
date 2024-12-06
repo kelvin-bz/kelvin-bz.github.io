@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+        .question {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .option {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .option:hover {
+            background-color: #f5f5f5;
+            transform: translateX(5px);
+        }
+        .selected {
+            background-color: #e3f2fd;
+        }
+        .correct {
+            background-color: #c8e6c9;
+            border-color: #81c784;
+        }
+        .incorrect {
+            background-color: #ffcdd2;
+            border-color: #e57373;
+        }
+        .input-answer {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            margin-top: 10px;
+            padding: 8px 16px;
+            background-color: #2196f3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #1976d2;
+        }
+        #score {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.2em;
+        }
+        .feedback {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            display: none;
+        }
+        code {
+            background-color: #f5f5f5;
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>☁️ AWS CloudWatch Quiz</h1>
+        <p>Test your knowledge of AWS CloudWatch monitoring, metrics, logs, and alerts!</p>
+        <div id="questions"></div>
+        <div id="score"></div>
+    </div>
+
+    <script>
+        const quizData = {
+            questions: [
+                {
+                    type: "single",
+                    question: "What is the default metric resolution (monitoring interval) in CloudWatch for basic monitoring?",
+                    options: [
+                        "1 minute",
+                        "3 minutes",
+                        "5 minutes",
+                        "10 minutes"
+                    ],
+                    correct: 2,
+                    explanation: "Basic monitoring in CloudWatch provides metrics at 5-minute intervals at no additional charge. For more frequent monitoring, you can enable detailed monitoring for 1-minute intervals."
+                },
+                {
+                    type: "single",
+                    question: "Which CloudWatch feature allows you to automatically respond to resource changes in your AWS environment?",
+                    options: [
+                        "CloudWatch Metrics",
+                        "CloudWatch Events",
+                        "CloudWatch Logs",
+                        "CloudWatch Dashboard"
+                    ],
+                    correct: 1,
+                    explanation: "CloudWatch Events (now part of Amazon EventBridge) delivers a near real-time stream of system events that describe changes in AWS resources, allowing automated response to these changes."
+                },
+                {
+                    type: "single",
+                    question: "How long are CloudWatch log events retained by default?",
+                    options: [
+                        "1 month",
+                        "2 months",
+                        "3 months",
+                        "Indefinitely"
+                    ],
+                    correct: 0,
+                    explanation: "By default, CloudWatch Logs retains log events for 1 month. You can modify the retention period for each log group, with possible values ranging from 1 day to 10 years, or set it to never expire."
+                },
+                {
+                    type: "single",
+                    question: "Which of these is NOT a valid CloudWatch metric statistic?",
+                    options: [
+                        "Average",
+                        "Sum",
+                        "Median",
+                        "Maximum"
+                    ],
+                    correct: 2,
+                    explanation: "CloudWatch supports several statistics including Average, Sum, Minimum, Maximum, Sample Count, and percentiles, but Median is not a supported statistic type. Use percentiles (p50) for median-like measurements."
+                },
+                {
+                    type: "single",
+                    question: "What is the minimum period for a CloudWatch alarm evaluation?",
+                    options: [
+                        "10 seconds",
+                        "30 seconds",
+                        "1 minute",
+                        "5 minutes"
+                    ],
+                    correct: 0,
+                    explanation: "CloudWatch alarms can be evaluated as frequently as 10 seconds with high-resolution custom metrics. Standard resolution metrics can be evaluated at a minimum of 1-minute intervals."
+                },
+                {
+                    type: "fill",
+                    question: "The CloudWatch feature that allows you to create visualizations of your metrics is called CloudWatch ______.",
+                    answer: "dashboard",
+                    explanation: "CloudWatch Dashboards are customizable home pages in the CloudWatch console that you can use to monitor your resources in a single view."
+                },
+                {
+                    type: "fill",
+                    question: "CloudWatch ______ are points of data about your resources and applications that CloudWatch collects and tracks.",
+                    answer: "metrics",
+                    explanation: "CloudWatch Metrics are data points about your resources' performance. They are the fundamental concept in CloudWatch monitoring."
+                },
+                {
+                    type: "fill",
+                    question: "To collect custom metrics from your applications and services, you need to use the CloudWatch ______ API.",
+                    answer: "PutMetricData",
+                    explanation: "The PutMetricData API call is used to publish custom metric data points to CloudWatch from your applications."
+                },
+                {
+                    type: "fill",
+                    question: "CloudWatch ______ Agent is used to collect additional system-level metrics from Amazon EC2 instances and on-premises servers.",
+                    answer: "unified",
+                    explanation: "The CloudWatch Unified Agent is the recommended way to collect additional system-level metrics and logs from your EC2 instances and on-premises servers."
+                },
+                {
+                    type: "fill",
+                    question: "CloudWatch Logs ______ allows you to search and analyze your log data using a powerful query language.",
+                    answer: "insights",
+                    explanation: "CloudWatch Logs Insights enables you to search and analyze log data interactively using a purpose-built query language."
+                }
+            ]
+        };
+
+        let score = 0;
+        let answeredQuestions = 0;
+
+        function createQuiz() {
+            const questionsContainer = document.getElementById('questions');
+            
+            quizData.questions.forEach((q, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question';
+                questionDiv.innerHTML = `<div><strong>Question ${index + 1}:</strong> ${q.question}</div>`;
+
+                if (q.type === 'single') {
+                    const optionsDiv = document.createElement('div');
+                    optionsDiv.className = 'options';
+                    
+                    q.options.forEach((option, optIndex) => {
+                        const optionDiv = document.createElement('div');
+                        optionDiv.className = 'option';
+                        optionDiv.textContent = option;
+                        optionDiv.onclick = () => checkAnswer(optIndex, q.correct, optionDiv, questionDiv, q.explanation);
+                        optionsDiv.appendChild(optionDiv);
+                    });
+
+                    questionDiv.appendChild(optionsDiv);
+                } else {
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.className = 'input-answer';
+                    input.placeholder = 'Type your answer here';
+                    
+                    const submitBtn = document.createElement('button');
+                    submitBtn.textContent = 'Submit';
+                    submitBtn.onclick = () => checkFillAnswer(input.value, q.answer, questionDiv, q.explanation);
+                    
+                    questionDiv.appendChild(input);
+                    questionDiv.appendChild(submitBtn);
+                }
+
+                const feedbackDiv = document.createElement('div');
+                feedbackDiv.className = 'feedback';
+                questionDiv.appendChild(feedbackDiv);
+                
+                questionsContainer.appendChild(questionDiv);
+            });
+
+            updateScore();
+        }
+
+        function checkAnswer(selected, correct, optionDiv, questionDiv, explanation) {
+            if (questionDiv.querySelector('.correct') || questionDiv.querySelector('.incorrect')) {
+                return; // Already answered
+            }
+
+            const options = questionDiv.getElementsByClassName('option');
+            options[correct].classList.add('correct');
+            
+            if (selected === correct) {
+                score++;
+                optionDiv.classList.add('correct');
+                showFeedback(questionDiv, `Correct! 🎉 ${explanation}`, true);
+            } else {
+                optionDiv.classList.add('incorrect');
+                showFeedback(questionDiv, `Incorrect. ${explanation}`, false);
+            }
+
+            answeredQuestions++;
+            updateScore();
+        }
+
+        function checkFillAnswer(input, correct, questionDiv, explanation) {
+            if (questionDiv.querySelector('.feedback').style.display === 'block') {
+                return; // Already answered
+            }
+
+            if (input.toLowerCase().trim() === correct.toLowerCase().trim()) {
+                score++;
+                showFeedback(questionDiv, `Correct! 🎉 ${explanation}`, true);
+            } else {
+                showFeedback(questionDiv, `Incorrect. The correct answer is: ${correct}. ${explanation}`, false);
+            }
+
+            answeredQuestions++;
+            updateScore();
+        }
+
+        function showFeedback(questionDiv, message, isCorrect) {
+            const feedbackDiv = questionDiv.querySelector('.feedback');
+            feedbackDiv.style.display = 'block';
+            feedbackDiv.textContent = message;
+            feedbackDiv.style.backgroundColor = isCorrect ? '#c8e6c9' : '#ffcdd2';
+        }
+
+        function updateScore() {
+            const scoreDiv = document.getElementById('score');
+            const percentage = (score / quizData.questions.length) * 100;
+            scoreDiv.innerHTML = `
+                <h3>Your Score: ${score}/${quizData.questions.length}</h3>
+                <p>Percentage: ${percentage.toFixed(1)}%</p>
+                ${answeredQuestions === quizData.questions.length ? 
+                    `<p>${percentage >= 70 ? '🎉 Great job! You have a solid understanding of AWS CloudWatch!' : 
+                    'Keep learning! Review the explanations to strengthen your knowledge of CloudWatch monitoring and observability.'}</p>` : ''}
+            `;
+        }
+
+        // Initialize the quiz
+        createQuiz();
+    </script>
+</body>
+</html>
