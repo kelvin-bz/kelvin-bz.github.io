@@ -61,6 +61,7 @@
             border: none;
             border-radius: 4px;
             cursor: pointer;
+            transition: background-color 0.3s;
         }
         button:hover {
             background-color: #1976d2;
@@ -85,12 +86,20 @@
             border-radius: 4px;
             font-family: monospace;
         }
+        .code-block {
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🔧 TypeScript Utility Types Quiz</h1>
-        <p>Test your knowledge of TypeScript's utility types!</p>
+        <h1>📂 Node.js File Handling Quiz</h1>
+        <p>Test your knowledge of Node.js file system operations and best practices!</p>
         <div id="questions"></div>
         <div id="score"></div>
     </div>
@@ -100,95 +109,93 @@
             questions: [
                 {
                     type: "single",
-                    question: "What does Pick<T, K> do in TypeScript?",
+                    question: "What's the correct way to import the file system module in Node.js?",
                     options: [
-                        "Creates a new type by selecting specific properties from type T",
-                        "Removes specific properties from type T",
-                        "Makes all properties optional in type T",
-                        "Combines multiple types into one"
-                    ],
-                    correct: 0,
-                    explanation: "Pick<T, K> constructs a type by picking the properties specified in K from type T."
-                },
-                {
-                    type: "single",
-                    question: "Given an interface User { name: string; age: number; email: string; }, what will Pick<User, 'name' | 'email'> include?",
-                    options: [
-                        "Only age",
-                        "name and age",
-                        "name and email",
-                        "email only"
-                    ],
-                    correct: 2,
-                    explanation: "Pick<User, 'name' | 'email'> will create a new type with only the name and email properties from User."
-                },
-                {
-                    type: "single",
-                    question: "What is the main difference between Pick<T, K> and Omit<T, K>?",
-                    options: [
-                        "Pick selects properties to keep, Omit selects properties to remove",
-                        "Pick removes properties, Omit keeps properties",
-                        "They are identical in functionality",
-                        "Pick is for strings, Omit is for numbers"
-                    ],
-                    correct: 0,
-                    explanation: "Pick<T, K> selects properties to include, while Omit<T, K> specifies properties to exclude."
-                },
-                {
-                    type: "single",
-                    question: "What happens when you use Partial<T>?",
-                    options: [
-                        "All properties become readonly",
-                        "All properties become required",
-                        "All properties become optional",
-                        "All properties are removed"
-                    ],
-                    correct: 2,
-                    explanation: "Partial<T> makes all properties in the resulting type optional by adding ? to each property."
-                },
-                {
-                    type: "single",
-                    question: "Which utility type should you use to make certain properties optional while keeping others required?",
-                    options: [
-                        "Required<T>",
-                        "Partial<Pick<T, K>>",
-                        "Optional<T>",
-                        "Pick<Partial<T>>"
+                        "const fs = require('filesystem');",
+                        "const fs = require('fs');",
+                        "import fs from 'filesystem';",
+                        "import { fs } from 'fs';"
                     ],
                     correct: 1,
-                    explanation: "Combining Partial with Pick allows you to make specific properties optional while leaving others unchanged."
+                    explanation: "The Node.js file system module is imported using require('fs'). In modern Node.js, you can also use: import * as fs from 'fs';"
+                },
+                {
+                    type: "single",
+                    question: "Which method would you use to read a file asynchronously in Node.js?",
+                    options: [
+                        "fs.readFile()",
+                        "fs.read()",
+                        "fs.readFileSync()",
+                        "fs.readAsync()"
+                    ],
+                    correct: 0,
+                    explanation: "fs.readFile() is the asynchronous method for reading files. It takes a callback function or returns a promise when used with promises/async-await."
+                },
+                {
+                    type: "single",
+                    question: "What does the following code do?\n<div class='code-block'>fs.watchFile('myfile.txt', (curr, prev) => {\n  console.log('File changed');\n});</div>",
+                    options: [
+                        "Reads the file content",
+                        "Monitors the file for changes",
+                        "Creates a new file",
+                        "Deletes the file"
+                    ],
+                    correct: 1,
+                    explanation: "fs.watchFile() monitors a file for changes. The callback is triggered whenever the file is modified, providing the current and previous file stats."
+                },
+                {
+                    type: "single",
+                    question: "Which encoding should you specify when reading text files?",
+                    options: [
+                        "ASCII",
+                        "UTF-8",
+                        "UTF-16",
+                        "Binary"
+                    ],
+                    correct: 1,
+                    explanation: "UTF-8 is the recommended encoding for text files as it supports a wide range of characters and is backward compatible with ASCII."
+                },
+                {
+                    type: "single",
+                    question: "What's the difference between fs.unlink() and fs.rmdir()?",
+                    options: [
+                        "They are the same",
+                        "unlink deletes files, rmdir deletes directories",
+                        "unlink is async, rmdir is sync",
+                        "unlink is for Windows, rmdir for Unix"
+                    ],
+                    correct: 1,
+                    explanation: "fs.unlink() is used to delete files, while fs.rmdir() is specifically for deleting empty directories. For directories with content, use fs.rm() with recursive option."
                 },
                 {
                     type: "fill",
-                    question: "To select specific properties from a type T, use: _____<T, K>",
-                    answer: "Pick",
-                    explanation: "Pick<T, K> is the utility type used to select specific properties from a type. Example: type UserBasicInfo = Pick<User, 'name' | 'age'>;"
+                    question: "The Node.js method to check if a file or directory exists is fs.______().",
+                    answer: "existsSync",
+                    explanation: "fs.existsSync() synchronously checks if a path exists. Note that the async version is deprecated due to race conditions."
                 },
                 {
                     type: "fill",
-                    question: "To remove specific properties from a type T, use: _____<T, K>",
-                    answer: "Omit",
-                    explanation: "Omit<T, K> is the utility type used to remove specific properties from a type. Example: type OmitUser = Omit<User, 'email'>;"
+                    question: "To append content to a file without overwriting existing content, use fs.______().",
+                    answer: "appendFile",
+                    explanation: "fs.appendFile() adds content to the end of a file. If the file doesn't exist, it creates it."
                 },
                 {
                     type: "fill",
-                    question: "To make all properties optional in a type T, use: _____<T>",
-                    answer: "Partial",
-                    explanation: "Partial<T> makes all properties in type T optional. Example: type PartialUser = Partial<User>;"
+                    question: "The callback function in fs.readFile() takes two parameters: ______ and data.",
+                    answer: "error",
+                    explanation: "The callback follows Node's error-first pattern: (error, data) => { }. If no error occurs, error will be null."
                 },
                 {
                     type: "fill",
-                    question: "The opposite of Partial<T> is: _____<T>",
-                    answer: "Required",
-                    explanation: "Required<T> makes all properties in type T required, removing optional modifiers. Example: type RequiredUser = Required<User>;"
+                    question: "The fs.______ method creates a read stream for large file operations.",
+                    answer: "createReadStream",
+                    explanation: "fs.createReadStream() is used for efficient reading of large files by breaking them into smaller chunks."
                 },
                 {
                     type: "fill",
-                    question: "To make all properties in T readonly, use: _____<T>",
-                    answer: "Readonly",
-                    explanation: `Readonly<T> makes all properties in type T readonly, preventing modification after initialization.
-                    Example: type ReadonlyUser = Readonly<User>;
-                    `
+                    question: "To get information about a file like size and modification time, use fs.______().",
+                    answer: "stat",
+                    explanation: "fs.stat() provides file statistics including size, creation time, and modification time. It has both sync and async versions."
                 }
             ]
         };
@@ -198,7 +205,7 @@
 
         function createQuiz() {
             const questionsContainer = document.getElementById('questions');
-
+            
             quizData.questions.forEach((q, index) => {
                 const questionDiv = document.createElement('div');
                 questionDiv.className = 'question';
@@ -207,7 +214,7 @@
                 if (q.type === 'single') {
                     const optionsDiv = document.createElement('div');
                     optionsDiv.className = 'options';
-
+                    
                     q.options.forEach((option, optIndex) => {
                         const optionDiv = document.createElement('div');
                         optionDiv.className = 'option';
@@ -222,11 +229,11 @@
                     input.type = 'text';
                     input.className = 'input-answer';
                     input.placeholder = 'Type your answer here';
-
+                    
                     const submitBtn = document.createElement('button');
                     submitBtn.textContent = 'Submit';
                     submitBtn.onclick = () => checkFillAnswer(input.value, q.answer, questionDiv, q.explanation);
-
+                    
                     questionDiv.appendChild(input);
                     questionDiv.appendChild(submitBtn);
                 }
@@ -234,7 +241,7 @@
                 const feedbackDiv = document.createElement('div');
                 feedbackDiv.className = 'feedback';
                 questionDiv.appendChild(feedbackDiv);
-
+                
                 questionsContainer.appendChild(questionDiv);
             });
 
@@ -243,12 +250,12 @@
 
         function checkAnswer(selected, correct, optionDiv, questionDiv, explanation) {
             if (questionDiv.querySelector('.correct') || questionDiv.querySelector('.incorrect')) {
-                return;
+                return; // Already answered
             }
 
             const options = questionDiv.getElementsByClassName('option');
             options[correct].classList.add('correct');
-
+            
             if (selected === correct) {
                 score++;
                 optionDiv.classList.add('correct');
@@ -264,7 +271,7 @@
 
         function checkFillAnswer(input, correct, questionDiv, explanation) {
             if (questionDiv.querySelector('.feedback').style.display === 'block') {
-                return;
+                return; // Already answered
             }
 
             if (input.toLowerCase().trim() === correct.toLowerCase().trim()) {
@@ -291,12 +298,13 @@
             scoreDiv.innerHTML = `
                 <h3>Your Score: ${score}/${quizData.questions.length}</h3>
                 <p>Percentage: ${percentage.toFixed(1)}%</p>
-                ${answeredQuestions === quizData.questions.length ?
-                    `<p>${percentage >= 70 ? '🎉 Great job! You have a solid understanding of TypeScript utility types!' :
-                    'Keep learning! Review the explanations to strengthen your TypeScript knowledge.'}</p>` : ''}
+                ${answeredQuestions === quizData.questions.length ? 
+                    `<p>${percentage >= 70 ? '🎉 Great job! You have a solid understanding of Node.js file handling!' : 
+                    'Keep practicing! Review the explanations to strengthen your knowledge of Node.js file operations.'}</p>` : ''}
             `;
         }
 
+        // Initialize the quiz
         createQuiz();
     </script>
 </body>
