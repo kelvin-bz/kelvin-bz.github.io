@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <style>
         .container {
             max-width: 800px;
@@ -8,72 +9,71 @@
             padding: 20px;
             font-family: system-ui, -apple-system, sans-serif;
         }
-        .code-block {
-            background: #f5f5f5;
-            padding: 20px;
-            border-radius: 8px;
-            overflow-x: auto;
-            white-space: pre;
-            font-family: monospace;
-        }
         .question {
-            margin: 20px 0;
+            margin-bottom: 20px;
             padding: 15px;
             border: 1px solid #ddd;
             border-radius: 8px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-        .option {
-            margin: 10px 0;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        .option:hover {
-            background: #f0f0f0;
-        }
-        .correct {
-            background: #d4edda;
-            border-color: #c3e6cb;
-        }
-        .incorrect {
-            background: #f8d7da;
-            border-color: #f5c6cb;
-        }
-        #score {
-            font-size: 1.2em;
-            margin: 20px 0;
-            padding: 15px;
-            background: #e9ecef;
-            border-radius: 8px;
-        }
-        .fill-blank {
-            display: inline-block;
-            margin: 0 5px;
-        }
-        .fill-blank input {
-            width: 150px;
-            padding: 5px;
-            border: 2px solid #ddd;
-            border-radius: 4px;
-        }
-        .fill-blank input.correct {
-            border-color: #28a745;
-        }
-        .fill-blank input.incorrect {
-            border-color: #dc3545;
-        }
-        .check-answer {
-            background: #007bff;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 4px;
-            cursor: pointer;
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
             margin-top: 10px;
         }
-        .check-answer:hover {
-            background: #0056b3;
+        .option {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .option:hover {
+            background-color: #f5f5f5;
+            transform: translateX(5px);
+        }
+        .selected {
+            background-color: #e3f2fd;
+        }
+        .correct {
+            background-color: #c8e6c9;
+            border-color: #81c784;
+        }
+        .incorrect {
+            background-color: #ffcdd2;
+            border-color: #e57373;
+        }
+        .input-answer {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            margin-top: 10px;
+            padding: 8px 16px;
+            background-color: #2196f3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #1976d2;
+        }
+        #score {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.2em;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         .feedback {
             margin-top: 10px;
@@ -81,263 +81,299 @@
             border-radius: 4px;
             display: none;
         }
+        code {
+            background-color: #f5f5f5;
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-areas:
+                'header header header'
+                'concepts images containers'
+                'commands networking volumes';
+            grid-template-rows: auto 1fr 1fr;
+            grid-template-columns: 1fr 1fr 1fr;
+            grid-gap: 15px;
+            padding: 15px;
+            box-sizing: border-box;
+            width: 100%;
+            height: auto;
+        }
+
+        .grid-container > div {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #000;
+            page-break-inside: avoid;
+        }
+
+        .header {
+            grid-area: header;
+            text-align: center;
+            background-color: #d3e4f5;
+        }
+
+        .concepts { grid-area: concepts; background-color: #e1f5fe; }
+        .images { grid-area: images; background-color: #e8f5e9; }
+        .containers { grid-area: containers; background-color: #fff9c4; }
+        .commands { grid-area: commands; background-color: #fce4ec; }
+        .networking { grid-area: networking; background-color: #f3e5f5; }
+        .volumes { grid-area: volumes; background-color: #ffebee; }
+
+        code {
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-family: monospace;
+            background-color: #f4f4f4;
+        }
+
+        pre {
+            background-color: #f4f4f4;
+            padding: 15px;
+            border-radius: 8px;
+            overflow: auto;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #333;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .output {
+            color: #0a7a0a;
+            margin-left: 20px;
+            border-left: 3px solid #0a7a0a;
+            padding-left: 10px;
+        }
     </style>
 </head>
 <body>
-<div class="container">
-    <h1>🎯 JavaScript Functions: The Deep Dive Quiz 🚀</h1>
-    <p>Test your mastery of functions, arrow functions, binding, and the mystical 'this' keyword!</p>
+    <div class="container">
+        <h1>🐳 Docker Master Quiz</h1>
+        <p>Test your knowledge of Docker with this comprehensive quiz!</p>
+        <div id="questions"></div>
+        <div id="score"></div>
+    </div>
 
-    <div id="code-example" class="code-block"></div>
-    <div id="questions"></div>
-    <div id="score"></div>
-</div>
 
-<script>
-    const quizData = {
-        "title": "JavaScript Functions Deep Dive Quiz 🎯",
-        "description": "Test your understanding of JavaScript functions, arrow functions, binding, and 'this' keyword!",
-        "codeExample": `// Traditional Function
-function greet(name) {
-    return "Hello " + this.title + " " + name;
-}
-
-// Arrow Function
-const greetArrow = (name) => {
-    return "Hello " + this.title + " " + name;
-};
-
-// Object with methods
-const person = {
-    title: "Mr.",
-    name: "John",
-    normalGreet: function() {
-        return "Hi, I'm " + this.name;
-    },
-    arrowGreet: () => {
-        return "Hi, I'm " + this.name;
-    },
-    delayedGreet: function() {
-        setTimeout(function() {
-            console.log("Hi, I'm " + this.name);
-        }.bind(this), 1000);
-    },
-    delayedArrowGreet: function() {
-        setTimeout(() => {
-            console.log("Hi, I'm " + this.name);
-        }, 1000);
-    }
-};
-
-// Function borrowing
-const teacher = {
-    title: "Professor",
-    subject: "JavaScript"
-};
-
-greet.call(teacher, "Smith");
-greet.apply(teacher, ["Smith"]);
-const boundGreet = greet.bind(teacher);`,
-        "multipleChoice": [
-            {
-                "id": 1,
-                "question": "What will person.arrowGreet() return?",
-                "options": [
-                    { "id": "a", "text": "Hi, I'm John" },
-                    { "id": "b", "text": "Hi, I'm undefined" },
-                    { "id": "c", "text": "TypeError" },
-                    { "id": "d", "text": "Hi, I'm [object Window]" }
-                ],
-                "correctAnswer": "b",
-                "explanation": "Arrow functions don't have their own 'this' binding. They inherit 'this' from the enclosing scope."
-            },
-            {
-                "id": 2,
-                "question": "What's the difference between .call() and .apply()?",
-                "options": [
-                    { "id": "a", "text": "No difference, they're aliases" },
-                    { "id": "b", "text": ".call() accepts arguments list, .apply() accepts arguments array" },
-                    { "id": "c", "text": ".apply() accepts arguments list, .call() accepts arguments array" },
-                    { "id": "d", "text": "Only .call() can set 'this' context" }
-                ],
-                "correctAnswer": "b",
-                "explanation": ".call(context, arg1, arg2) vs .apply(context, [arg1, arg2])"
-            },
-            {
-                "id": 3,
-                "question": "Why does person.delayedArrowGreet() work correctly while traditional delayedGreet() needs .bind(this)?",
-                "options": [
-                    { "id": "a", "text": "Arrow functions are faster" },
-                    { "id": "b", "text": "Arrow functions automatically bind 'this'" },
-                    { "id": "c", "text": "Arrow functions inherit 'this' from their enclosing scope" },
-                    { "id": "d", "text": "setTimeout works differently with arrow functions" }
-                ],
-                "correctAnswer": "c",
-                "explanation": "Arrow functions capture 'this' from their surrounding context when they're created."
-            },
-            {
-                "id": 4,
-                "question": "What's the main difference between .bind() and .call()?",
-                "options": [
-                    { "id": "a", "text": ".bind() creates a new function, .call() executes immediately" },
-                    { "id": "b", "text": ".call() creates a new function, .bind() executes immediately" },
-                    { "id": "c", "text": "They're the same but .bind() is newer" },
-                    { "id": "d", "text": ".bind() can only be used with arrow functions" }
-                ],
-                "correctAnswer": "a",
-                "explanation": ".bind() returns a new function with bound context, while .call() executes the function right away."
-            },
-            {
-                "id": 5,
-                "question": "Which statement about arrow functions is FALSE?",
-                "options": [
-                    { "id": "a", "text": "They can be used as constructors" },
-                    { "id": "b", "text": "They have a lexical 'this' binding" },
-                    { "id": "c", "text": "They can be shorter than traditional functions" },
-                    { "id": "d", "text": "They don't have their own arguments object" }
-                ],
-                "correctAnswer": "a",
-                "explanation": "Arrow functions cannot be used as constructors and will throw an error if used with 'new'."
-            }
-        ],
-        "fillInBlank": [
-            {
-                "id": 6,
-                "question": "The _____ method is used to call a function with a given this value and arguments provided as an array.",
-                "correctAnswer": "apply",
-                "hint": "It's similar to .call() but takes an array of arguments"
-            },
-            {
-                "id": 7,
-                "question": "Arrow functions use _____ scoping for the 'this' keyword.",
-                "correctAnswer": "lexical",
-                "hint": "This type of scoping means they inherit 'this' from their surrounding code"
-            },
-            {
-                "id": 8,
-                "question": "The expression () => {} is an example of an _____ function.",
-                "correctAnswer": "arrow",
-                "hint": "This modern function syntax was introduced in ES6"
-            },
-            {
-                "id": 9,
-                "question": "When a method is called on an object, _____ refers to the object itself inside traditional functions.",
-                "correctAnswer": "this",
-                "hint": "It's a special keyword that references the current context"
-            },
-            {
-                "id": 10,
-                "question": "The _____ method creates a new function that, when called, has its 'this' keyword set to a specific value.",
-                "correctAnswer": "bind",
-                "hint": "Unlike call() or apply(), this method returns a new function"
-            }
-        ]
-    };
-
-    function init() {
-        document.getElementById('code-example').textContent = quizData.codeExample;
-
-        const questionsContainer = document.getElementById('questions');
-
-        // Multiple Choice Questions
-        quizData.multipleChoice.forEach(q => {
-            const questionDiv = document.createElement('div');
-            questionDiv.className = 'question';
-            questionDiv.innerHTML = `
-                    <h3>Question ${q.id}: ${q.question}</h3>
-                    ${q.options.map(opt => `
-                        <div class="option" data-question="${q.id}" data-option="${opt.id}">
-                            ${opt.id.toUpperCase()}. ${opt.text}
-                        </div>
-                    `).join('')}
-                `;
-            questionsContainer.appendChild(questionDiv);
-        });
-
-        // Fill in the Blank Questions
-        quizData.fillInBlank.forEach(q => {
-            const questionDiv = document.createElement('div');
-            questionDiv.className = 'question';
-            questionDiv.innerHTML = `
-                    <h3>Question ${q.id}: Fill in the blank</h3>
-                    <p>${q.question}</p>
-                    <div class="fill-blank">
-                        <input type="text" id="q${q.id}" placeholder="Type your answer">
-                        <p class="hint"><em>Hint: ${q.hint}</em></p>
-                        <button class="check-answer" onclick="checkFillBlank(${q.id})">Check Answer</button>
-                        <div id="feedback-${q.id}" class="feedback"></div>
-                    </div>
-                `;
-            questionsContainer.appendChild(questionDiv);
-        });
+    <script>
+        const quizData = {
+            questions: [
+                {
+                    type: "single",
+                    question: "Which command is used to create and start a container from an image?",
+                    options: [
+                        "docker create",
+                        "docker run",
+                        "docker start",
+                        "docker launch"
+                    ],
+                    correct: 1,
+                    explanation: "docker run is used to create and start a container. It combines the functionality of docker create and docker start."
+                },
+                {
+                    type: "single",
+                    question: "What is the purpose of a Dockerfile?",
+                    options: [
+                        "To store Docker images",
+                        "To run Docker containers",
+                        "To define how to build an image",
+                        "To manage Docker networks"
+                    ],
+                    correct: 2,
+                    explanation: "A Dockerfile is a text document containing instructions for building a Docker image automatically."
+                },
+                {
+                    type: "single",
+                    question: "Which command shows all running containers?",
+                    options: [
+                        "docker ps",
+                        "docker ls",
+                        "docker list",
+                        "docker show"
+                    ],
+                    correct: 0,
+                    explanation: "docker ps shows all currently running containers. Use docker ps -a to show all containers, including stopped ones."
+                },
+                {
+                    type: "single",
+                    question: "What is Docker Compose used for?",
+                    options: [
+                        "To build single containers",
+                        "To define and run multi-container applications",
+                        "To store Docker images",
+                        "To scan Docker images for vulnerabilities"
+                    ],
+                    correct: 1,
+                    explanation: "Docker Compose is a tool for defining and running multi-container Docker applications using a YAML file."
+                },
+                {
+                    type: "single",
+                    question: "Which of these is NOT a valid Dockerfile instruction?",
+                    options: [
+                        "FROM",
+                        "RUN",
+                        "EXECUTE",
+                        "COPY"
+                    ],
+                    correct: 2,
+                    explanation: "EXECUTE is not a valid Dockerfile instruction. RUN is used to execute commands in a Dockerfile."
+                },
+                {
+                    type: "fill",
+                    question: "The command to remove a Docker image is: docker _____ <image-name>",
+                    answer: "rmi",
+                    explanation: "docker rmi is used to remove one or more Docker images."
+                },
+                {
+                    type: "fill",
+                    question: "The Dockerfile instruction to set environment variables is: _______",
+                    answer: "ENV",
+                    explanation: "ENV instruction is used to set environment variables in a Dockerfile."
+                },
+                {
+                    type: "fill",
+                    question: "To expose a port in a Dockerfile, use the _______ instruction",
+                    answer: "EXPOSE",
+                    explanation: "EXPOSE instruction informs Docker that the container listens on specified network ports at runtime."
+                },
+                {
+                    type: "fill",
+                    question: "The file that defines Docker Compose services is typically named: docker-compose._____",
+                    answer: "yml",
+                    explanation: "Docker Compose typically uses docker-compose.yml or docker-compose.yaml as the configuration file."
+                },
+                {
+                    type: "fill",
+                    question: "To specify the base image in a Dockerfile, use the ______ instruction",
+                    answer: "FROM",
+                    explanation: "FROM instruction specifies the base image from which you are building your custom image."
+                }
+            ]
+        };
 
         let score = 0;
-        const scoreDiv = document.getElementById('score');
-        scoreDiv.textContent = `Score: ${score}/${quizData.multipleChoice.length + quizData.fillInBlank.length}`;
+        let answeredQuestions = 0;
 
-        // Multiple Choice Event Listeners
-        document.querySelectorAll('.option').forEach(option => {
-            option.addEventListener('click', function() {
-                const questionId = this.dataset.question;
-                const selectedOption = this.dataset.option;
-                const question = quizData.multipleChoice.find(q => q.id === parseInt(questionId));
+        function createQuiz() {
+            const questionsContainer = document.getElementById('questions');
 
-                document.querySelectorAll(`[data-question="${questionId}"]`)
-                    .forEach(opt => {
-                        opt.classList.remove('correct', 'incorrect');
+            quizData.questions.forEach((q, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question';
+                questionDiv.innerHTML = `<div><strong>Question ${index + 1}:</strong> ${q.question}</div>`;
+
+                if (q.type === 'single') {
+                    const optionsDiv = document.createElement('div');
+                    optionsDiv.className = 'options';
+
+                    q.options.forEach((option, optIndex) => {
+                        const optionDiv = document.createElement('div');
+                        optionDiv.className = 'option';
+                        optionDiv.textContent = option;
+                        optionDiv.onclick = () => checkAnswer(optIndex, q.correct, optionDiv, questionDiv, q.explanation);
+                        optionsDiv.appendChild(optionDiv);
                     });
 
-                if (selectedOption === question.correctAnswer) {
-                    this.classList.add('correct');
-                    if (!this.dataset.scored) {
-                        score++;
-                        this.dataset.scored = 'true';
-                    }
+                    questionDiv.appendChild(optionsDiv);
                 } else {
-                    this.classList.add('incorrect');
-                    document.querySelector(`[data-question="${questionId}"][data-option="${question.correctAnswer}"]`)
-                        .classList.add('correct');
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.className = 'input-answer';
+                    input.placeholder = 'Type your answer here';
+
+                    const submitBtn = document.createElement('button');
+                    submitBtn.textContent = 'Submit';
+                    submitBtn.onclick = () => checkFillAnswer(input.value, q.answer, questionDiv, q.explanation);
+
+                    questionDiv.appendChild(input);
+                    questionDiv.appendChild(submitBtn);
                 }
 
-                updateScore();
+                const feedbackDiv = document.createElement('div');
+                feedbackDiv.className = 'feedback';
+                questionDiv.appendChild(feedbackDiv);
+
+                questionsContainer.appendChild(questionDiv);
             });
-        });
-    }
 
-    function checkFillBlank(questionId) {
-        const input = document.getElementById(`q${questionId}`);
-        const feedback = document.getElementById(`feedback-${questionId}`);
-        const question = quizData.fillInBlank.find(q => q.id === questionId);
-
-        if (input.value.trim().toLowerCase() === question.correctAnswer.toLowerCase()) {
-            input.classList.remove('incorrect');
-            input.classList.add('correct');
-            feedback.style.display = 'block';
-            feedback.className = 'feedback correct';
-            feedback.textContent = "Correct! 🎉";
-            if (!input.dataset.scored) {
-                input.dataset.scored = 'true';
-                updateScore();
-            }
-        } else {
-            input.classList.remove('correct');
-            input.classList.add('incorrect');
-            feedback.style.display = 'block';
-            feedback.className = 'feedback incorrect';
-            feedback.textContent = "Try again! Remember: " + question.hint;
+            updateScore();
         }
-    }
 
-    function updateScore() {
-        const totalQuestions = quizData.multipleChoice.length + quizData.fillInBlank.length;
-        const correctMultipleChoice = document.querySelectorAll('.option[data-scored="true"]').length;
-        const correctFillBlank = document.querySelectorAll('input[data-scored="true"]').length;
-        const score = correctMultipleChoice + correctFillBlank;
+        function checkAnswer(selected, correct, optionDiv, questionDiv, explanation) {
+            if (questionDiv.querySelector('.correct') || questionDiv.querySelector('.incorrect')) {
+                return; // Already answered
+            }
 
-        document.getElementById('score').textContent = `Score: ${score}/${totalQuestions}`;
-    }
+            const options = questionDiv.getElementsByClassName('option');
+            options[correct].classList.add('correct');
 
-    init();
-</script>
+            if (selected === correct) {
+                score++;
+                optionDiv.classList.add('correct');
+                showFeedback(questionDiv, `Correct! 🎉 ${explanation}`, true);
+            } else {
+                optionDiv.classList.add('incorrect');
+                showFeedback(questionDiv, `Incorrect. ${explanation}`, false);
+            }
+
+            answeredQuestions++;
+            updateScore();
+        }
+
+        function checkFillAnswer(input, correct, questionDiv, explanation) {
+            if (questionDiv.querySelector('.feedback').style.display === 'block') {
+                return; // Already answered
+            }
+
+            if (input.toLowerCase().trim() === correct.toLowerCase().trim()) {
+                score++;
+                showFeedback(questionDiv, `Correct! 🎉 ${explanation}`, true);
+            } else {
+                showFeedback(questionDiv, `Incorrect. The correct answer is: ${correct}. ${explanation}`, false);
+            }
+
+            answeredQuestions++;
+            updateScore();
+        }
+
+        function showFeedback(questionDiv, message, isCorrect) {
+            const feedbackDiv = questionDiv.querySelector('.feedback');
+            feedbackDiv.style.display = 'block';
+            feedbackDiv.textContent = message;
+            feedbackDiv.style.backgroundColor = isCorrect ? '#c8e6c9' : '#ffcdd2';
+        }
+
+        function updateScore() {
+            const scoreDiv = document.getElementById('score');
+            const percentage = (score / quizData.questions.length) * 100;
+            scoreDiv.innerHTML = `
+                <h3>Your Score: ${score}/${quizData.questions.length}</h3>
+                <p>Percentage: ${percentage.toFixed(1)}%</p>
+                ${answeredQuestions === quizData.questions.length ?
+                    `<p>${percentage >= 70 ? '🎉 Great job! You have a solid understanding of Docker!' :
+                    'Keep learning! Review the explanations to strengthen your Docker knowledge.'}</p>` : ''}
+            `;
+        }
+
+        // Initialize the quiz
+        createQuiz();
+    </script>
 </body>
 </html>
