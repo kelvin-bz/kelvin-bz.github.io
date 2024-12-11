@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+        .question {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .option {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .option:hover {
+            background-color: #f5f5f5;
+            transform: translateX(5px);
+        }
+        .selected {
+            background-color: #e3f2fd;
+        }
+        .correct {
+            background-color: #c8e6c9;
+            border-color: #81c784;
+        }
+        .incorrect {
+            background-color: #ffcdd2;
+            border-color: #e57373;
+        }
+        .input-answer {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            margin-top: 10px;
+            padding: 8px 16px;
+            background-color: #ff9900;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #ec8600;
+        }
+        #score {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.2em;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .feedback {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            display: none;
+        }
+        code {
+            background-color: #f5f5f5;
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 AWS Lambda Master Quiz</h1>
+        <p>Test your knowledge of AWS Lambda serverless computing service!</p>
+        <div id="questions"></div>
+        <div id="score"></div>
+    </div>
+
+    <script>
+        const quizData = {
+            questions: [
+                {
+                    type: "single",
+                    question: "What is the maximum execution time limit for an AWS Lambda function?",
+                    options: [
+                        "5 minutes",
+                        "10 minutes",
+                        "15 minutes",
+                        "30 minutes"
+                    ],
+                    correct: 2,
+                    explanation: "AWS Lambda functions have a maximum execution time limit of 15 minutes. After this time, the function will timeout."
+                },
+                {
+                    type: "single",
+                    question: "Which programming language is NOT natively supported by AWS Lambda?",
+                    options: [
+                        "Python",
+                        "Node.js",
+                        "C++",
+                        "Java"
+                    ],
+                    correct: 2,
+                    explanation: "C++ is not natively supported by AWS Lambda. Natively supported languages include Node.js, Python, Java, .NET, Go, and Ruby."
+                },
+                {
+                    type: "single",
+                    question: "What is the default maximum memory allocation for a Lambda function?",
+                    options: [
+                        "128MB",
+                        "512MB",
+                        "1024MB",
+                        "10240MB"
+                    ],
+                    correct: 3,
+                    explanation: "The maximum memory that can be allocated to a Lambda function is 10240MB (10GB)."
+                },
+                {
+                    type: "single",
+                    question: "Which service can be used to trigger Lambda functions on a schedule?",
+                    options: [
+                        "AWS CloudWatch Events",
+                        "AWS SQS",
+                        "AWS SNS",
+                        "AWS DynamoDB"
+                    ],
+                    correct: 0,
+                    explanation: "AWS CloudWatch Events (now called EventBridge) can be used to trigger Lambda functions on a schedule using cron expressions."
+                },
+                {
+                    type: "single",
+                    question: "What is the primary unit of deployment for Lambda functions?",
+                    options: [
+                        "Container",
+                        "Package",
+                        "ZIP file",
+                        "JAR file"
+                    ],
+                    correct: 2,
+                    explanation: "Lambda functions are primarily deployed as ZIP files containing the function code and dependencies."
+                },
+                {
+                    type: "fill",
+                    question: "The environment variable to store AWS access keys in Lambda is AWS________KEY",
+                    answer: "ACCESS",
+                    explanation: "AWS_ACCESS_KEY is the standard environment variable name for storing AWS access keys in Lambda functions."
+                },
+                {
+                    type: "fill",
+                    question: "The default temporary storage available to Lambda functions in /tmp is ______ MB",
+                    answer: "512",
+                    explanation: "Lambda functions get 512MB of temporary storage space in the /tmp directory by default."
+                },
+                {
+                    type: "fill",
+                    question: "The AWS Lambda pricing model charges for _______ (duration) and memory used",
+                    answer: "time",
+                    explanation: "AWS Lambda charges based on the number of requests, execution time (duration), and memory allocated."
+                },
+                {
+                    type: "fill",
+                    question: "Lambda functions can be placed in a _____ to access resources in a VPC",
+                    answer: "subnet",
+                    explanation: "To access VPC resources, Lambda functions need to be placed in a subnet within that VPC."
+                },
+                {
+                    type: "fill",
+                    question: "The Lambda deployment package size limit for direct upload is ____ MB",
+                    answer: "50",
+                    explanation: "The deployment package size limit for direct upload to Lambda is 50MB. Larger packages must use S3."
+                }
+            ]
+        };
+
+        let score = 0;
+        let answeredQuestions = 0;
+
+        function createQuiz() {
+            const questionsContainer = document.getElementById('questions');
+            
+            quizData.questions.forEach((q, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question';
+                questionDiv.innerHTML = `<div><strong>Question ${index + 1}:</strong> ${q.question}</div>`;
+
+                if (q.type === 'single') {
+                    const optionsDiv = document.createElement('div');
+                    optionsDiv.className = 'options';
+                    
+                    q.options.forEach((option, optIndex) => {
+                        const optionDiv = document.createElement('div');
+                        optionDiv.className = 'option';
+                        optionDiv.textContent = option;
+                        optionDiv.onclick = () => checkAnswer(optIndex, q.correct, optionDiv, questionDiv, q.explanation);
+                        optionsDiv.appendChild(optionDiv);
+                    });
+
+                    questionDiv.appendChild(optionsDiv);
+                } else {
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.className = 'input-answer';
+                    input.placeholder = 'Type your answer here';
+                    
+                    const submitBtn = document.createElement('button');
+                    submitBtn.textContent = 'Submit';
+                    submitBtn.onclick = () => checkFillAnswer(input.value, q.answer, questionDiv, q.explanation);
+                    
+                    questionDiv.appendChild(input);
+                    questionDiv.appendChild(submitBtn);
+                }
+
+                const feedbackDiv = document.createElement('div');
+                feedbackDiv.className = 'feedback';
+                questionDiv.appendChild(feedbackDiv);
+                
+                questionsContainer.appendChild(questionDiv);
+            });
+
+            updateScore();
+        }
+
+        function checkAnswer(selected, correct, optionDiv, questionDiv, explanation) {
+            if (questionDiv.querySelector('.correct') || questionDiv.querySelector('.incorrect')) {
+                return; // Already answered
+            }
+
+            const options = questionDiv.getElementsByClassName('option');
+            options[correct].classList.add('correct');
+            
+            if (selected === correct) {
+                score++;
+                optionDiv.classList.add('correct');
+                showFeedback(questionDiv, `Correct! 🎉 ${explanation}`, true);
+            } else {
+                optionDiv.classList.add('incorrect');
+                showFeedback(questionDiv, `Incorrect. ${explanation}`, false);
+            }
+
+            answeredQuestions++;
+            updateScore();
+        }
+
+        function checkFillAnswer(input, correct, questionDiv, explanation) {
+            if (questionDiv.querySelector('.feedback').style.display === 'block') {
+                return; // Already answered
+            }
+
+            if (input.toLowerCase().trim() === correct.toLowerCase().trim()) {
+                score++;
+                showFeedback(questionDiv, `Correct! 🎉 ${explanation}`, true);
+            } else {
+                showFeedback(questionDiv, `Incorrect. The correct answer is: ${correct}. ${explanation}`, false);
+            }
+
+            answeredQuestions++;
+            updateScore();
+        }
+
+        function showFeedback(questionDiv, message, isCorrect) {
+            const feedbackDiv = questionDiv.querySelector('.feedback');
+            feedbackDiv.style.display = 'block';
+            feedbackDiv.textContent = message;
+            feedbackDiv.style.backgroundColor = isCorrect ? '#c8e6c9' : '#ffcdd2';
+        }
+
+        function updateScore() {
+            const scoreDiv = document.getElementById('score');
+            const percentage = (score / quizData.questions.length) * 100;
+            scoreDiv.innerHTML = `
+                <h3>Your Score: ${score}/${quizData.questions.length}</h3>
+                <p>Percentage: ${percentage.toFixed(1)}%</p>
+                ${answeredQuestions === quizData.questions.length ? 
+                    `<p>${percentage >= 70 ? '🎉 Great job! You have a solid understanding of AWS Lambda!' : 
+                    'Keep learning! Review the explanations to strengthen your AWS Lambda knowledge.'}</p>` : ''}
+            `;
+        }
+
+        // Initialize the quiz
+        createQuiz();
+    </script>
+</body>
+</html>

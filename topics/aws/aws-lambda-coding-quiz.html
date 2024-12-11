@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+        .question {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .option {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+        .option:hover {
+            background-color: #f5f5f5;
+            transform: translateX(5px);
+        }
+        .selected {
+            background-color: #e3f2fd;
+        }
+        .correct {
+            background-color: #c8e6c9;
+            border-color: #81c784;
+        }
+        .incorrect {
+            background-color: #ffcdd2;
+            border-color: #e57373;
+        }
+        .input-answer {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            font-family: monospace;
+        }
+        button {
+            margin-top: 10px;
+            padding: 8px 16px;
+            background-color: #ff9900;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #ec8600;
+        }
+        #score {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.2em;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .feedback {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            display: none;
+        }
+        code {
+            background-color: #f5f5f5;
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        .question-code {
+            background-color: #f8f9fa;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 AWS Lambda Coding Quiz</h1>
+        <p>Test your knowledge of AWS Lambda function implementation and coding patterns!</p>
+        <div id="questions"></div>
+        <div id="score"></div>
+    </div>
+
+    <script>
+        const quizData = {
+            questions: [
+                // Kept original #1
+                {
+                    type: "single",
+                    question: "Which code structure correctly defines an AWS Lambda handler function in Node.js?",
+                    options: [
+                        `exports.handler = function(event, context) {
+    return {
+        statusCode: 200,
+        body: JSON.stringify({ message: "Success" })
+    };
+}`,
+                        `exports.handler = async (event, context) => {
+    return {
+        statusCode: 200,
+        body: JSON.stringify({ message: "Success" })
+    };
+}`,
+                        `function handler(event, context) {
+    return {
+        status: 200,
+        body: { message: "Success" }
+    };
+}`,
+                        `async function lambda(event, context) {
+    return {
+        code: 200,
+        response: { message: "Success" }
+    };
+}`
+                    ],
+                    correct: 1,
+                    explanation: "The correct format uses 'exports.handler' with an async arrow function. The response should include statusCode and a stringified body for API Gateway integration."
+                },
+                // Kept original #2
+                {
+                    type: "single",
+                    question: "Given this event from API Gateway, which code correctly extracts the 'userId' parameter?\n\n" +
+                        `{
+    "pathParameters": {
+        "userId": "123"
+    },
+    "queryStringParameters": null,
+    "body": null
+}`,
+                    options: [
+                        `const userId = event.pathParams.userId;`,
+                        `const userId = event.params.userId;`,
+                        `const { userId } = event.pathParameters;`,
+                        `const userId = event.path.userId;`
+                    ],
+                    correct: 2,
+                    explanation: "API Gateway events store path parameters in the pathParameters object. Using destructuring is a clean way to extract the userId."
+                },
+                // New basic question #3
+                {
+                    type: "single",
+                    question: "How do you access a query string parameter named 'name' from an API Gateway event?",
+                    options: [
+                        `event.queryString.name`,
+                        `event.queryStringParameters.name`,
+                        `event.query.name`,
+                        `event.parameters.name`
+                    ],
+                    correct: 1,
+                    explanation: "Query string parameters in API Gateway events are accessed through event.queryStringParameters object."
+                },
+                // Kept original #4
+                {
+                    type: "single",
+                    question: "Which error handling pattern is recommended for Lambda functions?",
+                    options: [
+                        `exports.handler = async (event) => {
+    try {
+        // process event
+        return { statusCode: 200, body: "Success" };
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+}`,
+                        `exports.handler = async (event) => {
+    try {
+        // process event
+        return { statusCode: 200, body: "Success" };
+    } catch (error) {
+        return {
+            statusCode: 500,
+            body: JSON.stringify({ error: error.message })
+        };
+    }
+}`,
+                        `exports.handler = async (event) => {
+    // process event
+    return { statusCode: 200, body: "Success" };
+}`,
+                        `exports.handler = async (event) => {
+    if (event.error) {
+        return { status: "error" };
+    }
+    return { status: "success" };
+}`
+                    ],
+                    correct: 1,
+                    explanation: "Best practice is to catch errors and return a proper HTTP response with status code and error message, rather than throwing or logging the error."
+                },
+                // Kept original #5
+                {
+                    type: "single",
+                    question: "Which code correctly uses environment variables in a Lambda function?",
+                    options: [
+                        `const tableName = environment.TABLE_NAME;`,
+                        `const tableName = ENV.TABLE_NAME;`,
+                        `const tableName = process.env.TABLE_NAME;`,
+                        `const tableName = lambda.environment.TABLE_NAME;`
+                    ],
+                    correct: 2,
+                    explanation: "In Node.js Lambda functions, environment variables are accessed through the process.env object."
+                },
+                // New basic question #6
+                {
+                    type: "fill",
+                    question: "What is the name of the main function handler export in a Lambda function?\nexports.______ = async (event) => {}",
+                    answer: "handler",
+                    explanation: "The standard name for a Lambda function handler is 'handler'. This is the default entry point AWS Lambda looks for."
+                },
+                // Kept original #7
+                {
+                    type: "fill",
+                    question: "What parameter name is used to access the request body in an API Gateway event?\nevent.______",
+                    answer: "body",
+                    explanation: "The request body in API Gateway events is accessed through event.body. Remember to JSON.parse() it if the content is JSON."
+                },
+                // New basic question #8
+                {
+                    type: "fill",
+                    question: "To return a successful response from Lambda, what should be the ______Code in the response object?",
+                    answer: "status",
+                    explanation: "The statusCode should be set to 200 for successful responses in the format: { statusCode: 200, body: ... }"
+                },
+                // New basic question #9
+                {
+                    type: "fill",
+                    question: "To log information in a Lambda function, we use console.______('message')",
+                    answer: "log",
+                    explanation: "console.log() is used for logging in Lambda functions, and these logs appear in CloudWatch Logs."
+                },
+                // New basic question #10
+                {
+                    type: "fill",
+                    question: "When parsing a JSON string in the event body, we use JSON._______(event.body)",
+                    answer: "parse",
+                    explanation: "JSON.parse() is used to convert JSON strings into JavaScript objects, commonly used with API Gateway event bodies."
+                }
+            ]
+        };
+
+        let score = 0;
+        let answeredQuestions = 0;
+
+        function createQuiz() {
+            const questionsContainer = document.getElementById('questions');
+
+            quizData.questions.forEach((q, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question';
+                questionDiv.innerHTML = `<div><strong>Question ${index + 1}:</strong> ${q.question}</div>`;
+
+                if (q.type === 'single') {
+                    const optionsDiv = document.createElement('div');
+                    optionsDiv.className = 'options';
+
+                    q.options.forEach((option, optIndex) => {
+                        const optionDiv = document.createElement('div');
+                        optionDiv.className = 'option';
+                        optionDiv.textContent = option;
+                        optionDiv.onclick = () => checkAnswer(optIndex, q.correct, optionDiv, questionDiv, q.explanation);
+                        optionsDiv.appendChild(optionDiv);
+                    });
+
+                    questionDiv.appendChild(optionsDiv);
+                } else {
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.className = 'input-answer';
+                    input.placeholder = 'Type your answer here';
+
+                    const submitBtn = document.createElement('button');
+                    submitBtn.textContent = 'Submit';
+                    submitBtn.onclick = () => checkFillAnswer(input.value, q.answer, questionDiv, q.explanation);
+
+                    questionDiv.appendChild(input);
+                    questionDiv.appendChild(submitBtn);
+                }
+
+                const feedbackDiv = document.createElement('div');
+                feedbackDiv.className = 'feedback';
+                questionDiv.appendChild(feedbackDiv);
+
+                questionsContainer.appendChild(questionDiv);
+            });
+
+            updateScore();
+        }
+
+        function checkAnswer(selected, correct, optionDiv, questionDiv, explanation) {
+            if (questionDiv.querySelector('.correct') || questionDiv.querySelector('.incorrect')) {
+                return; // Already answered
+            }
+
+            const options = questionDiv.getElementsByClassName('option');
+            options[correct].classList.add('correct');
+
+            if (selected === correct) {
+                score++;
+                optionDiv.classList.add('correct');
+                showFeedback(questionDiv, `Correct! 🎉 ${explanation}`, true);
+            } else {
+                optionDiv.classList.add('incorrect');
+                showFeedback(questionDiv, `Incorrect. ${explanation}`, false);
+            }
+
+            answeredQuestions++;
+            updateScore();
+        }
+
+        function checkFillAnswer(input, correct, questionDiv, explanation) {
+            if (questionDiv.querySelector('.feedback').style.display === 'block') {
+                return; // Already answered
+            }
+
+            if (input.toLowerCase().trim() === correct.toLowerCase().trim()) {
+                score++;
+                showFeedback(questionDiv, `Correct! 🎉 ${explanation}`, true);
+            } else {
+                showFeedback(questionDiv, `Incorrect. The correct answer is: ${correct}. ${explanation}`, false);
+            }
+
+            answeredQuestions++;
+            updateScore();
+        }
+
+        function showFeedback(questionDiv, message, isCorrect) {
+            const feedbackDiv = questionDiv.querySelector('.feedback');
+            feedbackDiv.style.display = 'block';
+            feedbackDiv.textContent = message;
+            feedbackDiv.style.backgroundColor = isCorrect ? '#c8e6c9' : '#ffcdd2';
+        }
+
+        function updateScore() {
+            const scoreDiv = document.getElementById('score');
+            const percentage = (score / quizData.questions.length) * 100;
+            scoreDiv.innerHTML = `
+                <h3>Your Score: ${score}/${quizData.questions.length}</h3>
+                <p>Percentage: ${percentage.toFixed(1)}%</p>
+                ${answeredQuestions === quizData.questions.length ?
+                    `<p>${percentage >= 70 ? '🎉 Great job! You have a solid understanding of AWS Lambda coding patterns!' :
+                    'Keep practicing! Review the code examples and explanations to improve your Lambda implementation skills.'}</p>` : ''}
+            `;
+        }
+
+        // Initialize the quiz
+        createQuiz();
+    </script>
+</body>
+</html>
