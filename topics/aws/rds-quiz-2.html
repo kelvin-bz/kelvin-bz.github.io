@@ -34,6 +34,9 @@
             background-color: #f5f5f5;
             transform: translateX(5px);
         }
+        .selected {
+            background-color: #e3f2fd;
+        }
         .correct {
             background-color: #c8e6c9;
             border-color: #81c784;
@@ -58,6 +61,7 @@
             border: none;
             border-radius: 4px;
             cursor: pointer;
+            transition: background-color 0.3s;
         }
         button:hover {
             background-color: #1976d2;
@@ -69,6 +73,7 @@
             border-radius: 8px;
             text-align: center;
             font-size: 1.2em;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         .feedback {
             margin-top: 10px;
@@ -80,8 +85,8 @@
 </head>
 <body>
     <div class="container">
-        <h1>📚 AWS EC2 Master Quiz Quiz</h1>
-        <p>Test your knowledge of advanced Amazon EC2 features and best practices!</p>
+        <h1>📚 Amazon RDS Master Quiz</h1>
+        <p>Test your knowledge of Amazon RDS with this comprehensive quiz!</p>
         <div id="questions"></div>
         <div id="score"></div>
     </div>
@@ -91,93 +96,93 @@
             questions: [
                 {
                     type: "single",
-                    question: "Which type of EC2 instances allow you to change their instance family during the commitment period?",
+                    question: "Which AWS service should you use to migrate data from an on-premises database to RDS while keeping the source database operational?",
                     options: [
-                        "Standard Reserved Instances",
-                        "Convertible Reserved Instances",
-                        "Scheduled Reserved Instances",
-                        "Dedicated Reserved Instances"
+                        "AWS Backup",
+                        "AWS Database Migration Service (DMS)",
+                        "AWS DataSync",
+                        "AWS Transfer Family"
                     ],
                     correct: 1,
-                    explanation: "Convertible Reserved Instances allow you to modify instance attributes including instance family during the term."
+                    explanation: "AWS DMS allows you to migrate databases while keeping the source database fully operational, minimizing downtime during the migration process."
                 },
                 {
                     type: "single",
-                    question: "What happens to data on an EBS volume when an EC2 instance is stopped?",
+                    question: "In an Aurora global database configuration, what is the maximum number of secondary regions you can have?",
                     options: [
-                        "Data is automatically deleted",
-                        "Data is temporarily archived",
-                        "Data is preserved",
-                        "Data is backed up to S3"
+                        "2",
+                        "3",
+                        "5",
+                        "1"
                     ],
                     correct: 2,
-                    explanation: "When an EC2 instance is stopped, the data on its EBS volumes is preserved and remains intact."
+                    explanation: "Amazon Aurora global databases support up to 5 secondary regions, allowing for global distribution of read operations."
                 },
                 {
                     type: "single",
-                    question: "Which solution is most cost-effective for an application that needs a mix of steady-state and variable workloads?",
+                    question: "Which disaster recovery strategy provides the fastest recovery time (RTO) but costs the most?",
                     options: [
-                        "All On-Demand instances",
-                        "All Reserved instances",
-                        "Mix of Reserved and On-Demand instances",
-                        "Mix of Reserved and Spot instances"
+                        "Pilot Light",
+                        "Warm Standby",
+                        "Hot Standby",
+                        "Backup and Restore"
                     ],
-                    correct: 3,
-                    explanation: "Using Reserved instances for steady-state workloads and Spot instances for variable workloads provides the most cost-effective solution."
+                    correct: 2,
+                    explanation: "Hot Standby provides the fastest recovery time as it maintains a fully functional copy of the entire workload, but it's also the most expensive option."
                 },
                 {
                     type: "single",
-                    question: "What's the key difference between Security Groups and NACLs?",
+                    question: "What is the main purpose of an Aurora Custom Endpoint?",
                     options: [
-                        "Security Groups are stateless, NACLs are stateful",
-                        "Security Groups are stateful, NACLs are stateless",
-                        "Security Groups work at subnet level, NACLs at instance level",
-                        "Security Groups only allow inbound rules"
+                        "To connect to the primary instance only",
+                        "To load balance write operations",
+                        "To connect to specific groups of instances based on instance type or configuration",
+                        "To connect to the nearest geographical instance"
+                    ],
+                    correct: 2,
+                    explanation: "Aurora Custom Endpoints allow you to connect to specific groups of DB instances based on criteria like instance type or configuration, useful for scenarios like directing reporting queries to specific instances."
+                },
+                {
+                    type: "single",
+                    question: "What happens to existing connections when RDS performs a failover to a standby instance?",
+                    options: [
+                        "They remain active",
+                        "They are terminated and must be re-established",
+                        "They are paused and automatically resumed",
+                        "They are gradually migrated over time"
                     ],
                     correct: 1,
-                    explanation: "Security Groups are stateful (return traffic is automatically allowed) while NACLs are stateless (return traffic must be explicitly allowed)."
-                },
-                {
-                    type: "single",
-                    question: "Which port is commonly used for HTTPS traffic?",
-                    options: [
-                        "Port 21",
-                        "Port 22",
-                        "Port 80",
-                        "Port 443"
-                    ],
-                    correct: 3,
-                    explanation: "Port 443 is the standard port for HTTPS (HTTP Secure) traffic."
+                    explanation: "During an RDS failover, existing database connections are terminated and must be re-established. This is why using RDS Proxy is recommended to handle connection management."
                 },
                 {
                     type: "fill",
-                    question: "The tool used to import a virtual machine from VMware to AWS is called VM _______",
-                    answer: "Import",
-                    explanation: "VM Import/Export is the AWS service used to import virtual machine images from your existing environment to Amazon EC2."
+                    question: "To enable automatic minor version upgrades for RDS, you need to enable the _______ parameter.",
+                    answer: "auto_minor_version_upgrade",
+                    explanation: "The auto_minor_version_upgrade parameter controls whether RDS automatically applies minor version upgrades during maintenance windows."
                 },
                 {
                     type: "fill",
-                    question: "To access instance metadata from within an EC2 instance, you need to query http://_______.254.169.254/latest/meta-data/",
-                    answer: "169",
-                    explanation: "The instance metadata service is available at http://169.254.169.254/latest/meta-data/."
+                    question: "Aurora Serverless v2 scales in _______ increments, allowing for more granular scaling than v1.",
+                    answer: "0.5",
+                    explanation: "Aurora Serverless v2 scales in increments of 0.5 ACUs (Aurora Capacity Units), providing more fine-grained scaling control."
                 },
                 {
                     type: "fill",
-                    question: "To get detailed memory utilization metrics from an EC2 instance, you must install the CloudWatch ______",
-                    answer: "agent",
-                    explanation: "The CloudWatch agent is required to collect memory, disk, and other detailed system-level metrics not available by default."
+                    question: "When encrypting RDS storage, AWS uses the _______ encryption standard.",
+                    answer: "AES256",
+                    explanation: "RDS uses AES-256 encryption for encrypting data at rest in storage."
                 },
                 {
                     type: "fill",
-                    question: "To ensure EC2 instances can reach the internet from a private subnet, you need a _____ gateway",
-                    answer: "NAT",
-                    explanation: "A NAT (Network Address Translation) gateway allows instances in private subnets to access the internet while remaining private."
+                    question: "The _______ command in AWS CLI is used to create a manual RDS snapshot.",
+                    answer: "create-db-snapshot",
+                    explanation: "The create-db-snapshot command in AWS CLI is used to create manual snapshots of RDS instances."
                 },
                 {
                     type: "fill",
-                    question: "When an EC2 instance is stopped, its _______ IP address is released",
-                    answer: "public",
-                    explanation: "When an EC2 instance is stopped, its public IP address is released, but it retains its private IP address."
+                    question: "Aurora provides a _______ endpoint that automatically connects to the primary instance for write operations.",
+                    answer: "cluster",
+                    explanation: "The Aurora cluster endpoint automatically tracks the primary instance and is used for write operations."
                 }
             ]
         };
@@ -226,6 +231,8 @@
 
                 questionsContainer.appendChild(questionDiv);
             });
+
+            updateScore();
         }
 
         function checkAnswer(selected, correct, optionDiv, questionDiv, explanation) {
@@ -279,8 +286,8 @@
                 <h3>Your Score: ${score}/${quizData.questions.length}</h3>
                 <p>Percentage: ${percentage.toFixed(1)}%</p>
                 ${answeredQuestions === quizData.questions.length ?
-                    `<p>${percentage >= 70 ? '🎉 Excellent! You have an advanced understanding of EC2!' :
-                    'Keep learning! Review the explanations to deepen your EC2 knowledge.'}</p>` : ''}
+                    `<p>${percentage >= 70 ? '🎉 Great job! You have a solid understanding of Amazon RDS!' :
+                    'Keep learning! Review the explanations to strengthen your Amazon RDS knowledge.'}</p>` : ''}
             `;
         }
 

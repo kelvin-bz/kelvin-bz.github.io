@@ -34,6 +34,9 @@
             background-color: #f5f5f5;
             transform: translateX(5px);
         }
+        .selected {
+            background-color: #e3f2fd;
+        }
         .correct {
             background-color: #c8e6c9;
             border-color: #81c784;
@@ -58,6 +61,7 @@
             border: none;
             border-radius: 4px;
             cursor: pointer;
+            transition: background-color 0.3s;
         }
         button:hover {
             background-color: #1976d2;
@@ -69,6 +73,7 @@
             border-radius: 8px;
             text-align: center;
             font-size: 1.2em;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         .feedback {
             margin-top: 10px;
@@ -80,8 +85,8 @@
 </head>
 <body>
     <div class="container">
-        <h1>📚 AWS EC2 Master Quiz Quiz</h1>
-        <p>Test your knowledge of advanced Amazon EC2 features and best practices!</p>
+        <h1>📚 Amazon RDS Master Quiz</h1>
+        <p>Test your knowledge of Amazon RDS with this comprehensive quiz!</p>
         <div id="questions"></div>
         <div id="score"></div>
     </div>
@@ -91,93 +96,93 @@
             questions: [
                 {
                     type: "single",
-                    question: "Which type of EC2 instances allow you to change their instance family during the commitment period?",
+                    question: "Which AWS service should you use to automatically handle database connection management during failover scenarios?",
                     options: [
-                        "Standard Reserved Instances",
-                        "Convertible Reserved Instances",
-                        "Scheduled Reserved Instances",
-                        "Dedicated Reserved Instances"
+                        "RDS Multi-AZ",
+                        "RDS Proxy",
+                        "RDS Read Replica",
+                        "RDS Backup"
                     ],
                     correct: 1,
-                    explanation: "Convertible Reserved Instances allow you to modify instance attributes including instance family during the term."
+                    explanation: "RDS Proxy automatically handles connection management during failover scenarios, ensuring applications maintain their database connections."
                 },
                 {
                     type: "single",
-                    question: "What happens to data on an EBS volume when an EC2 instance is stopped?",
+                    question: "What is the replication latency for Amazon Aurora?",
                     options: [
-                        "Data is automatically deleted",
-                        "Data is temporarily archived",
-                        "Data is preserved",
-                        "Data is backed up to S3"
+                        "Less than 1 second",
+                        "Less than 5 seconds",
+                        "Less than 10 seconds",
+                        "Less than 1 minute"
+                    ],
+                    correct: 0,
+                    explanation: "Amazon Aurora provides high performance with milliseconds lag and replication latency of less than 1 second."
+                },
+                {
+                    type: "single",
+                    question: "Which tool should you use first when migrating an on-premises database to Amazon RDS?",
+                    options: [
+                        "AWS Database Migration Service (DMS)",
+                        "AWS Schema Conversion Tool",
+                        "AWS Backup",
+                        "RDS Snapshot"
+                    ],
+                    correct: 1,
+                    explanation: "The AWS Schema Conversion Tool should be used first to translate the database schema before using DMS to migrate the actual data."
+                },
+                {
+                    type: "single",
+                    question: "What happens to the CNAME record during a Multi-AZ failover?",
+                    options: [
+                        "It remains unchanged",
+                        "It switches to the standby instance",
+                        "It is temporarily disabled",
+                        "It requires manual update"
+                    ],
+                    correct: 1,
+                    explanation: "In a Multi-AZ deployment, when the primary instance fails, the CNAME is automatically switched to the standby instance."
+                },
+                {
+                    type: "single",
+                    question: "Which feature provides the fastest Recovery Point Objective (RPO) for RDS?",
+                    options: [
+                        "Manual Snapshots",
+                        "Automated Backups",
+                        "AWS DRS",
+                        "Multi-AZ Deployment"
                     ],
                     correct: 2,
-                    explanation: "When an EC2 instance is stopped, the data on its EBS volumes is preserved and remains intact."
-                },
-                {
-                    type: "single",
-                    question: "Which solution is most cost-effective for an application that needs a mix of steady-state and variable workloads?",
-                    options: [
-                        "All On-Demand instances",
-                        "All Reserved instances",
-                        "Mix of Reserved and On-Demand instances",
-                        "Mix of Reserved and Spot instances"
-                    ],
-                    correct: 3,
-                    explanation: "Using Reserved instances for steady-state workloads and Spot instances for variable workloads provides the most cost-effective solution."
-                },
-                {
-                    type: "single",
-                    question: "What's the key difference between Security Groups and NACLs?",
-                    options: [
-                        "Security Groups are stateless, NACLs are stateful",
-                        "Security Groups are stateful, NACLs are stateless",
-                        "Security Groups work at subnet level, NACLs at instance level",
-                        "Security Groups only allow inbound rules"
-                    ],
-                    correct: 1,
-                    explanation: "Security Groups are stateful (return traffic is automatically allowed) while NACLs are stateless (return traffic must be explicitly allowed)."
-                },
-                {
-                    type: "single",
-                    question: "Which port is commonly used for HTTPS traffic?",
-                    options: [
-                        "Port 21",
-                        "Port 22",
-                        "Port 80",
-                        "Port 443"
-                    ],
-                    correct: 3,
-                    explanation: "Port 443 is the standard port for HTTPS (HTTP Secure) traffic."
+                    explanation: "AWS DRS (Disaster Recovery Service) provides the fastest RPO for disaster recovery scenarios."
                 },
                 {
                     type: "fill",
-                    question: "The tool used to import a virtual machine from VMware to AWS is called VM _______",
-                    answer: "Import",
-                    explanation: "VM Import/Export is the AWS service used to import virtual machine images from your existing environment to Amazon EC2."
+                    question: "To encrypt an existing unencrypted RDS instance, you must first create a _______ of the instance.",
+                    answer: "snapshot",
+                    explanation: "To encrypt an existing RDS instance, you need to create a snapshot, make an encrypted copy of that snapshot, and then restore from the encrypted snapshot."
                 },
                 {
                     type: "fill",
-                    question: "To access instance metadata from within an EC2 instance, you need to query http://_______.254.169.254/latest/meta-data/",
-                    answer: "169",
-                    explanation: "The instance metadata service is available at http://169.254.169.254/latest/meta-data/."
+                    question: "Aurora Serverless computing capacity is measured in _______, where each unit provides 2GB of memory.",
+                    answer: "ACUs",
+                    explanation: "Aurora Capacity Units (ACUs) are used to measure computing capacity in Aurora Serverless, with each ACU providing 2GB of memory."
                 },
                 {
                     type: "fill",
-                    question: "To get detailed memory utilization metrics from an EC2 instance, you must install the CloudWatch ______",
-                    answer: "agent",
-                    explanation: "The CloudWatch agent is required to collect memory, disk, and other detailed system-level metrics not available by default."
+                    question: "The _______ endpoint in Aurora can be used specifically for report queries and analysis.",
+                    answer: "custom",
+                    explanation: "Aurora custom endpoints can be created specifically for handling report queries and analysis workloads."
                 },
                 {
                     type: "fill",
-                    question: "To ensure EC2 instances can reach the internet from a private subnet, you need a _____ gateway",
-                    answer: "NAT",
-                    explanation: "A NAT (Network Address Translation) gateway allows instances in private subnets to access the internet while remaining private."
+                    question: "To force all connections to use SSL in RDS, set the _______ parameter to true.",
+                    answer: "rds.force_ssl",
+                    explanation: "The rds.force_ssl parameter can be set to true to force all database connections to use SSL encryption."
                 },
                 {
                     type: "fill",
-                    question: "When an EC2 instance is stopped, its _______ IP address is released",
-                    answer: "public",
-                    explanation: "When an EC2 instance is stopped, its public IP address is released, but it retains its private IP address."
+                    question: "Read Replicas use _______ replication to stay in sync with the primary instance.",
+                    answer: "async",
+                    explanation: "Read Replicas in RDS use asynchronous replication to maintain synchronization with the primary instance."
                 }
             ]
         };
@@ -187,7 +192,7 @@
 
         function createQuiz() {
             const questionsContainer = document.getElementById('questions');
-
+            
             quizData.questions.forEach((q, index) => {
                 const questionDiv = document.createElement('div');
                 questionDiv.className = 'question';
@@ -196,7 +201,7 @@
                 if (q.type === 'single') {
                     const optionsDiv = document.createElement('div');
                     optionsDiv.className = 'options';
-
+                    
                     q.options.forEach((option, optIndex) => {
                         const optionDiv = document.createElement('div');
                         optionDiv.className = 'option';
@@ -211,11 +216,11 @@
                     input.type = 'text';
                     input.className = 'input-answer';
                     input.placeholder = 'Type your answer here';
-
+                    
                     const submitBtn = document.createElement('button');
                     submitBtn.textContent = 'Submit';
                     submitBtn.onclick = () => checkFillAnswer(input.value, q.answer, questionDiv, q.explanation);
-
+                    
                     questionDiv.appendChild(input);
                     questionDiv.appendChild(submitBtn);
                 }
@@ -223,9 +228,11 @@
                 const feedbackDiv = document.createElement('div');
                 feedbackDiv.className = 'feedback';
                 questionDiv.appendChild(feedbackDiv);
-
+                
                 questionsContainer.appendChild(questionDiv);
             });
+
+            updateScore();
         }
 
         function checkAnswer(selected, correct, optionDiv, questionDiv, explanation) {
@@ -235,7 +242,7 @@
 
             const options = questionDiv.getElementsByClassName('option');
             options[correct].classList.add('correct');
-
+            
             if (selected === correct) {
                 score++;
                 optionDiv.classList.add('correct');
@@ -278,9 +285,9 @@
             scoreDiv.innerHTML = `
                 <h3>Your Score: ${score}/${quizData.questions.length}</h3>
                 <p>Percentage: ${percentage.toFixed(1)}%</p>
-                ${answeredQuestions === quizData.questions.length ?
-                    `<p>${percentage >= 70 ? '🎉 Excellent! You have an advanced understanding of EC2!' :
-                    'Keep learning! Review the explanations to deepen your EC2 knowledge.'}</p>` : ''}
+                ${answeredQuestions === quizData.questions.length ? 
+                    `<p>${percentage >= 70 ? '🎉 Great job! You have a solid understanding of Amazon RDS!' : 
+                    'Keep learning! Review the explanations to strengthen your Amazon RDS knowledge.'}</p>` : ''}
             `;
         }
 
