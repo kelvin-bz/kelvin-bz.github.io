@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            font-family: system-ui, -apple-system, sans-serif;
+            line-height: 1.6;
+        }
+        .question {
+            background-color: #fff;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .option {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .option:hover {
+            background-color: #f5f5f5;
+            transform: translateX(5px);
+        }
+        .selected {
+            background-color: #e3f2fd;
+        }
+        .correct {
+            background-color: #e8f5e9;
+            border-color: #81c784;
+        }
+        .incorrect {
+            background-color: #ffebee;
+            border-color: #e57373;
+        }
+        .input-answer {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            margin-top: 10px;
+            padding: 8px 16px;
+            background-color: #2196f3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #1976d2;
+        }
+        #score {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.2em;
+        }
+        .feedback {
+            margin-top: 10px;
+            padding: 15px;
+            border-radius: 4px;
+            display: none;
+            line-height: 1.6;
+        }
+        .code-block {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre;
+            overflow-x: auto;
+            line-height: 1.5;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            position: relative;
+        }
+        .copy-button {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .explanation-text {
+            margin-bottom: 10px;
+        }
+        .code-comment {
+            color: #6a737d;
+        }
+        .code-output {
+            color: #0a3069;
+            border-left: 3px solid #2196f3;
+            margin-left: 10px;
+            padding-left: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>📘 Node.js Command Line Operations Quiz</h1>
+    <p>Test your knowledge of Node.js command line operations, environment variables, and REPL!</p>
+    <div id="questions"></div>
+    <div id="score"></div>
+</div>
+
+
+<script>
+    const quizData = {
+        questions: [
+            {
+                type: "single",
+                question: "Which Node.js command starts the REPL with the current directory preloaded?",
+                options: [
+                    "node repl .",
+                    "node -r .",
+                    "node --require .",
+                    "node -i ."
+                ],
+                correct: 1,
+                explanation: {
+                    text: "The -r or --require flag preloads the specified module/directory before starting REPL.",
+                    code: `
+// Start REPL with current directory
+node -r .
+
+// Start REPL with specific module
+node -r dotenv/config
+
+// Access preloaded modules in REPL
+> process.env
+> require('./localModule')`
+                }
+            },
+            {
+                type: "single",
+                question: "How do you access command line arguments in a Node.js script starting from the first custom argument?",
+                options: [
+                    "process.args.slice(2)",
+                    "process.argv.slice(2)",
+                    "process.arguments.slice(2)",
+                    "process.parameters.slice(2)"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "process.argv.slice(2) skips the first two arguments (node path and script path) to get only the custom arguments.",
+                    code: `
+// script.js
+console.log(process.argv);
+
+// Running: node script.js arg1 arg2 --name=value
+[
+  '/usr/local/bin/node',     // [0] Node.js path
+  '/path/to/script.js',      // [1] Script path
+  'arg1',                    // [2] First custom argument
+  'arg2',                    // [3] Second custom argument
+  '--name=value'             // [4] Named argument
+]
+
+// Get only custom arguments
+const args = process.argv.slice(2);
+console.log(args); // ['arg1', 'arg2', '--name=value']`
+                }
+            },
+            {
+                type: "single",
+                question: "What's the best way to read sensitive environment variables in Node.js?",
+                options: [
+                    "process.env directly",
+                    "dotenv package",
+                    "config.json file",
+                    "command line arguments"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "The dotenv package is the recommended way to manage environment variables, especially for sensitive data.",
+                    code: `
+// Install dotenv
+npm install dotenv
+
+// .env file
+DB_PASSWORD=secret123
+API_KEY=abcd1234
+
+// In your Node.js application
+require('dotenv').config();
+
+// Or using import
+import 'dotenv/config';
+
+// Access environment variables
+const dbPassword = process.env.DB_PASSWORD;
+const apiKey = process.env.API_KEY;
+
+// Best practice: validate required env vars
+function validateEnv() {
+    const required = ['DB_PASSWORD', 'API_KEY'];
+    for (const var of required) {
+        if (!process.env[var]) {
+            throw new Error(\`Missing required env var: \${var}\`);
+        }
+    }
+}`
+                }
+            },
+            {
+                type: "single",
+                question: "Which Node.js REPL command shows all available special commands?",
+                options: [
+                    ".help",
+                    ".commands",
+                    ".list",
+                    ".show"
+                ],
+                correct: 0,
+                explanation: {
+                    text: "The .help command in REPL shows all available special commands and their usage.",
+                    code: `
+> .help
+.break    Sometimes you get stuck, this gets you out
+.clear    Alias for .break
+.editor   Enter editor mode
+.exit     Exit the REPL
+.help     Print this help message
+.load     Load JS from a file into the REPL session
+.save     Save all evaluated commands in this REPL session to a file
+
+// Example of using .editor
+> .editor
+// Enter editor mode, write multiple lines
+function add(a, b) {
+    return a + b;
+}
+// Press Ctrl+D to finish`
+                }
+            },
+            {
+                type: "single",
+                question: "What's the correct way to read user input asynchronously in Node.js?",
+                options: [
+                    "process.stdin.read()",
+                    "readline.createInterface()",
+                    "console.read()",
+                    "input.readline()"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "readline.createInterface() is used to read user input line by line asynchronously.",
+                    code: `
+const readline = require('readline');
+
+const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+});
+
+// Ask single question
+rl.question('What is your name? ', (answer) => {
+    console.log(\`Hello, \${answer}!\`);
+    rl.close();
+});
+
+// Create interactive CLI
+async function askQuestions() {
+    const questions = [
+        'What is your name? ',
+        'How old are you? '
+    ];
+    const answers = [];
+
+    for (const question of questions) {
+        const answer = await new Promise(resolve => {
+            rl.question(question, resolve);
+        });
+        answers.push(answer);
+    }
+
+    return answers;
+}`
+                }
+            },
+            {
+                type: "fill",
+                question: "To exit the Node.js REPL programmatically, use process._____();",
+                answer: "exit",
+                explanation: {
+                    text: "process.exit() terminates the Node.js process with an optional exit code.",
+                    code: `
+// Exit with success code
+process.exit(0);
+
+// Exit with error code
+process.exit(1);
+
+// Handle cleanup before exit
+process.on('exit', (code) => {
+    console.log(\`About to exit with code: \${code}\`);
+    // Perform cleanup operations
+});
+
+// Handle unhandled errors
+process.on('uncaughtException', (err) => {
+    console.error('Uncaught Exception:', err);
+    process.exit(1);
+});`
+                }
+            },
+            {
+                type: "fill",
+                question: "Use process._____ to handle cleanup operations before the Node.js process exits.",
+                answer: "on",
+                explanation: {
+                    text: "process.on() is used to handle various process events, including 'exit' for cleanup operations.",
+                    code: `
+// Handle different process events
+process.on('exit', (code) => {
+    console.log('Cleaning up before exit');
+    closeConnections();
+    saveState();
+});
+
+process.on('SIGINT', () => {
+    console.log('Received SIGINT (Ctrl+C)');
+    process.exit();
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('Unhandled Rejection at:', promise);
+    console.error('Reason:', reason);
+});`
+                }
+            },
+            {
+                type: "fill",
+                question: "To print colored output to the console, use console.log with _____escape codes.",
+                answer: "ANSI",
+                explanation: {
+                    text: "ANSI escape codes can be used to add colors and styling to console output.",
+                    code: `
+// Color constants
+const colors = {
+    reset: '\\x1b[0m',
+    bright: '\\x1b[1m',
+    red: '\\x1b[31m',
+    green: '\\x1b[32m',
+    yellow: '\\x1b[33m'
+};
+
+// Colored output
+console.log(\`\${colors.red}Error:\${colors.reset} Something went wrong\`);
+console.log(\`\${colors.green}Success:\${colors.reset} Operation completed\`);
+
+// Create helper function
+function colorize(text, color) {
+    return \`\${colors[color]}\${text}\${colors.reset}\`;
+}
+
+console.log(colorize('Warning!', 'yellow'));`
+                }
+            },
+            {
+                type: "fill",
+                question: "The _____ package is commonly used to parse command line arguments in Node.js applications.",
+                answer: "yargs",
+                explanation: {
+                    text: "yargs is a popular package for parsing command line arguments with many helpful features.",
+                    code: `
+// Install yargs
+npm install yargs
+
+// Using yargs
+const yargs = require('yargs/yargs');
+const { hideBin } = require('yargs/helpers');
+
+const argv = yargs(hideBin(process.argv))
+    .option('name', {
+        alias: 'n',
+        type: 'string',
+        description: 'Your name'
+    })
+    .option('age', {
+        alias: 'a',
+        type: 'number',
+        description: 'Your age'
+    })
+    .demandOption(['name'])
+    .help()
+    .argv;
+
+console.log(\`Hello, \${argv.name}!\`);
+
+// Run: node script.js --name John --age 30
+// Or: node script.js -n John -a 30`
+                }
+            },
+            {
+                type: "fill",
+                question: "Use process._____ to change the current working directory in Node.js.",
+                answer: "chdir",
+                explanation: {
+                    text: "process.chdir() changes the current working directory of the Node.js process.",
+                    code: `
+const path = require('path');
+
+// Get current working directory
+console.log('Current directory:', process.cwd());
+
+// Change directory
+try {
+    process.chdir('../other-directory');
+    console.log('New directory:', process.cwd());
+} catch (err) {
+    console.error('Error changing directory:', err);
+}
+
+// Working with relative paths
+const relativePath = './config';
+const absolutePath = path.resolve(process.cwd(), relativePath);
+console.log('Absolute path:', absolutePath);`
+                }
+            }
+        ]
+    };
+
+
+    function copyToClipboard(text, button) {
+        navigator.clipboard.writeText(text).then(() => {
+            const originalText = button.textContent;
+            button.textContent = 'Copied!';
+            setTimeout(() => {
+                button.textContent = originalText;
+            }, 2000);
+        });
+    }
+
+    function formatCodeExample(code) {
+        return code.split('\n').map(line => {
+            if (line.includes('//')) {
+                const [code, comment] = line.split('//');
+                return `${code}<span class="code-comment">// ${comment}</span>`;
+            }
+            return line;
+        }).join('\n');
+    }
+
+    function createQuiz() {
+        const questionsContainer = document.getElementById('questions');
+
+        quizData.questions.forEach((q, index) => {
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'question';
+            questionDiv.innerHTML = `<div><strong>Question ${index + 1}:</strong> ${q.question}</div>`;
+
+            if (q.type === 'single') {
+                const optionsDiv = document.createElement('div');
+                optionsDiv.className = 'options';
+
+                q.options.forEach((option, optIndex) => {
+                    const optionDiv = document.createElement('div');
+                    optionDiv.className = 'option';
+                    optionDiv.textContent = option;
+                    optionDiv.onclick = () => checkAnswer(optIndex, q.correct, optionDiv, questionDiv, q.explanation);
+                    optionsDiv.appendChild(optionDiv);
+                });
+
+                questionDiv.appendChild(optionsDiv);
+            } else {
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.className = 'input-answer';
+                input.placeholder = 'Type your answer here';
+
+                const submitBtn = document.createElement('button');
+                submitBtn.textContent = 'Submit';
+                submitBtn.onclick = () => checkFillAnswer(input.value, q.answer, questionDiv, q.explanation);
+
+                questionDiv.appendChild(input);
+                questionDiv.appendChild(submitBtn);
+            }
+
+            const feedbackDiv = document.createElement('div');
+            feedbackDiv.className = 'feedback';
+            questionDiv.appendChild(feedbackDiv);
+
+            questionsContainer.appendChild(questionDiv);
+        });
+
+        updateScore();
+    }
+
+    function checkFillAnswer(input, answer, questionDiv, explanation) {
+        // Check if question has already been answered
+        if (questionDiv.querySelector('.feedback').style.display === 'block') {
+            return; // Already answered
+        }
+
+        // Get or create input element
+        const inputElement = questionDiv.querySelector('.input-answer');
+        if (inputElement) {
+            inputElement.disabled = true; // Disable input after submission
+        }
+
+        // Compare answer (case-insensitive)
+        if (input.toLowerCase().trim() === answer.toLowerCase().trim()) {
+            score++;
+            showFeedback(questionDiv, explanation, true);
+        } else {
+            showFeedback(questionDiv, {
+                text: `The correct answer is: ${answer}. ${explanation.text}`,
+                code: explanation.code
+            }, false);
+        }
+
+        answeredQuestions++;
+        updateScore();
+    }
+    function showFeedback(questionDiv, explanation, isCorrect) {
+        const feedbackDiv = questionDiv.querySelector('.feedback');
+        feedbackDiv.style.display = 'block';
+
+        const codeId = 'code-' + Math.random().toString(36).substr(2, 9);
+
+        feedbackDiv.innerHTML = `
+                <div class="explanation-text">
+                    ${isCorrect ? '✅' : '❌'} ${explanation.text}
+                </div>
+                ${explanation.code ? `
+                    <div class="code-block" id="${codeId}">
+                        ${formatCodeExample(explanation.code)}
+                        <button class="copy-button" onclick="copyToClipboard(\`${explanation.code}\`, this)">Copy</button>
+                    </div>
+                ` : ''}
+            `;
+
+        feedbackDiv.style.backgroundColor = isCorrect ? '#e8f5e9' : '#ffebee';
+    }
+
+    function checkAnswer(selected, correct, optionDiv, questionDiv, explanation) {
+        if (questionDiv.querySelector('.correct') || questionDiv.querySelector('.incorrect')) {
+            return;
+        }
+
+        const options = questionDiv.getElementsByClassName('option');
+        options[correct].classList.add('correct');
+
+        if (selected === correct) {
+            score++;
+            optionDiv.classList.add('correct');
+            showFeedback(questionDiv, explanation, true);
+        } else {
+            optionDiv.classList.add('incorrect');
+            showFeedback(questionDiv, explanation, false);
+        }
+
+        answeredQuestions++;
+        updateScore();
+    }
+
+    function updateScore() {
+        const scoreDiv = document.getElementById('score');
+        const percentage = (score / quizData.questions.length) * 100;
+        scoreDiv.innerHTML = `
+                <h3>Your Score: ${score}/${quizData.questions.length}</h3>
+                <p>Percentage: ${percentage.toFixed(1)}%</p>
+                ${answeredQuestions === quizData.questions.length ?
+            `<p>${percentage >= 70 ? '🎉 Great job! You have a solid understanding of Node.js core modules!' :
+                'Keep learning! Review the explanations to strengthen your knowledge of Node.js core modules.'}</p>` : ''}
+            `;
+    }
+
+    let score = 0;
+    let answeredQuestions = 0;
+    createQuiz();
+</script>
+</body>
+</html>
