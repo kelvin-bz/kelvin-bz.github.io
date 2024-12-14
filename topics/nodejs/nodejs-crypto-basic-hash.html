@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            font-family: system-ui, -apple-system, sans-serif;
+            line-height: 1.6;
+        }
+        .question {
+            background-color: #fff;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .option {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .option:hover {
+            background-color: #f5f5f5;
+            transform: translateX(5px);
+        }
+        .selected {
+            background-color: #e3f2fd;
+        }
+        .correct {
+            background-color: #e8f5e9;
+            border-color: #81c784;
+        }
+        .incorrect {
+            background-color: #ffebee;
+            border-color: #e57373;
+        }
+        .input-answer {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            margin-top: 10px;
+            padding: 8px 16px;
+            background-color: #2196f3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #1976d2;
+        }
+        #score {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.2em;
+        }
+        .feedback {
+            margin-top: 10px;
+            padding: 15px;
+            border-radius: 4px;
+            display: none;
+            line-height: 1.6;
+        }
+        .code-block {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre;
+            overflow-x: auto;
+            line-height: 1.5;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            position: relative;
+        }
+        .copy-button {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .explanation-text {
+            margin-bottom: 10px;
+        }
+        .code-comment {
+            color: #6a737d;
+        }
+        .code-output {
+            color: #0a3069;
+            border-left: 3px solid #2196f3;
+            margin-left: 10px;
+            padding-left: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🔐 Node.js Hashing Quiz</h1>
+    <p>Test your knowledge of Node.js hashing techniques and security practices!</p>
+    <div id="questions"></div>
+    <div id="score"></div>
+</div>
+
+
+
+<script>
+
+    const quizData = {
+        questions: [
+            {
+                type: "single",
+                question: "What module do you need to import to use cryptographic functions in Node.js?",
+                options: [
+                    "crypto",
+                    "cryptography",
+                    "crypt",
+                    "encryption"
+                ],
+                correct: 0,
+                explanation: {
+                    text: "The 'crypto' module is Node.js's built-in cryptography module.",
+                    code: `
+const crypto = require('crypto');
+
+// Now you can use crypto methods
+const hash = crypto.createHash('sha256');
+hash.update('Hello, World!');
+console.log(hash.digest('hex'));`
+                }
+            },
+            {
+                type: "single",
+                question: "Which method is used to create a hash in Node.js?",
+                options: [
+                    "crypto.makeHash()",
+                    "crypto.generateHash()",
+                    "crypto.createHash()",
+                    "crypto.hash()"
+                ],
+                correct: 2,
+                explanation: {
+                    text: "crypto.createHash() is the correct method to create a hash. It takes the hash algorithm as a parameter.",
+                    code: `
+const crypto = require('crypto');
+
+// Create a hash using SHA-256
+const hash = crypto.createHash('sha256');
+hash.update('password123');
+const hashedValue = hash.digest('hex');
+console.log(hashedValue);`
+                }
+            },
+            {
+                type: "single",
+                question: "What is the most common use of hashing in web applications?",
+                options: [
+                    "Storing passwords securely",
+                    "Encrypting files",
+                    "Sending secret messages",
+                    "Creating user IDs"
+                ],
+                correct: 0,
+                explanation: {
+                    text: "Hashing is commonly used to store passwords securely because hashes are one-way functions and can't be reversed.",
+                    code: `
+const crypto = require('crypto');
+
+function hashPassword(password) {
+    const hash = crypto.createHash('sha256');
+    hash.update(password);
+    return hash.digest('hex');
+}
+
+const hashedPassword = hashPassword('userPassword123');
+console.log('Hashed password:', hashedPassword);`
+                }
+            },
+            {
+                type: "single",
+                question: "Which of these is NOT a hash algorithm available in Node.js crypto?",
+                options: [
+                    "md5",
+                    "sha256",
+                    "sha512",
+                    "super256"
+                ],
+                correct: 3,
+                explanation: {
+                    text: "md5, sha256, and sha512 are real hash algorithms available in Node.js. 'super256' is not a real hash algorithm.",
+                    code: `
+const crypto = require('crypto');
+
+// Available hash algorithms
+console.log(crypto.getHashes());
+
+// Using different hash algorithms
+const md5Hash = crypto.createHash('md5');
+const sha256Hash = crypto.createHash('sha256');
+const sha512Hash = crypto.createHash('sha512');`
+                }
+            },
+            {
+                type: "single",
+                question: "Which of these is NOT a recommended modern hashing algorithm for passwords?",
+                options: [
+                    "Argon2",
+                    "BCrypt",
+                    "PBKDF2",
+                    "MD5"
+                ],
+                correct: 3,
+                explanation: {
+                    text: "MD5 is outdated and vulnerable to collision attacks. Argon2, BCrypt, and PBKDF2 are modern, secure options for password hashing.",
+                    code: `
+// Don't use MD5 for passwords!
+const crypto = require('crypto');
+const hash = crypto.createHash('md5'); // ❌ Insecure!
+
+// Instead, use a secure algorithm like Argon2
+const argon2 = require('argon2');
+const hash = await argon2.hash(password, {
+    type: argon2.argon2id,
+    memoryCost: 2 ** 16,
+    timeCost: 3
+}); // ✅ Secure!`
+                }
+            },
+            {
+                type: "single",
+                question: "What is the purpose of adding a salt to a password hash?",
+                options: [
+                    "To make the hash faster to compute",
+                    "To make identical passwords produce different hashes",
+                    "To decrypt the hash later",
+                    "To reduce the hash size"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "Salt is a unique random value added to each password before hashing to ensure that even if two users have the same password, their hashes will be different.",
+                    code: `
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
+
+async function hashPassword(password) {
+    // bcrypt automatically generates and includes the salt
+    const salt = await bcrypt.genSalt(saltRounds);
+    const hash = await bcrypt.hash(password, salt);
+    return hash;
+}
+
+// Example usage
+const password = 'user123';
+const hash1 = await hashPassword(password);
+const hash2 = await hashPassword(password);
+console.log(hash1 !== hash2); // true - different salts used`
+                }
+            },
+            {
+                type: "single",
+                question: "How is a pepper different from a salt in password hashing?",
+                options: [
+                    "Pepper is stored with the hash, salt isn't",
+                    "Salt is stored with the hash, pepper isn't",
+                    "Pepper is longer than salt",
+                    "Salt is used only once, pepper multiple times"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "Unlike salt which is stored with the hash, pepper is a secret key that is kept separately (typically in application code or environment variables).",
+                    code: `
+class PasswordService {
+    constructor() {
+        // Pepper is stored in environment variable
+        this.pepper = process.env.PASSWORD_PEPPER;
+    }
+
+    async hashPassword(password) {
+        const pepperedPassword = password + this.pepper;
+        const salt = await bcrypt.genSalt(10);
+        return await bcrypt.hash(pepperedPassword, salt);
+    }
+}`
+                }
+            },
+            {
+                type: "single",
+                question: "What method is used to generate random bytes in Node.js?",
+                options: [
+                    "crypto.randomBytes()",
+                    "crypto.random()",
+                    "crypto.generateRandom()",
+                    "crypto.bytes()"
+                ],
+                correct: 0,
+                explanation: {
+                    text: "crypto.randomBytes() is used to generate cryptographically strong random bytes.",
+                    code: `
+const crypto = require('crypto');
+
+// Generate 16 random bytes
+crypto.randomBytes(16, (err, buffer) => {
+    if (err) throw err;
+    console.log('Random bytes:', buffer.toString('hex'));
+});
+
+// Synchronous version
+const randomBytes = crypto.randomBytes(16);
+console.log('Random bytes:', randomBytes.toString('hex'));`
+                }
+            },
+            {
+                type: "fill",
+                question: "The current standard and recommended algorithm for password hashing is _______.",
+                answer: "argon2",
+                explanation: {
+                    text: "Argon2 is the current standard for password hashing, offering memory-hardness and high customizability.",
+                    code: `
+const argon2 = require('argon2');
+
+async function hashPassword(password) {
+    return await argon2.hash(password, {
+        type: argon2.argon2id,
+        memoryCost: 2 ** 16,   // 64MB memory usage
+        timeCost: 3,           // 3 iterations
+        parallelism: 1         // single-threaded
+    });
+}`
+                }
+            },
+            {
+                type: "fill",
+                question: "A _______ table attack can be prevented by using proper password salting.",
+                answer: "rainbow",
+                explanation: {
+                    text: "Rainbow table attacks, which use precomputed hash tables, are prevented by adding unique salts to passwords before hashing.",
+                    code: `
+const bcrypt = require('bcrypt');
+
+async function secureHash(password) {
+    // Generate unique salt for each password
+    const salt = await bcrypt.genSalt(10);
+
+    // Combine password with salt and hash
+    // This prevents rainbow table attacks
+    return await bcrypt.hash(password, salt);
+}
+
+// Even identical passwords get different hashes
+const pass1 = await secureHash('password123');
+const pass2 = await secureHash('password123');
+console.log(pass1 === pass2); // false`
+                }
+            },
+            {
+                type: "fill",
+                question: "The technique of applying a hash function multiple times to make cracking more difficult is called key _______.",
+                answer: "stretching",
+                explanation: {
+                    text: "Key stretching involves repeatedly applying the hash function to make the process slower and more resistant to brute-force attacks.",
+                    code: `
+const crypto = require('crypto');
+
+function stretchKey(password, iterations = 10000) {
+    let hash = password;
+
+    // Apply hash multiple times
+    for(let i = 0; i < iterations; i++) {
+        hash = crypto.createHash('sha256')
+            .update(hash)
+            .digest('hex');
+    }
+
+    return hash;
+}`
+                }
+            },
+            {
+                type: "fill",
+                question: "_______ is a hash-based message authentication code used for verifying data integrity.",
+                answer: "hmac",
+                explanation: {
+                    text: "HMAC combines a secret key with a hash function to create a secure way to verify data integrity.",
+                    code: `
+const crypto = require('crypto');
+
+function createHMAC(data, secretKey) {
+    const hmac = crypto.createHmac('sha256', secretKey);
+    hmac.update(data);
+    return hmac.digest('hex');
+}
+
+// Example usage
+const secretKey = 'your-secret-key';
+const data = 'message-to-authenticate';
+const hmac = createHMAC(data, secretKey);
+
+// Verify integrity
+const isValid = (receivedHmac === hmac);`
+                }
+            },
+            {
+                type: "fill",
+                question: "crypto.randomBytes() returns a _____ object containing random bytes.",
+                answer: "Buffer",
+                explanation: {
+                    text: "The method returns a Buffer object containing the random bytes, which can be converted to different formats.",
+                    code: `
+const crypto = require('crypto');
+
+// Generate random bytes and convert to different formats
+const buffer = crypto.randomBytes(16);
+console.log('Buffer:', buffer);
+console.log('Hex:', buffer.toString('hex'));
+console.log('Base64:', buffer.toString('base64'));`
+                }
+            },
+            {
+                type: "fill",
+                question: "Hash functions are _____ way functions, meaning they cannot be reversed.",
+                answer: "one",
+                explanation: {
+                    text: "Hash functions are one-way functions - you cannot derive the original input from the hash output.",
+                    code: `
+const crypto = require('crypto');
+
+// Example showing hash is one-way
+const password = 'myPassword123';
+const hash = crypto.createHash('sha256')
+    .update(password)
+    .digest('hex');
+
+console.log('Original:', password);
+console.log('Hashed:', hash);
+// No way to get 'myPassword123' from the hash!`
+                }
+            },
+            {
+                type: "fill",
+                question: "The minimum recommended hash algorithm for passwords is _____-256.",
+                answer: "sha",
+                explanation: {
+                    text: "SHA-256 is considered a minimum standard for secure hashing, though bcrypt is preferred for passwords.",
+                    code: `
+const crypto = require('crypto');
+
+// Using SHA-256 for basic hashing
+function hashPassword(password) {
+    return crypto.createHash('sha256')
+        .update(password)
+        .digest('hex');
+}
+
+const password = 'userPassword123';
+const hashedPassword = hashPassword(password);
+console.log('Hashed with SHA-256:', hashedPassword);`
+                }
+            }
+        ]
+    };
+
+
+
+
+    function copyToClipboard(text, button) {
+        navigator.clipboard.writeText(text).then(() => {
+            const originalText = button.textContent;
+            button.textContent = 'Copied!';
+            setTimeout(() => {
+                button.textContent = originalText;
+            }, 2000);
+        });
+    }
+
+    function formatCodeExample(code) {
+        return code.split('\n').map(line => {
+            if (line.includes('//')) {
+                const [code, comment] = line.split('//');
+                return `${code}<span class="code-comment">// ${comment}</span>`;
+            }
+            return line;
+        }).join('\n');
+    }
+
+    function createQuiz() {
+        const questionsContainer = document.getElementById('questions');
+
+        quizData.questions.forEach((q, index) => {
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'question';
+            questionDiv.innerHTML = `<div><strong>Question ${index + 1}:</strong> ${q.question}</div>`;
+
+            if (q.type === 'single') {
+                const optionsDiv = document.createElement('div');
+                optionsDiv.className = 'options';
+
+                q.options.forEach((option, optIndex) => {
+                    const optionDiv = document.createElement('div');
+                    optionDiv.className = 'option';
+                    optionDiv.textContent = option;
+                    optionDiv.onclick = () => checkAnswer(optIndex, q.correct, optionDiv, questionDiv, q.explanation);
+                    optionsDiv.appendChild(optionDiv);
+                });
+
+                questionDiv.appendChild(optionsDiv);
+            } else {
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.className = 'input-answer';
+                input.placeholder = 'Type your answer here';
+
+                const submitBtn = document.createElement('button');
+                submitBtn.textContent = 'Submit';
+                submitBtn.onclick = () => checkFillAnswer(input.value, q.answer, questionDiv, q.explanation);
+
+                questionDiv.appendChild(input);
+                questionDiv.appendChild(submitBtn);
+            }
+
+            const feedbackDiv = document.createElement('div');
+            feedbackDiv.className = 'feedback';
+            questionDiv.appendChild(feedbackDiv);
+
+            questionsContainer.appendChild(questionDiv);
+        });
+
+        updateScore();
+    }
+
+    function checkFillAnswer(input, answer, questionDiv, explanation) {
+        // Check if question has already been answered
+        if (questionDiv.querySelector('.feedback').style.display === 'block') {
+            return; // Already answered
+        }
+
+        // Get or create input element
+        const inputElement = questionDiv.querySelector('.input-answer');
+        if (inputElement) {
+            inputElement.disabled = true; // Disable input after submission
+        }
+
+        // Compare answer (case-insensitive)
+        if (input.toLowerCase().trim() === answer.toLowerCase().trim()) {
+            score++;
+            showFeedback(questionDiv, explanation, true);
+        } else {
+            showFeedback(questionDiv, {
+                text: `The correct answer is: ${answer}. ${explanation.text}`,
+                code: explanation.code
+            }, false);
+        }
+
+        answeredQuestions++;
+        updateScore();
+    }
+    function showFeedback(questionDiv, explanation, isCorrect) {
+        const feedbackDiv = questionDiv.querySelector('.feedback');
+        feedbackDiv.style.display = 'block';
+
+        const codeId = 'code-' + Math.random().toString(36).substr(2, 9);
+
+        feedbackDiv.innerHTML = `
+                <div class="explanation-text">
+                    ${isCorrect ? '✅' : '❌'} ${explanation.text}
+                </div>
+                ${explanation.code ? `
+                    <div class="code-block" id="${codeId}">
+                        ${formatCodeExample(explanation.code)}
+                        <button class="copy-button" onclick="copyToClipboard(\`${explanation.code}\`, this)">Copy</button>
+                    </div>
+                ` : ''}
+            `;
+
+        feedbackDiv.style.backgroundColor = isCorrect ? '#e8f5e9' : '#ffebee';
+    }
+
+    function checkAnswer(selected, correct, optionDiv, questionDiv, explanation) {
+        if (questionDiv.querySelector('.correct') || questionDiv.querySelector('.incorrect')) {
+            return;
+        }
+
+        const options = questionDiv.getElementsByClassName('option');
+        options[correct].classList.add('correct');
+
+        if (selected === correct) {
+            score++;
+            optionDiv.classList.add('correct');
+            showFeedback(questionDiv, explanation, true);
+        } else {
+            optionDiv.classList.add('incorrect');
+            showFeedback(questionDiv, explanation, false);
+        }
+
+        answeredQuestions++;
+        updateScore();
+    }
+
+    function updateScore() {
+        const scoreDiv = document.getElementById('score');
+        const percentage = (score / quizData.questions.length) * 100;
+        scoreDiv.innerHTML = `
+                <h3>Your Score: ${score}/${quizData.questions.length}</h3>
+                <p>Percentage: ${percentage.toFixed(1)}%</p>
+                ${answeredQuestions === quizData.questions.length ?
+            `<p>${percentage >= 70 ? '🎉 Great job! You have a solid understanding of Node.js core modules!' :
+                'Keep learning! Review the explanations to strengthen your knowledge of Node.js core modules.'}</p>` : ''}
+            `;
+    }
+
+    let score = 0;
+    let answeredQuestions = 0;
+    createQuiz();
+</script>
+</body>
+</html>
