@@ -4,17 +4,17 @@
     <meta charset="UTF-8">
     <style>
         .container {
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
             padding: 20px;
             font-family: system-ui, -apple-system, sans-serif;
+            line-height: 1.6;
         }
         .question {
-            margin-bottom: 20px;
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
             background-color: #fff;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         .options {
@@ -38,11 +38,11 @@
             background-color: #e3f2fd;
         }
         .correct {
-            background-color: #c8e6c9;
+            background-color: #e8f5e9;
             border-color: #81c784;
         }
         .incorrect {
-            background-color: #ffcdd2;
+            background-color: #ffebee;
             border-color: #e57373;
         }
         .input-answer {
@@ -73,232 +73,503 @@
             border-radius: 8px;
             text-align: center;
             font-size: 1.2em;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         .feedback {
             margin-top: 10px;
-            padding: 10px;
+            padding: 15px;
             border-radius: 4px;
             display: none;
+            line-height: 1.6;
         }
-        code {
+        .code-block {
             background-color: #f5f5f5;
-            padding: 2px 4px;
+            padding: 15px;
             border-radius: 4px;
-            font-family: monospace;
+            margin: 10px 0;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre;
+            overflow-x: auto;
+            line-height: 1.5;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            position: relative;
+        }
+        .copy-button {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .explanation-text {
+            margin-bottom: 10px;
+        }
+        .code-comment {
+            color: #6a737d;
+        }
+        .code-output {
+            color: #0a3069;
+            border-left: 3px solid #2196f3;
+            margin-left: 10px;
+            padding-left: 10px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🤝 JavaScript Promises Master Quiz</h1>
-        <p>Test your knowledge of JavaScript Promises with this interactive quiz!</p>
-        <div id="questions"></div>
-        <div id="score"></div>
-    </div>
+<div class="container">
+    <h1>🤝 JavaScript Promises Master Quiz</h1>
+    <p>Test your knowledge of JavaScript Promises with this interactive quiz!</p>
+    <div id="questions"></div>
+    <div id="score"></div>
+</div>
 
-    <script>
-        const quizData = {
-            questions: [
-                {
-                    type: "single",
-                    question: "What are the three states of a Promise?",
-                    options: [
-                        "success, error, complete",
-                        "pending, fulfilled, rejected",
-                        "loading, success, error",
-                        "start, progress, end"
-                    ],
-                    correct: 1,
-                    explanation: "A Promise can be in one of three states: pending (initial state), fulfilled (completed successfully), or rejected (failed)."
-                },
-                {
-                    type: "single",
-                    question: "Which method is used to handle errors in a Promise chain?",
-                    options: [
-                        ".error()",
-                        ".catch()",
-                        ".fail()",
-                        ".reject()"
-                    ],
-                    correct: 1,
-                    explanation: "The .catch() method is used to handle errors in a Promise chain. It catches any errors that occur in the preceding Promise chain."
-                },
-                {
-                    type: "single",
-                    question: "Which method executes after all promises in an array have completed?",
-                    options: [
-                        "Promise.all()",
-                        "Promise.race()",
-                        "Promise.any()",
-                        "Promise.allSettled()"
-                    ],
-                    correct: 0,
-                    explanation: "Promise.all() waits for all promises to resolve and returns an array of their results. If any promise fails, it immediately rejects."
-                },
-                {
-                    type: "single",
-                    question: "What happens if you don't handle a rejected Promise?",
-                    options: [
-                        "Nothing, it's silently ignored",
-                        "The program crashes immediately",
-                        "You get an UnhandledPromiseRejection warning",
-                        "The Promise automatically retries"
-                    ],
-                    correct: 2,
-                    explanation: "An unhandled Promise rejection results in an UnhandledPromiseRejection warning, which may terminate the Node.js process in future versions."
-                },
-                {
-                    type: "single",
-                    question: "Which Promise method returns the first settled promise from an array?",
-                    options: [
-                        "Promise.first()",
-                        "Promise.race()",
-                        "Promise.any()",
-                        "Promise.fastest()"
-                    ],
-                    correct: 1,
-                    explanation: "Promise.race() returns the first promise that settles (either fulfills or rejects), regardless of the outcome."
-                },
-                {
-                    type: "fill",
-                    question: "To create a new Promise, you use the _______ keyword followed by the Promise constructor.",
-                    answer: "new",
-                    explanation: "The 'new' keyword is required when creating a Promise: new Promise((resolve, reject) => {...})"
-                },
-                {
-                    type: "fill",
-                    question: "The method used to handle successful Promise resolution is ._______().",
-                    answer: "then",
-                    explanation: "The .then() method is used to handle the successful resolution of a Promise and chain additional operations."
-                },
-                {
-                    type: "fill",
-                    question: "Promise._______ returns a Promise that fulfills after all given promises have either fulfilled or rejected.",
-                    answer: "allSettled",
-                    explanation: "Promise.allSettled() waits for all promises to settle regardless of whether they fulfill or reject."
-                },
-                {
-                    type: "fill",
-                    question: "A Promise that is neither fulfilled nor rejected is in a _______ state.",
-                    answer: "pending",
-                    explanation: "The pending state is the initial state of a Promise before it is either fulfilled or rejected."
-                },
-                {
-                    type: "fill",
-                    question: "The Promise method that returns a promise which fulfills when any of the input's promises fulfills is Promise._______().",
-                    answer: "any",
-                    explanation: "Promise.any() returns a fulfilled promise as soon as one of the promises in the array fulfills, or rejects if all promises reject."
+
+<script>
+    const quizData = {
+        questions: [
+            {
+                type: "single",
+                question: "What are the three states of a Promise?",
+                options: [
+                    "success, error, complete",
+                    "pending, fulfilled, rejected",
+                    "loading, success, error",
+                    "start, progress, end"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "A Promise can be in one of three states: pending (initial state), fulfilled (completed successfully), or rejected (failed).",
+                    code: `
+// Creating a promise that demonstrates all three states
+const promise = new Promise((resolve, reject) => {
+    // Promise starts in 'pending' state
+    console.log('Initial State:', 'pending');
+
+    setTimeout(() => {
+        const success = Math.random() > 0.5;
+        if (success) {
+            // Transitions to 'fulfilled' state
+            resolve('Success!');
+        } else {
+            // Transitions to 'rejected' state
+            reject('Error!');
+        }
+    }, 1000);
+});
+
+promise
+    .then(result => console.log('Fulfilled:', result))
+    .catch(error => console.log('Rejected:', error));`
                 }
-            ]
-        };
-
-        let score = 0;
-        let answeredQuestions = 0;
-
-        function createQuiz() {
-            const questionsContainer = document.getElementById('questions');
-            
-            quizData.questions.forEach((q, index) => {
-                const questionDiv = document.createElement('div');
-                questionDiv.className = 'question';
-                questionDiv.innerHTML = `<div><strong>Question ${index + 1}:</strong> ${q.question}</div>`;
-
-                if (q.type === 'single') {
-                    const optionsDiv = document.createElement('div');
-                    optionsDiv.className = 'options';
-                    
-                    q.options.forEach((option, optIndex) => {
-                        const optionDiv = document.createElement('div');
-                        optionDiv.className = 'option';
-                        optionDiv.textContent = option;
-                        optionDiv.onclick = () => checkAnswer(optIndex, q.correct, optionDiv, questionDiv, q.explanation);
-                        optionsDiv.appendChild(optionDiv);
-                    });
-
-                    questionDiv.appendChild(optionsDiv);
-                } else {
-                    const input = document.createElement('input');
-                    input.type = 'text';
-                    input.className = 'input-answer';
-                    input.placeholder = 'Type your answer here';
-                    
-                    const submitBtn = document.createElement('button');
-                    submitBtn.textContent = 'Submit';
-                    submitBtn.onclick = () => checkFillAnswer(input.value, q.answer, questionDiv, q.explanation);
-                    
-                    questionDiv.appendChild(input);
-                    questionDiv.appendChild(submitBtn);
+            },
+            {
+                type: "single",
+                question: "Which method is used to handle errors in a Promise chain?",
+                options: [
+                    ".error()",
+                    ".catch()",
+                    ".fail()",
+                    ".reject()"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "The .catch() method is used to handle errors in a Promise chain. It catches any errors that occur in the preceding Promise chain.",
+                    code: `
+// Example of error handling in Promise chain
+fetchUserData(userId)
+    .then(user => {
+        if (!user.isActive) {
+            throw new Error('User is not active');
+        }
+        return processUserData(user);
+    })
+    .then(processedData => {
+        return saveUserData(processedData);
+    })
+    .catch(error => {
+        // Handles any errors from the above chain
+        console.error('Error in user processing:', error);
+        // Perform error recovery or logging
+    });`
                 }
+            },
+            {
+                type: "single",
+                question: "Which method executes after all promises in an array have completed?",
+                options: [
+                    "Promise.all()",
+                    "Promise.race()",
+                    "Promise.any()",
+                    "Promise.allSettled()"
+                ],
+                correct: 0,
+                explanation: {
+                    text: "Promise.all() waits for all promises to resolve and returns an array of their results. If any promise fails, it immediately rejects.",
+                    code: `
+// Example using Promise.all()
+const userPromise = fetchUser(userId);
+const postsPromise = fetchUserPosts(userId);
+const friendsPromise = fetchUserFriends(userId);
 
-                const feedbackDiv = document.createElement('div');
-                feedbackDiv.className = 'feedback';
-                questionDiv.appendChild(feedbackDiv);
-                
-                questionsContainer.appendChild(questionDiv);
-            });
+Promise.all([userPromise, postsPromise, friendsPromise])
+    .then(([user, posts, friends]) => {
+        console.log('User:', user);
+        console.log('Posts:', posts);
+        console.log('Friends:', friends);
+    })
+    .catch(error => {
+        // If any promise fails, this executes
+        console.error('Failed to fetch user data:', error);
+    });`
+                }
+            },
+            {
+                type: "single",
+                question: "What happens if you don't handle a rejected Promise?",
+                options: [
+                    "Nothing, it's silently ignored",
+                    "The program crashes immediately",
+                    "You get an UnhandledPromiseRejection warning",
+                    "The Promise automatically retries"
+                ],
+                correct: 2,
+                explanation: {
+                    text: "An unhandled Promise rejection results in an UnhandledPromiseRejection warning, which may terminate the Node.js process in future versions.",
+                    code: `
+// Unhandled Promise Rejection Example
+process.on('unhandledRejection', (reason, promise) => {
+    console.log('Unhandled Rejection at:', promise);
+    console.log('Reason:', reason);
+});
 
-            updateScore();
+// This Promise rejection is not handled
+new Promise((resolve, reject) => {
+    reject(new Error('This error is not caught!'));
+});
+
+// Proper way to handle rejection
+new Promise((resolve, reject) => {
+    reject(new Error('This error is caught properly'));
+})
+    .catch(error => {
+        console.error('Caught error:', error);
+    });`
+                }
+            },
+            {
+                type: "single",
+                question: "Which Promise method returns the first settled promise from an array?",
+                options: [
+                    "Promise.first()",
+                    "Promise.race()",
+                    "Promise.any()",
+                    "Promise.fastest()"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "Promise.race() returns the first promise that settles (either fulfills or rejects), regardless of the outcome.",
+                    code: `
+// Example of Promise.race()
+const timeout = new Promise((_, reject) => {
+    setTimeout(() => reject(new Error('Timeout!')), 5000);
+});
+
+const fetchData = fetch('https://api.example.com/data');
+
+Promise.race([fetchData, timeout])
+    .then(result => {
+        console.log('Data received:', result);
+    })
+    .catch(error => {
+        if (error.message === 'Timeout!') {
+            console.log('Request timed out');
+        } else {
+            console.log('Request failed:', error);
         }
+    });`
+                }
+            },
+            {
+                type: "fill",
+                question: "To create a new Promise, you use the _______ keyword followed by the Promise constructor.",
+                answer: "new",
+                explanation: {
+                    text: "The 'new' keyword is required when creating a Promise to instantiate a new Promise object.",
+                    code: `
+// Creating a new Promise
+const myPromise = new Promise((resolve, reject) => {
+    // Promise logic here
+    const success = true;
 
-        function checkAnswer(selected, correct, optionDiv, questionDiv, explanation) {
-            if (questionDiv.querySelector('.correct') || questionDiv.querySelector('.incorrect')) {
-                return; // Already answered
-            }
+    if (success) {
+        resolve('Operation completed');
+    } else {
+        reject(new Error('Operation failed'));
+    }
+});
 
-            const options = questionDiv.getElementsByClassName('option');
-            options[correct].classList.add('correct');
-            
-            if (selected === correct) {
-                score++;
-                optionDiv.classList.add('correct');
-                showFeedback(questionDiv, `Correct! 🎉 ${explanation}`, true);
+// Using the promise
+myPromise
+    .then(result => console.log(result))
+    .catch(error => console.error(error));`
+                }
+            },
+            {
+                type: "fill",
+                question: "The method used to handle successful Promise resolution is ._______().",
+                answer: "then",
+                explanation: {
+                    text: "The .then() method is used to handle the successful resolution of a Promise and chain additional operations.",
+                    code: `
+// Example of Promise chaining with .then()
+fetchUserProfile(userId)
+    .then(profile => {
+        // First transformation
+        return formatUserData(profile);
+    })
+    .then(formattedData => {
+        // Second transformation
+        return enrichUserData(formattedData);
+    })
+    .then(finalData => {
+        // Final handling
+        console.log('Processed user data:', finalData);
+    })
+    .catch(error => {
+        console.error('Error processing user data:', error);
+    });`
+                }
+            },
+            {
+                type: "fill",
+                question: "Promise._______ returns a Promise that fulfills after all given promises have either fulfilled or rejected.",
+                answer: "allSettled",
+                explanation: {
+                    text: "Promise.allSettled() waits for all promises to settle regardless of whether they fulfill or reject.",
+                    code: `
+// Example using Promise.allSettled()
+const promises = [
+    fetch('/api/users/1'),
+    fetch('/api/users/2'),
+    fetch('/api/users/3')
+];
+
+Promise.allSettled(promises)
+    .then(results => {
+        results.forEach((result, index) => {
+            if (result.status === 'fulfilled') {
+                console.log(\`Promise \${index} succeeded with \${result.value}\`);
             } else {
-                optionDiv.classList.add('incorrect');
-                showFeedback(questionDiv, `Incorrect. ${explanation}`, false);
+                console.log(\`Promise \${index} failed with \${result.reason}\`);
             }
+        });
+    });`
+                }
+            },
+            {
+                type: "fill",
+                question: "A Promise that is neither fulfilled nor rejected is in a _______ state.",
+                answer: "pending",
+                explanation: {
+                    text: "The pending state is the initial state of a Promise before it is either fulfilled or rejected.",
+                    code: `
+// Example showing pending state
+console.log('Starting long operation...');
 
-            answeredQuestions++;
-            updateScore();
-        }
+const pendingPromise = new Promise((resolve) => {
+    // Promise is in pending state during this timeout
+    setTimeout(() => {
+        resolve('Operation completed');
+    }, 5000);
+});
 
-        function checkFillAnswer(input, correct, questionDiv, explanation) {
-            if (questionDiv.querySelector('.feedback').style.display === 'block') {
-                return; // Already answered
+// Check the state immediately
+console.log('Promise is pending...');
+
+pendingPromise.then(result => {
+    console.log('No longer pending, fulfilled with:', result);
+});`
+                }
+            },
+            {
+                type: "fill",
+                question: "The Promise method that returns a promise which fulfills when any of the input's promises fulfills is Promise._______().",
+                answer: "any",
+                explanation: {
+                    text: "Promise.any() returns a fulfilled promise as soon as one of the promises in the array fulfills, or rejects if all promises reject.",
+                    code: `
+// Example using Promise.any()
+const promises = [
+    fetch('https://api1.example.com/data'),
+    fetch('https://api2.example.com/data'),
+    fetch('https://api3.example.com/data')
+];
+
+Promise.any(promises)
+    .then(firstSuccess => {
+        console.log('First successful response:', firstSuccess);
+    })
+    .catch(error => {
+        // AggregateError if all promises fail
+        console.log('All requests failed:', error);
+    });`
+                }
             }
+        ]
+    };
 
-            if (input.toLowerCase().trim() === correct.toLowerCase().trim()) {
-                score++;
-                showFeedback(questionDiv, `Correct! 🎉 ${explanation}`, true);
+
+    function copyToClipboard(text, button) {
+        navigator.clipboard.writeText(text).then(() => {
+            const originalText = button.textContent;
+            button.textContent = 'Copied!';
+            setTimeout(() => {
+                button.textContent = originalText;
+            }, 2000);
+        });
+    }
+
+    function formatCodeExample(code) {
+        return code.split('\n').map(line => {
+            if (line.includes('//')) {
+                const [code, comment] = line.split('//');
+                return `${code}<span class="code-comment">// ${comment}</span>`;
+            }
+            return line;
+        }).join('\n');
+    }
+
+    function createQuiz() {
+        const questionsContainer = document.getElementById('questions');
+
+        quizData.questions.forEach((q, index) => {
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'question';
+            questionDiv.innerHTML = `<div><strong>Question ${index + 1}:</strong> ${q.question}</div>`;
+
+            if (q.type === 'single') {
+                const optionsDiv = document.createElement('div');
+                optionsDiv.className = 'options';
+
+                q.options.forEach((option, optIndex) => {
+                    const optionDiv = document.createElement('div');
+                    optionDiv.className = 'option';
+                    optionDiv.textContent = option;
+                    optionDiv.onclick = () => checkAnswer(optIndex, q.correct, optionDiv, questionDiv, q.explanation);
+                    optionsDiv.appendChild(optionDiv);
+                });
+
+                questionDiv.appendChild(optionsDiv);
             } else {
-                showFeedback(questionDiv, `Incorrect. The correct answer is: ${correct}. ${explanation}`, false);
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.className = 'input-answer';
+                input.placeholder = 'Type your answer here';
+
+                const submitBtn = document.createElement('button');
+                submitBtn.textContent = 'Submit';
+                submitBtn.onclick = () => checkFillAnswer(input.value, q.answer, questionDiv, q.explanation);
+
+                questionDiv.appendChild(input);
+                questionDiv.appendChild(submitBtn);
             }
 
-            answeredQuestions++;
-            updateScore();
+            const feedbackDiv = document.createElement('div');
+            feedbackDiv.className = 'feedback';
+            questionDiv.appendChild(feedbackDiv);
+
+            questionsContainer.appendChild(questionDiv);
+        });
+
+        updateScore();
+    }
+
+    function checkFillAnswer(input, answer, questionDiv, explanation) {
+        // Check if question has already been answered
+        if (questionDiv.querySelector('.feedback').style.display === 'block') {
+            return; // Already answered
         }
 
-        function showFeedback(questionDiv, message, isCorrect) {
-            const feedbackDiv = questionDiv.querySelector('.feedback');
-            feedbackDiv.style.display = 'block';
-            feedbackDiv.textContent = message;
-            feedbackDiv.style.backgroundColor = isCorrect ? '#c8e6c9' : '#ffcdd2';
+        // Get or create input element
+        const inputElement = questionDiv.querySelector('.input-answer');
+        if (inputElement) {
+            inputElement.disabled = true; // Disable input after submission
         }
 
-        function updateScore() {
-            const scoreDiv = document.getElementById('score');
-            const percentage = (score / quizData.questions.length) * 100;
-            scoreDiv.innerHTML = `
+        // Compare answer (case-insensitive)
+        if (input.toLowerCase().trim() === answer.toLowerCase().trim()) {
+            score++;
+            showFeedback(questionDiv, explanation, true);
+        } else {
+            showFeedback(questionDiv, {
+                text: `The correct answer is: ${answer}. ${explanation.text}`,
+                code: explanation.code
+            }, false);
+        }
+
+        answeredQuestions++;
+        updateScore();
+    }
+    function showFeedback(questionDiv, explanation, isCorrect) {
+        const feedbackDiv = questionDiv.querySelector('.feedback');
+        feedbackDiv.style.display = 'block';
+
+        const codeId = 'code-' + Math.random().toString(36).substr(2, 9);
+
+        feedbackDiv.innerHTML = `
+                <div class="explanation-text">
+                    ${isCorrect ? '✅' : '❌'} ${explanation.text}
+                </div>
+                ${explanation.code ? `
+                    <div class="code-block" id="${codeId}">
+                        ${formatCodeExample(explanation.code)}
+                        <button class="copy-button" onclick="copyToClipboard(\`${explanation.code}\`, this)">Copy</button>
+                    </div>
+                ` : ''}
+            `;
+
+        feedbackDiv.style.backgroundColor = isCorrect ? '#e8f5e9' : '#ffebee';
+    }
+
+    function checkAnswer(selected, correct, optionDiv, questionDiv, explanation) {
+        if (questionDiv.querySelector('.correct') || questionDiv.querySelector('.incorrect')) {
+            return;
+        }
+
+        const options = questionDiv.getElementsByClassName('option');
+        options[correct].classList.add('correct');
+
+        if (selected === correct) {
+            score++;
+            optionDiv.classList.add('correct');
+            showFeedback(questionDiv, explanation, true);
+        } else {
+            optionDiv.classList.add('incorrect');
+            showFeedback(questionDiv, explanation, false);
+        }
+
+        answeredQuestions++;
+        updateScore();
+    }
+
+    function updateScore() {
+        const scoreDiv = document.getElementById('score');
+        const percentage = (score / quizData.questions.length) * 100;
+        scoreDiv.innerHTML = `
                 <h3>Your Score: ${score}/${quizData.questions.length}</h3>
                 <p>Percentage: ${percentage.toFixed(1)}%</p>
-                ${answeredQuestions === quizData.questions.length ? 
-                    `<p>${percentage >= 70 ? '🎉 Great job! You have a solid understanding of JavaScript Promises!' : 
-                    'Keep learning! Review the explanations to strengthen your knowledge of Promises.'}</p>` : ''}
+                ${answeredQuestions === quizData.questions.length ?
+            `<p>${percentage >= 70 ? '🎉 Great job! You have a solid understanding of Node.js core modules!' :
+                'Keep learning! Review the explanations to strengthen your knowledge of Node.js core modules.'}</p>` : ''}
             `;
-        }
+    }
 
-        // Initialize the quiz
-        createQuiz();
-    </script>
+    let score = 0;
+    let answeredQuestions = 0;
+    createQuiz();
+</script>
 </body>
 </html>
