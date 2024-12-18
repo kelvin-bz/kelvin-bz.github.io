@@ -142,19 +142,73 @@
                 explanation: {
                     text: "EventEmitter is the base class in Node.js for all objects that can emit events. It's available through require('events').",
                     code: `
+// events/orderEvents.js
 const EventEmitter = require('events');
 
-class MyEmitter extends EventEmitter {
-    constructor() {
-        super();
+class OrderEventEmitter extends EventEmitter {
+    static EVENTS = {
+        ORDER_CREATED: 'order.created',
+        ORDER_PAID: 'order.paid'
+    };
+}
+const orderEventEmitter = new OrderEventEmitter();
+
+// 4. Service Layer with Event Emission
+// services/orderService.js
+class OrderService {
+    constructor(orderRepository, eventEmitter) {
+        this.orderRepository = orderRepository;
+        this.eventEmitter = eventEmitter;
+    }
+
+    async createOrder(userId, items) {
+        // Create order
+        const order = await this.orderRepository.create({ userId, items });
+
+        // Emit event
+        this.eventEmitter.emit(
+            OrderEventEmitter.EVENTS.ORDER_CREATED,
+            { orderId: order._id, userId }
+        );
+
+        return order;
+    }
+
+    async markAsPaid(orderId) {
+        const order = await this.orderRepository.updateStatus(orderId, 'paid');
+
+        this.eventEmitter.emit(
+            OrderEventEmitter.EVENTS.ORDER_PAID,
+            { orderId: order._id }
+        );
+
+        return order;
     }
 }
 
-const myEmitter = new MyEmitter();
-myEmitter.on('event', () => {
-    console.log('Event occurred!');
-});
-myEmitter.emit('event');  // Outputs: Event occurred!`
+
+// listeners/orderListeners.js
+class OrderEventListeners {
+    static init(eventEmitter) {
+        eventEmitter.on(
+            OrderEventEmitter.EVENTS.ORDER_CREATED,
+            async ({ orderId, userId }) => {
+                // Handle order created
+                await this.notifyCustomer(userId);
+                await this.checkInventory(orderId);
+            }
+        );
+
+        eventEmitter.on(
+            OrderEventEmitter.EVENTS.ORDER_PAID,
+            async ({ orderId }) => {
+                await this.startShipping(orderId);
+            }
+        );
+    }
+    // ...
+}
+`
                 }
             },
             {
