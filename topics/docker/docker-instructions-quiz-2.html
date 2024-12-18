@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            font-family: system-ui, -apple-system, sans-serif;
+            line-height: 1.6;
+        }
+        .question {
+            background-color: #fff;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .option {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .option:hover {
+            background-color: #f5f5f5;
+            transform: translateX(5px);
+        }
+        .selected {
+            background-color: #e3f2fd;
+        }
+        .correct {
+            background-color: #e8f5e9;
+            border-color: #81c784;
+        }
+        .incorrect {
+            background-color: #ffebee;
+            border-color: #e57373;
+        }
+        .input-answer {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            margin-top: 10px;
+            padding: 8px 16px;
+            background-color: #2196f3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #1976d2;
+        }
+        #score {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.2em;
+        }
+        .feedback {
+            margin-top: 10px;
+            padding: 15px;
+            border-radius: 4px;
+            display: none;
+            line-height: 1.6;
+        }
+        .code-block {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre;
+            overflow-x: auto;
+            line-height: 1.5;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            position: relative;
+        }
+        .copy-button {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .explanation-text {
+            margin-bottom: 10px;
+        }
+        .code-comment {
+            color: #6a737d;
+        }
+        .code-output {
+            color: #0a3069;
+            border-left: 3px solid #2196f3;
+            margin-left: 10px;
+            padding-left: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🐳 Docker Build Instructions Quiz</h1>
+    <p>Test your understanding of Dockerfile instructions and container configuration!</p>
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Docker Basic Foundation</title>
+        <style>
+            body {
+                margin: 0;
+                padding: 0;
+                font-family: Arial, sans-serif;
+                background-color: #f7f7f7;
+            }
+
+            .grid-container {
+                display: grid;
+                grid-template-areas:
+                'header header'
+                'nodejs python';
+                grid-template-rows: auto 1fr;
+                grid-template-columns: 1fr 1fr;
+                grid-gap: 15px;
+                padding: 15px;
+                box-sizing: border-box;
+                width: 100%;
+                height: auto;
+            }
+
+            .grid-container > div {
+                background-color: #ffffff;
+                padding: 20px;
+                border-radius: 10px;
+                border: 2px solid #000;
+                page-break-inside: avoid;
+            }
+
+            .header {
+                grid-area: header;
+                text-align: center;
+                background-color: #d3e4f5;
+            }
+
+            .nodejs {
+                grid-area: nodejs;
+                background-color: #e8f5e9;
+            }
+            .python {
+                grid-area: python;
+                background-color: #e1f5fe;
+            }
+
+            code {
+                padding: 2px 4px;
+                border-radius: 4px;
+                font-family: monospace;
+            }
+
+            pre {
+                background-color: #f4f4f4;
+                padding: 15px;
+                border-radius: 8px;
+                overflow: auto;
+                margin: 10px 0;
+                font-size: 14px;
+                line-height: 1.4;
+            }
+
+            h2 {
+                margin-top: 0;
+                color: #333;
+                border-bottom: 2px solid #eee;
+                padding-bottom: 10px;
+            }
+
+            ul {
+                padding-left: 20px;
+            }
+
+            li {
+                margin-bottom: 8px;
+            }
+
+            .notes {
+                margin-top: 15px;
+                padding: 10px;
+                background-color: #fff3e0;
+                border-radius: 5px;
+            }
+        </style>
+    </head>
+    <body>
+    <div class="grid-container">
+
+        <div class="nodejs">
+            <h2>Node.js Dockerfile</h2>
+            <pre>
+# Use Node.js slim image for smaller size
+FROM node:18-slim
+
+# Set working directory
+WORKDIR /usr/src/app
+
+# Copy package files for dependency caching
+COPY package*.json ./
+
+# Install production dependencies only
+RUN npm ci --only=production
+
+# Copy application code
+COPY . .
+
+# Set environment variables
+ENV NODE_ENV=production \
+    PORT=3000
+
+# Expose application port
+EXPOSE 3000
+
+# Start application
+CMD ["node", "server.js"]</pre>
+            <div class="notes">
+                <h3>Key Features:</h3>
+                <ul>
+                    <li>Uses slim variant for optimized size</li>
+                    <li>Leverages layer caching for faster builds</li>
+                    <li>Production-optimized with npm ci</li>
+                    <li>Clear environment configuration</li>
+                    <li>Standard port exposure</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="python">
+            <h2>Python Dockerfile</h2>
+            <pre>
+# Use Python slim image for smaller size
+FROM python:3.11-slim
+
+# Set working directory
+WORKDIR /app
+
+# Copy requirements for dependency caching
+COPY requirements.txt .
+
+# Install dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application code
+COPY . .
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PORT=5000
+
+# Expose application port
+EXPOSE 5000
+
+# Start application
+CMD ["python", "app.py"]</pre>
+            <div class="notes">
+                <h3>Key Features:</h3>
+                <ul>
+                    <li>Slim Python base for minimal image size</li>
+                    <li>Optimized pip installation</li>
+                    <li>Python-specific environment setup</li>
+                    <li>Standard port configuration</li>
+                    <li>Simple startup command</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    </body>
+    </html>
+    <div id="questions"></div>
+    <div id="score"></div>
+</div>
+
+
+<script>
+    const quizData = {
+        questions: [
+            {
+                type: "single",
+                question: "What is the purpose of the AS keyword in a Dockerfile?",
+                options: [
+                    "To alias environment variables",
+                    "To rename files during COPY",
+                    "To name a build stage in multi-stage builds",
+                    "To create symbolic links"
+                ],
+                correct: 2,
+                explanation: {
+                    text: "The AS keyword is used to name a stage in multi-stage builds, allowing you to reference it later with --from=stage_name.",
+                    code: `
+# Name build stages with AS
+FROM golang:1.16 AS builder
+WORKDIR /app
+COPY . .
+RUN go build -o main
+
+FROM alpine:3.14 AS production
+COPY --from=builder /app/main /main
+CMD ["/main"]`
+                }
+            },
+            {
+                type: "single",
+                question: "What is the purpose of the HEALTHCHECK instruction in a Dockerfile?",
+                options: [
+                    "To check if the image was built successfully",
+                    "To verify container's running state and health status",
+                    "To scan for security vulnerabilities",
+                    "To validate Dockerfile syntax"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "HEALTHCHECK tells Docker how to test a container to check if it's still working properly. It's crucial for container orchestration and automatic restarts. Docker will  periodically run the health check command (curl --fail http://localhost:3000/health) to verify the container’s health.",
+                    code: `
+FROM node:16
+
+WORKDIR /app
+
+COPY package*.json ./
+COPY server.js ./
+
+RUN npm install
+
+EXPOSE 3000
+
+CMD ["node", "server.js"]
+
+HEALTHCHECK --interval=5s --timeout=3s --retries=3 \\
+ CMD curl --fail http://localhost:3000/health || exit 1`
+                }
+            },
+            {
+                type: "single",
+                question: "What does the ARG instruction do in a Dockerfile?",
+                options: [
+                    "Defines runtime arguments for the container",
+                    "Sets build-time variables that can be used during image construction",
+                    "Specifies command-line arguments for the application",
+                    "Defines arguments for shell scripts"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "ARG defines variables that users can pass at build-time using --build-arg. Unlike ENV, ARG values are only available during image build.",
+                    code: `
+# Define build argument with default value
+ARG VERSION=latest
+
+# Use build argument
+FROM node:$\{VERSION\}
+
+# Multiple build args
+ARG USER=myuser
+ARG UID=1000
+RUN useradd -m -u $UID $USER`
+                }
+            },
+            {
+                type: "single",
+                question: "What is the purpose of the SHELL instruction?",
+                options: [
+                    "To install a shell in the container",
+                    "To run shell scripts",
+                    "To override default shell used by RUN and CMD instructions",
+                    "To access container's shell"
+                ],
+                correct: 2,
+                explanation: {
+                    text: "SHELL instruction allows you to override the default shell used for shell-form commands in RUN, CMD, and ENTRYPOINT instructions.",
+                    code: `
+# Start with the official Python base image
+FROM python:3.10-slim
+
+# Install bash and other dependencies
+RUN apt-get update && apt-get install -y bash
+
+# Override the default shell to /bin/bash
+SHELL ["/bin/bash", "-c"]
+
+# Set a working directory
+WORKDIR /app
+
+# Copy requirements file
+COPY requirements.txt .
+
+# Install Python dependencies using bash
+RUN echo "Installing dependencies..." && \\
+    pip install --no-cache-dir -r requirements.txt
+
+# Copy the Python application code
+COPY . .
+
+# Print a confirmation message during build
+RUN echo "Build complete! Ready to run the application."
+
+# Run the Python application
+CMD ["python", "app.py"]`
+                }
+            },
+            {
+                type: "single",
+                question: "What does the .dockerignore pattern !file.txt do?",
+                options: [
+                    "Ignores file.txt",
+                    "Includes file.txt even if it matches a previous pattern",
+                    "Marks file.txt as important",
+                    "Deletes file.txt"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "The ! pattern in .dockerignore negates a previous pattern, ensuring the specified file is included even if it matches an ignore pattern.",
+                    code: `
+# .dockerignore example
+*.txt        # Ignore all .txt files
+!config.txt  # But include config.txt
+!important/*.txt  # Include .txt files in important/
+build/
+node_modules/`
+                }
+            },
+            {
+                type: "single",
+                question: "What is the purpose of the --chown flag in COPY instruction?",
+                options: [
+                    "To verify file ownership",
+                    "To set ownership of copied files",
+                    "To change image ownership",
+                    "To restrict file access"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "The --chown flag sets the user and group ownership of the copied files in the container.",
+                    code: `
+# Copy with ownership
+COPY --chown=user:group files/ /app/
+
+# Copy with numeric IDs
+COPY --chown=1000:1000 . /app/
+
+# Multiple files with ownership
+COPY --chown=nginx:nginx index.html styles.css /var/www/`
+                }
+            },
+            {
+                type: "fill",
+                question: "The ______ instruction is used to specify user and group for RUN, CMD, and ENTRYPOINT.",
+                answer: "USER",
+                explanation: {
+                    text: "USER sets the user (and optionally user group) to use when running the image and for any following RUN, CMD, and ENTRYPOINT instructions.",
+                    code: `
+# Set user by name
+USER nginx
+
+# Set user by UID
+USER 1001
+
+# Set user and group
+USER user:group
+
+# Typically used after creating user
+RUN useradd -ms /bin/bash myuser
+USER myuser`
+                }
+            },
+            {
+                type: "fill",
+                question: "Use ______ --mount=type=secret to access secure data during build.",
+                answer: "RUN",
+                explanation: {
+                    text: "Using RUN --mount=type=secret in Docker allows you to securely access secrets (like API keys, credentials, or tokens) during the image build process without exposing them in the final image",
+                    code: `
+# Mount secret during build
+RUN --mount=type=secret,id=mysecret \
+    cat /run/secrets/mysecret
+
+# Use with environment variable
+RUN --mount=type=secret,id=aws,target=/root/.aws/credentials \
+    aws s3 cp s3://bucket/file .
+
+# Build command:
+# docker build --secret id=mysecret,src=secret.txt .`
+                }
+            },
+            {
+                type: "fill",
+                question: "The ______ instruction specifies default networking ports.",
+                answer: "EXPOSE",
+                explanation: {
+                    text: "EXPOSE documents which ports the application uses, serving as documentation and defaults for docker run -P.",
+                    code: `
+# Expose web and SSL ports
+EXPOSE 80 443
+
+# Specify protocol
+EXPOSE 53/udp
+
+# Multiple protocols
+EXPOSE 80/tcp 80/udp
+
+# Note: Still needs -p flag to publish`
+                }
+            },
+            {
+                type: "fill",
+                question: "______ is used to ignore files during COPY and ADD operations.",
+                answer: ".dockerignore",
+                explanation: {
+                    text: ".dockerignore file specifies which files and directories should be excluded from the build context.",
+                    code: `
+# Example .dockerignore file
+node_modules
+npm-debug.log
+Dockerfile
+.git
+*.md
+.env*
+coverage/
+test/
+docs/
+
+# Using patterns
+**/*.pyc
+**/build
+**/.git`
+                }
+            },
+            {
+                type: "fill",
+                question: "The _______ syntax creates a bind mount in docker run.",
+                answer: "volume",
+                explanation: {
+                    text: "The --volume or -v flag creates a bind mount, mapping a host directory to a container directory.",
+                    code: `
+# Basic volume mount
+docker run -v /host/path:/container/path image
+
+# Read-only volume
+docker run -v /host/data:/data:ro image
+
+# Named volume
+docker run -v myvolume:/app/data image
+
+# Multiple volumes
+docker run -v logs:/logs -v data:/data image`
+                }
+            },
+            {
+                type: "fill",
+                question: "The _______ flag sets runtime memory limits for containers.",
+                answer: "memory",
+                explanation: {
+                    text: "The --memory flag sets the maximum amount of memory the container can use.",
+                    code: `
+# Set memory limit
+docker run --memory=512m image
+
+# Memory and swap limit
+docker run --memory=1g --memory-swap=2g image
+
+# Memory reservation
+docker run --memory-reservation=512m image
+
+# Memory with CPU limits
+docker run --memory=1g --cpus=2 image`
+                }
+            },
+            {
+                type: "fill",
+                question: "The ______ stage is commonly used for minimal production images.",
+                answer: "multi",
+                explanation: {
+                    text: "Multi-stage builds allow you to use multiple FROM statements in your Dockerfile to create minimal production images.",
+                    code: `
+# Build stage
+FROM node:14 AS builder
+WORKDIR /app
+COPY . .
+RUN npm ci && npm run build
+
+# Production stage
+FROM node:14-alpine
+COPY --from=builder /app/dist /app
+CMD ["node", "/app/server.js"]`
+                }
+            }
+        ]
+    };
+
+    function copyToClipboard(text, button) {
+        navigator.clipboard.writeText(text).then(() => {
+            const originalText = button.textContent;
+            button.textContent = 'Copied!';
+            setTimeout(() => {
+                button.textContent = originalText;
+            }, 2000);
+        });
+    }
+
+    function formatCodeExample(code) {
+        return code.split('\n').map(line => {
+            if (line.includes('//')) {
+                const [code, comment] = line.split('//');
+                return `${code}<span class="code-comment">// ${comment}</span>`;
+            }
+            return line;
+        }).join('\n');
+    }
+
+    function createQuiz() {
+        const questionsContainer = document.getElementById('questions');
+
+        quizData.questions.forEach((q, index) => {
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'question';
+            questionDiv.innerHTML = `<div><strong>Question ${index + 1}:</strong> ${q.question}</div>`;
+
+            if (q.type === 'single') {
+                const optionsDiv = document.createElement('div');
+                optionsDiv.className = 'options';
+
+                q.options.forEach((option, optIndex) => {
+                    const optionDiv = document.createElement('div');
+                    optionDiv.className = 'option';
+                    optionDiv.textContent = option;
+                    optionDiv.onclick = () => checkAnswer(optIndex, q.correct, optionDiv, questionDiv, q.explanation);
+                    optionsDiv.appendChild(optionDiv);
+                });
+
+                questionDiv.appendChild(optionsDiv);
+            } else {
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.className = 'input-answer';
+                input.placeholder = 'Type your answer here';
+
+                const submitBtn = document.createElement('button');
+                submitBtn.textContent = 'Submit';
+                submitBtn.onclick = () => checkFillAnswer(input.value, q.answer, questionDiv, q.explanation);
+
+                questionDiv.appendChild(input);
+                questionDiv.appendChild(submitBtn);
+            }
+
+            const feedbackDiv = document.createElement('div');
+            feedbackDiv.className = 'feedback';
+            questionDiv.appendChild(feedbackDiv);
+
+            questionsContainer.appendChild(questionDiv);
+        });
+
+        updateScore();
+    }
+
+    function checkFillAnswer(input, answer, questionDiv, explanation) {
+        // Check if question has already been answered
+        if (questionDiv.querySelector('.feedback').style.display === 'block') {
+            return; // Already answered
+        }
+
+        // Get or create input element
+        const inputElement = questionDiv.querySelector('.input-answer');
+        if (inputElement) {
+            inputElement.disabled = true; // Disable input after submission
+        }
+
+        // Compare answer (case-insensitive)
+        if (input.toLowerCase().trim() === answer.toLowerCase().trim()) {
+            score++;
+            showFeedback(questionDiv, explanation, true);
+        } else {
+            showFeedback(questionDiv, {
+                text: `The correct answer is: ${answer}. ${explanation.text}`,
+                code: explanation.code
+            }, false);
+        }
+
+        answeredQuestions++;
+        updateScore();
+    }
+    function showFeedback(questionDiv, explanation, isCorrect) {
+        const feedbackDiv = questionDiv.querySelector('.feedback');
+        feedbackDiv.style.display = 'block';
+
+        const codeId = 'code-' + Math.random().toString(36).substr(2, 9);
+
+        feedbackDiv.innerHTML = `
+                <div class="explanation-text">
+                    ${isCorrect ? '✅' : '❌'} ${explanation.text}
+                </div>
+                ${explanation.code ? `
+                    <div class="code-block" id="${codeId}">
+                        ${formatCodeExample(explanation.code)}
+                        <button class="copy-button" onclick="copyToClipboard(\`${explanation.code}\`, this)">Copy</button>
+                    </div>
+                ` : ''}
+            `;
+
+        feedbackDiv.style.backgroundColor = isCorrect ? '#e8f5e9' : '#ffebee';
+    }
+
+    function checkAnswer(selected, correct, optionDiv, questionDiv, explanation) {
+        if (questionDiv.querySelector('.correct') || questionDiv.querySelector('.incorrect')) {
+            return;
+        }
+
+        const options = questionDiv.getElementsByClassName('option');
+        options[correct].classList.add('correct');
+
+        if (selected === correct) {
+            score++;
+            optionDiv.classList.add('correct');
+            showFeedback(questionDiv, explanation, true);
+        } else {
+            optionDiv.classList.add('incorrect');
+            showFeedback(questionDiv, explanation, false);
+        }
+
+        answeredQuestions++;
+        updateScore();
+    }
+
+    function updateScore() {
+        const scoreDiv = document.getElementById('score');
+        const percentage = (score / quizData.questions.length) * 100;
+        scoreDiv.innerHTML = `
+                <h3>Your Score: ${score}/${quizData.questions.length}</h3>
+                <p>Percentage: ${percentage.toFixed(1)}%</p>
+                ${answeredQuestions === quizData.questions.length ?
+            `<p>${percentage >= 70 ? '🎉 Great job! You have a solid understanding of Node.js core modules!' :
+                'Keep learning! Review the explanations to strengthen your knowledge of Node.js core modules.'}</p>` : ''}
+            `;
+    }
+
+    let score = 0;
+    let answeredQuestions = 0;
+    createQuiz();
+</script>
+</body>
+</html>
