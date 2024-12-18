@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            font-family: system-ui, -apple-system, sans-serif;
+            line-height: 1.6;
+        }
+        .question {
+            background-color: #fff;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .option {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .option:hover {
+            background-color: #f5f5f5;
+            transform: translateX(5px);
+        }
+        .selected {
+            background-color: #e3f2fd;
+        }
+        .correct {
+            background-color: #e8f5e9;
+            border-color: #81c784;
+        }
+        .incorrect {
+            background-color: #ffebee;
+            border-color: #e57373;
+        }
+        .input-answer {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            margin-top: 10px;
+            padding: 8px 16px;
+            background-color: #2196f3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #1976d2;
+        }
+        #score {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.2em;
+        }
+        .feedback {
+            margin-top: 10px;
+            padding: 15px;
+            border-radius: 4px;
+            display: none;
+            line-height: 1.6;
+        }
+        .code-block {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre;
+            overflow-x: auto;
+            line-height: 1.5;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            position: relative;
+        }
+        .copy-button {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .explanation-text {
+            margin-bottom: 10px;
+        }
+        .code-comment {
+            color: #6a737d;
+        }
+        .code-output {
+            color: #0a3069;
+            border-left: 3px solid #2196f3;
+            margin-left: 10px;
+            padding-left: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+<h1>🔐 Node.js Encryption Mastery Quiz</h1>
+<p>Test your understanding of Node.js encryption, ciphers, and cryptographic security!</p>
+<div id="questions"></div>
+<div id="score"></div>
+</div>
+
+
+
+<script>
+
+    const quizData = {
+        questions: [
+            {
+                type: "single",
+                question: "Which method is used to create a cipher for encryption in Node.js?",
+                options: [
+                    "crypto.createEncryption()",
+                    "crypto.createCipher()",
+                    "crypto.makeCipher()",
+                    "crypto.encrypt()"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "crypto.createCipher() is used to create a cipher for encryption, though crypto.createCipheriv() is now recommended for better security.",
+                    code: `
+const crypto = require('crypto');
+
+// Basic encryption example
+const cipher = crypto.createCipher('aes-256-cbc', 'encryption-key');
+let encrypted = cipher.update('secret text', 'utf8', 'hex');
+encrypted += cipher.final('hex');
+console.log('Encrypted:', encrypted);`
+                }
+            },
+            {
+                type: "single",
+                question: "What's the most common encryption algorithm available in Node.js crypto?",
+                options: [
+                    "DES",
+                    "AES",
+                    "RSA",
+                    "ROT13"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "AES (Advanced Encryption Standard) is the most widely used encryption algorithm due to its security and performance.",
+                    code: `
+const crypto = require('crypto');
+
+// Using AES encryption
+const algorithm = 'aes-256-cbc';
+const key = crypto.randomBytes(32);
+const iv = crypto.randomBytes(16);
+
+const cipher = crypto.createCipheriv(algorithm, key, iv);
+let encrypted = cipher.update('secret data', 'utf8', 'hex');
+encrypted += cipher.final('hex');`
+                }
+            },
+            {
+                type: "single",
+                question: "What's needed alongside a password to properly encrypt data?",
+                options: [
+                    "A hash function",
+                    "An initialization vector (IV)",
+                    "A timestamp",
+                    "A username"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "An initialization vector (IV) is crucial for secure encryption. It ensures the same data encrypted with the same key produces different results.",
+                    code: `
+const crypto = require('crypto');
+
+// Proper encryption with IV
+const algorithm = 'aes-256-cbc';
+const key = crypto.randomBytes(32);
+const iv = crypto.randomBytes(16);  // Important!
+
+const cipher = crypto.createCipheriv(algorithm, key, iv);
+const encrypted = Buffer.concat([
+    cipher.update('secret'),
+    cipher.final()
+]);`
+                }
+            },
+            {
+                type: "single",
+                question: "Which method decrypts data that was encrypted with createCipher?",
+                options: [
+                    "crypto.createDecipher()",
+                    "crypto.decrypt()",
+                    "crypto.undo()",
+                    "crypto.unCipher()"
+                ],
+                correct: 0,
+                explanation: {
+                    text: "crypto.createDecipher() is used to decrypt data that was encrypted with createCipher(). For createCipheriv(), use createDecipheriv().",
+                    code: `
+const crypto = require('crypto');
+
+// Encryption
+const cipher = crypto.createCipher('aes-256-cbc', 'key');
+let encrypted = cipher.update('secret text', 'utf8', 'hex');
+encrypted += cipher.final('hex');
+
+// Decryption
+const decipher = crypto.createDecipher('aes-256-cbc', 'key');
+let decrypted = decipher.update(encrypted, 'hex', 'utf8');
+decrypted += decipher.final('utf8');
+console.log('Decrypted:', decrypted);`
+                }
+            },
+            {
+                type: "single",
+                question: "What does the 'aes-256-cbc' string represent in encryption?",
+                options: [
+                    "File format",
+                    "Cipher algorithm and mode",
+                    "Key length only",
+                    "Database type"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "aes-256-cbc represents the encryption algorithm (AES), key size (256 bits), and mode of operation (CBC - Cipher Block Chaining).",
+                    code: `
+const crypto = require('crypto');
+
+// Different AES variants
+const cipher1 = crypto.createCipheriv('aes-128-cbc', key16, iv);  // 128-bit key
+const cipher2 = crypto.createCipheriv('aes-192-cbc', key24, iv);  // 192-bit key
+const cipher3 = crypto.createCipheriv('aes-256-cbc', key32, iv);  // 256-bit key
+
+// See available ciphers
+console.log(crypto.getCiphers());`
+                }
+            },
+            {
+                type: "fill",
+                question: "The crypto.create_____iv() method is the modern way to create a cipher.",
+                answer: "Cipher",
+                explanation: {
+                    text: "crypto.createCipheriv() is the recommended modern way to create a cipher for encryption, as it requires an explicit IV.",
+                    code: `
+const crypto = require('crypto');
+
+// Modern encryption with createCipheriv
+const algorithm = 'aes-256-cbc';
+const key = crypto.randomBytes(32);
+const iv = crypto.randomBytes(16);
+
+const cipher = crypto.createCipheriv(algorithm, key, iv);
+const encrypted = Buffer.concat([
+    cipher.update('secret data'),
+    cipher.final()
+]);`
+                }
+            },
+            {
+                type: "fill",
+                question: "The _____ mode of AES is considered more secure than ECB mode.",
+                answer: "CBC",
+                explanation: {
+                    text: "CBC (Cipher Block Chaining) mode is more secure than ECB because it uses an IV and chains blocks together.",
+                    code: `
+const crypto = require('crypto');
+
+// Using CBC mode
+const algorithm = 'aes-256-cbc';  // CBC mode
+const key = crypto.randomBytes(32);
+const iv = crypto.randomBytes(16);
+
+const cipher = crypto.createCipheriv(algorithm, key, iv);
+let encrypted = cipher.update('secure text', 'utf8', 'hex');
+encrypted += cipher.final('hex');`
+                }
+            },
+            {
+                type: "fill",
+                question: "A(n) __/__ key pair is needed for asymmetric encryption.",
+                answer: "public/private",
+                explanation: {
+                    text: "Asymmetric encryption uses a public key for encryption and a private key for decryption.",
+                    code: `
+const crypto = require('crypto');
+
+// Generate public/private key pair
+const { publicKey, privateKey } = crypto.generateKeyPairSync('rsa', {
+    modulusLength: 2048,
+    publicKeyEncoding: {
+        type: 'spki',
+        format: 'pem'
+    },
+    privateKeyEncoding: {
+        type: 'pkcs8',
+        format: 'pem'
+    }
+});`
+                }
+            },
+            {
+                type: "fill",
+                question: "The cipher._____ method completes the encryption process.",
+                answer: "final",
+                explanation: {
+                    text: "The final() method completes the encryption process and returns any remaining encrypted content.",
+                    code: `
+const crypto = require('crypto');
+
+const cipher = crypto.createCipheriv('aes-256-cbc', key, iv);
+// Update can be called multiple times
+let encrypted = cipher.update('first part', 'utf8', 'hex');
+encrypted += cipher.update('second part', 'utf8', 'hex');
+// Final completes the encryption
+encrypted += cipher.final('hex');`
+                }
+            },
+            {
+                type: "fill",
+                question: "Encrypted data is often encoded as _____ or base64 strings.",
+                answer: "hex",
+                explanation: {
+                    text: "Encrypted data is typically encoded as hex or base64 strings for safe storage and transmission.",
+                    code: `
+const crypto = require('crypto');
+
+const cipher = crypto.createCipheriv('aes-256-cbc', key, iv);
+// Encoding as hex
+let hexOutput = cipher.update('secret', 'utf8', 'hex');
+hexOutput += cipher.final('hex');
+
+// Or encoding as base64
+cipher = crypto.createCipheriv('aes-256-cbc', key, iv);
+let base64Output = cipher.update('secret', 'utf8', 'base64');
+base64Output += cipher.final('base64');`
+                }
+            }
+        ]
+    };
+
+
+
+
+    function copyToClipboard(text, button) {
+        navigator.clipboard.writeText(text).then(() => {
+            const originalText = button.textContent;
+            button.textContent = 'Copied!';
+            setTimeout(() => {
+                button.textContent = originalText;
+            }, 2000);
+        });
+    }
+
+    function formatCodeExample(code) {
+        return code.split('\n').map(line => {
+            if (line.includes('//')) {
+                const [code, comment] = line.split('//');
+                return `${code}<span class="code-comment">// ${comment}</span>`;
+            }
+            return line;
+        }).join('\n');
+    }
+
+    function createQuiz() {
+        const questionsContainer = document.getElementById('questions');
+
+        quizData.questions.forEach((q, index) => {
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'question';
+            questionDiv.innerHTML = `<div><strong>Question ${index + 1}:</strong> ${q.question}</div>`;
+
+            if (q.type === 'single') {
+                const optionsDiv = document.createElement('div');
+                optionsDiv.className = 'options';
+
+                q.options.forEach((option, optIndex) => {
+                    const optionDiv = document.createElement('div');
+                    optionDiv.className = 'option';
+                    optionDiv.textContent = option;
+                    optionDiv.onclick = () => checkAnswer(optIndex, q.correct, optionDiv, questionDiv, q.explanation);
+                    optionsDiv.appendChild(optionDiv);
+                });
+
+                questionDiv.appendChild(optionsDiv);
+            } else {
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.className = 'input-answer';
+                input.placeholder = 'Type your answer here';
+
+                const submitBtn = document.createElement('button');
+                submitBtn.textContent = 'Submit';
+                submitBtn.onclick = () => checkFillAnswer(input.value, q.answer, questionDiv, q.explanation);
+
+                questionDiv.appendChild(input);
+                questionDiv.appendChild(submitBtn);
+            }
+
+            const feedbackDiv = document.createElement('div');
+            feedbackDiv.className = 'feedback';
+            questionDiv.appendChild(feedbackDiv);
+
+            questionsContainer.appendChild(questionDiv);
+        });
+
+        updateScore();
+    }
+
+    function checkFillAnswer(input, answer, questionDiv, explanation) {
+        // Check if question has already been answered
+        if (questionDiv.querySelector('.feedback').style.display === 'block') {
+            return; // Already answered
+        }
+
+        // Get or create input element
+        const inputElement = questionDiv.querySelector('.input-answer');
+        if (inputElement) {
+            inputElement.disabled = true; // Disable input after submission
+        }
+
+        // Compare answer (case-insensitive)
+        if (input.toLowerCase().trim() === answer.toLowerCase().trim()) {
+            score++;
+            showFeedback(questionDiv, explanation, true);
+        } else {
+            showFeedback(questionDiv, {
+                text: `The correct answer is: ${answer}. ${explanation.text}`,
+                code: explanation.code
+            }, false);
+        }
+
+        answeredQuestions++;
+        updateScore();
+    }
+    function showFeedback(questionDiv, explanation, isCorrect) {
+        const feedbackDiv = questionDiv.querySelector('.feedback');
+        feedbackDiv.style.display = 'block';
+
+        const codeId = 'code-' + Math.random().toString(36).substr(2, 9);
+
+        feedbackDiv.innerHTML = `
+                <div class="explanation-text">
+                    ${isCorrect ? '✅' : '❌'} ${explanation.text}
+                </div>
+                ${explanation.code ? `
+                    <div class="code-block" id="${codeId}">
+                        ${formatCodeExample(explanation.code)}
+                        <button class="copy-button" onclick="copyToClipboard(\`${explanation.code}\`, this)">Copy</button>
+                    </div>
+                ` : ''}
+            `;
+
+        feedbackDiv.style.backgroundColor = isCorrect ? '#e8f5e9' : '#ffebee';
+    }
+
+    function checkAnswer(selected, correct, optionDiv, questionDiv, explanation) {
+        if (questionDiv.querySelector('.correct') || questionDiv.querySelector('.incorrect')) {
+            return;
+        }
+
+        const options = questionDiv.getElementsByClassName('option');
+        options[correct].classList.add('correct');
+
+        if (selected === correct) {
+            score++;
+            optionDiv.classList.add('correct');
+            showFeedback(questionDiv, explanation, true);
+        } else {
+            optionDiv.classList.add('incorrect');
+            showFeedback(questionDiv, explanation, false);
+        }
+
+        answeredQuestions++;
+        updateScore();
+    }
+
+    function updateScore() {
+        const scoreDiv = document.getElementById('score');
+        const percentage = (score / quizData.questions.length) * 100;
+        scoreDiv.innerHTML = `
+                <h3>Your Score: ${score}/${quizData.questions.length}</h3>
+                <p>Percentage: ${percentage.toFixed(1)}%</p>
+                ${answeredQuestions === quizData.questions.length ?
+            `<p>${percentage >= 70 ? '🎉 Great job! You have a solid understanding of Node.js core modules!' :
+                'Keep learning! Review the explanations to strengthen your knowledge of Node.js core modules.'}</p>` : ''}
+            `;
+    }
+
+    let score = 0;
+    let answeredQuestions = 0;
+    createQuiz();
+</script>
+</body>
+</html>
