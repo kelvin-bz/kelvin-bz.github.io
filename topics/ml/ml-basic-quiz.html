@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            font-family: system-ui, -apple-system, sans-serif;
+            line-height: 1.6;
+        }
+        .question {
+            background-color: #fff;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .option {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .option:hover {
+            background-color: #f5f5f5;
+            transform: translateX(5px);
+        }
+        .selected {
+            background-color: #e3f2fd;
+        }
+        .correct {
+            background-color: #e8f5e9;
+            border-color: #81c784;
+        }
+        .incorrect {
+            background-color: #ffebee;
+            border-color: #e57373;
+        }
+        .input-answer {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            margin-top: 10px;
+            padding: 8px 16px;
+            background-color: #2196f3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #1976d2;
+        }
+        #score {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.2em;
+        }
+        .feedback {
+            margin-top: 10px;
+            padding: 15px;
+            border-radius: 4px;
+            display: none;
+            line-height: 1.6;
+        }
+        .code-block {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre;
+            overflow-x: auto;
+            line-height: 1.5;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            position: relative;
+        }
+        .copy-button {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .explanation-text {
+            margin-bottom: 10px;
+        }
+        .code-comment {
+            color: #6a737d;
+        }
+        .code-output {
+            color: #0a3069;
+            border-left: 3px solid #2196f3;
+            margin-left: 10px;
+            padding-left: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🔌 Node.js File Handling Quiz</h1>
+    <p>Test your knowledge of Node.js Websocket!</p>
+    <div id="questions"></div>
+    <div id="score"></div>
+</div>
+
+
+<script>
+
+    const quizData = {
+        questions: [
+            {
+                type: "single",
+                question: "What type of machine learning algorithm is used for predicting continuous numerical values?",
+                options: [
+                    "Classification",
+                    "Regression",
+                    "Clustering",
+                    "Dimensionality Reduction"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "Regression algorithms are used when the target variable is continuous. They predict numerical values like price, temperature, or age.",
+                    code: `
+# Simple Linear Regression Example
+from sklearn.linear_model import LinearRegression
+
+# Create and train model
+model = LinearRegression()
+model.fit(X_train, y_train)
+
+# Make predictions
+predictions = model.predict(X_test)`
+                }
+            },
+            {
+                type: "single",
+                question: "Which of these is a supervised learning algorithm?",
+                options: [
+                    "K-means clustering",
+                    "Random Forest",
+                    "Principal Component Analysis",
+                    "Autoencoders"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "Random Forest is a supervised learning algorithm that requires labeled data for training. It can be used for both classification and regression tasks.",
+                    code: `
+# Random Forest Example
+from sklearn.ensemble import RandomForestClassifier
+
+# Create and train model
+rf_model = RandomForestClassifier(n_estimators=100)
+rf_model.fit(X_train, y_train)
+
+# Make predictions
+predictions = rf_model.predict(X_test)`
+                }
+            },
+            {
+                type: "single",
+                question: "What is the main purpose of feature scaling?",
+                options: [
+                    "To reduce the number of features",
+                    "To normalize features to a similar scale",
+                    "To increase model complexity",
+                    "To create new features"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "Feature scaling ensures all features contribute equally to the model by bringing them to a similar scale, which is important for many algorithms.",
+                    code: `
+# Feature Scaling Example
+from sklearn.preprocessing import StandardScaler
+
+# Create scaler
+scaler = StandardScaler()
+
+# Fit and transform training data
+X_train_scaled = scaler.fit_transform(X_train)
+
+# Transform test data
+X_test_scaled = scaler.transform(X_test)`
+                }
+            },
+            {
+                type: "single",
+                question: "Which evaluation metric is commonly used for classification problems?",
+                options: [
+                    "Mean Squared Error",
+                    "Accuracy",
+                    "R-squared",
+                    "Mean Absolute Error"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "Accuracy is a common metric for classification tasks, measuring the proportion of correct predictions.",
+                    code: `
+# Classification Metrics Example
+from sklearn.metrics import accuracy_score, classification_report
+
+# Calculate accuracy
+accuracy = accuracy_score(y_true, y_pred)
+
+# Get detailed classification metrics
+print(classification_report(y_true, y_pred))`
+                }
+            },
+            {
+                type: "single",
+                question: "What is overfitting in machine learning?",
+                options: [
+                    "Model performs well on training and test data",
+                    "Model performs poorly on all data",
+                    "Model performs well on training but poorly on test data",
+                    "Model performs poorly on training but well on test data"
+                ],
+                correct: 2,
+                explanation: {
+                    text: "Overfitting occurs when a model learns the training data too well, including noise, leading to poor generalization on new data.",
+                    code: `
+# Preventing Overfitting Example
+from sklearn.model_selection import cross_val_score
+
+# Use cross-validation
+scores = cross_val_score(model, X, y, cv=5)
+
+# Add regularization
+from sklearn.linear_model import Ridge
+model = Ridge(alpha=1.0)  # Alpha controls regularization strength`
+                }
+            },
+            {
+                type: "fill",
+                question: "The process of splitting data into training and _____ sets is crucial for model evaluation.",
+                answer: "test",
+                explanation: {
+                    text: "The test set is used to evaluate model performance on unseen data.",
+                    code: `
+# Train-Test Split Example
+from sklearn.model_selection import train_test_split
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42)`
+                }
+            },
+            {
+                type: "fill",
+                question: "_____ learning is when the model learns from labeled training data.",
+                answer: "supervised",
+                explanation: {
+                    text: "Supervised learning involves training models on data with known target values or labels.",
+                    code: `
+# Supervised Learning Example
+from sklearn.svm import SVC
+
+# Create and train supervised model
+model = SVC(kernel='rbf')
+model.fit(X_train, y_train)  # y_train contains labels`
+                }
+            },
+            {
+                type: "fill",
+                question: "K-means is an example of _____ learning algorithm.",
+                answer: "unsupervised",
+                explanation: {
+                    text: "Unsupervised learning algorithms find patterns in data without labeled outputs.",
+                    code: `
+# K-means Clustering Example
+from sklearn.cluster import KMeans
+
+# Create and fit clustering model
+kmeans = KMeans(n_clusters=3)
+clusters = kmeans.fit_predict(X)  # No labels needed`
+                }
+            },
+            {
+                type: "fill",
+                question: "The _____ matrix shows true positives, false positives, true negatives, and false negatives.",
+                answer: "confusion",
+                explanation: {
+                    text: "A confusion matrix is a table showing the performance of a classification model.",
+                    code: `
+# Confusion Matrix Example
+from sklearn.metrics import confusion_matrix
+import seaborn as sns
+
+# Create confusion matrix
+cm = confusion_matrix(y_true, y_pred)
+
+# Visualize
+sns.heatmap(cm, annot=True, fmt='d')`
+                }
+            },
+            {
+                type: "fill",
+                question: "_____ validation is used to tune model hyperparameters.",
+                answer: "cross",
+                explanation: {
+                    text: "Cross validation helps assess model performance and tune parameters using multiple train-test splits.",
+                    code: `
+# Cross Validation Example
+from sklearn.model_selection import GridSearchCV
+
+# Define parameter grid
+param_grid = {'C': [0.1, 1, 10], 'kernel': ['rbf', 'linear']}
+
+# Perform grid search with cross validation
+grid_search = GridSearchCV(SVC(), param_grid, cv=5)
+grid_search.fit(X_train, y_train)`
+                }
+            }
+        ]
+    };
+
+
+
+
+    function copyToClipboard(text, button) {
+        navigator.clipboard.writeText(text).then(() => {
+            const originalText = button.textContent;
+            button.textContent = 'Copied!';
+            setTimeout(() => {
+                button.textContent = originalText;
+            }, 2000);
+        });
+    }
+
+    function formatCodeExample(code) {
+        return code.split('\n').map(line => {
+            if (line.includes('//')) {
+                const [code, comment] = line.split('//');
+                return `${code}<span class="code-comment">// ${comment}</span>`;
+            }
+            return line;
+        }).join('\n');
+    }
+
+    function createQuiz() {
+        const questionsContainer = document.getElementById('questions');
+
+        quizData.questions.forEach((q, index) => {
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'question';
+            questionDiv.innerHTML = `<div><strong>Question ${index + 1}:</strong> ${q.question}</div>`;
+
+            if (q.type === 'single') {
+                const optionsDiv = document.createElement('div');
+                optionsDiv.className = 'options';
+
+                q.options.forEach((option, optIndex) => {
+                    const optionDiv = document.createElement('div');
+                    optionDiv.className = 'option';
+                    optionDiv.textContent = option;
+                    optionDiv.onclick = () => checkAnswer(optIndex, q.correct, optionDiv, questionDiv, q.explanation);
+                    optionsDiv.appendChild(optionDiv);
+                });
+
+                questionDiv.appendChild(optionsDiv);
+            } else {
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.className = 'input-answer';
+                input.placeholder = 'Type your answer here';
+
+                const submitBtn = document.createElement('button');
+                submitBtn.textContent = 'Submit';
+                submitBtn.onclick = () => checkFillAnswer(input.value, q.answer, questionDiv, q.explanation);
+
+                questionDiv.appendChild(input);
+                questionDiv.appendChild(submitBtn);
+            }
+
+            const feedbackDiv = document.createElement('div');
+            feedbackDiv.className = 'feedback';
+            questionDiv.appendChild(feedbackDiv);
+
+            questionsContainer.appendChild(questionDiv);
+        });
+
+        updateScore();
+    }
+
+    function checkFillAnswer(input, answer, questionDiv, explanation) {
+        // Check if question has already been answered
+        if (questionDiv.querySelector('.feedback').style.display === 'block') {
+            return; // Already answered
+        }
+
+        // Get or create input element
+        const inputElement = questionDiv.querySelector('.input-answer');
+        if (inputElement) {
+            inputElement.disabled = true; // Disable input after submission
+        }
+
+        // Compare answer (case-insensitive)
+        if (input.toLowerCase().trim() === answer.toLowerCase().trim()) {
+            score++;
+            showFeedback(questionDiv, explanation, true);
+        } else {
+            showFeedback(questionDiv, {
+                text: `The correct answer is: ${answer}. ${explanation.text}`,
+                code: explanation.code
+            }, false);
+        }
+
+        answeredQuestions++;
+        updateScore();
+    }
+    function showFeedback(questionDiv, explanation, isCorrect) {
+        const feedbackDiv = questionDiv.querySelector('.feedback');
+        feedbackDiv.style.display = 'block';
+
+        const codeId = 'code-' + Math.random().toString(36).substr(2, 9);
+
+        feedbackDiv.innerHTML = `
+                <div class="explanation-text">
+                    ${isCorrect ? '✅' : '❌'} ${explanation.text}
+                </div>
+                ${explanation.code ? `
+                    <div class="code-block" id="${codeId}">
+                        ${formatCodeExample(explanation.code)}
+                        <button class="copy-button" onclick="copyToClipboard(\`${explanation.code}\`, this)">Copy</button>
+                    </div>
+                ` : ''}
+            `;
+
+        feedbackDiv.style.backgroundColor = isCorrect ? '#e8f5e9' : '#ffebee';
+    }
+
+    function checkAnswer(selected, correct, optionDiv, questionDiv, explanation) {
+        if (questionDiv.querySelector('.correct') || questionDiv.querySelector('.incorrect')) {
+            return;
+        }
+
+        const options = questionDiv.getElementsByClassName('option');
+        options[correct].classList.add('correct');
+
+        if (selected === correct) {
+            score++;
+            optionDiv.classList.add('correct');
+            showFeedback(questionDiv, explanation, true);
+        } else {
+            optionDiv.classList.add('incorrect');
+            showFeedback(questionDiv, explanation, false);
+        }
+
+        answeredQuestions++;
+        updateScore();
+    }
+
+    function updateScore() {
+        const scoreDiv = document.getElementById('score');
+        const percentage = (score / quizData.questions.length) * 100;
+        scoreDiv.innerHTML = `
+                <h3>Your Score: ${score}/${quizData.questions.length}</h3>
+                <p>Percentage: ${percentage.toFixed(1)}%</p>
+                ${answeredQuestions === quizData.questions.length ?
+            `<p>${percentage >= 70 ? '🎉 Great job! You have a solid understanding of Node.js core modules!' :
+                'Keep learning! Review the explanations to strengthen your knowledge of Node.js core modules.'}</p>` : ''}
+            `;
+    }
+
+    let score = 0;
+    let answeredQuestions = 0;
+    createQuiz();
+</script>
+</body>
+</html>
