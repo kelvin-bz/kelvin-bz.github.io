@@ -143,7 +143,7 @@
                 ],
                 correct: 1,
                 explanation: {
-                    text: "crypto.createCipher() is used to create a cipher for encryption, though crypto.createCipheriv() is now recommended for better security.",
+                    text: "crypto.createCipher() is used to create a cipher for encryption, though crypto.createCipheriv() is now recommended for better security. The IV ensures that even if the same plaintext is encrypted multiple times with the same key, the resulting ciphertext will be different because the IV changes the initial state of the encryption.",
                     code: `
 const crypto = require('crypto');
 
@@ -190,20 +190,69 @@ encrypted += cipher.final('hex');`
                 ],
                 correct: 1,
                 explanation: {
-                    text: "An initialization vector (IV) is crucial for secure encryption. It ensures the same data encrypted with the same key produces different results.",
+                    text: "An initialization vector (IV) is crucial for secure encryption. It ensures the same data encrypted with the same key produces different results. Prepending the IV to the ciphertext is a standard practice. The IV doesn't need to be secret, just unique for each encryption",
                     code: `
 const crypto = require('crypto');
 
-// Proper encryption with IV
-const algorithm = 'aes-256-cbc';
-const key = crypto.randomBytes(32);
-const iv = crypto.randomBytes(16);  // Important!
+// Utility function to encrypt data
+function encrypt(text, key) {
+    // Generate a random IV for each encryption
+    const iv = crypto.randomBytes(16);
+    const cipher = crypto.createCipheriv('aes-256-cbc', key, iv);
 
-const cipher = crypto.createCipheriv(algorithm, key, iv);
-const encrypted = Buffer.concat([
-    cipher.update('secret'),
-    cipher.final()
-]);`
+    // Encrypt the data
+    const encrypted = Buffer.concat([
+        cipher.update(text),
+        cipher.final()
+    ]);
+
+    // Return both IV and encrypted data
+    // IV is prepended to the encrypted data
+    return Buffer.concat([iv, encrypted]);
+}
+
+// Utility function to decrypt data
+function decrypt(encryptedData, key) {
+    // Extract the IV from the first 16 bytes
+    const iv = encryptedData.slice(0, 16);
+    // Get the actual encrypted content after the IV
+    const encryptedContent = encryptedData.slice(16);
+
+    const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
+
+    return Buffer.concat([
+        decipher.update(encryptedContent),
+        decipher.final()
+    ]).toString('utf8');
+}
+
+// Example usage
+try {
+    // Generate a random 32-byte key
+    const key = crypto.randomBytes(32);
+    const message = "Secret message";
+
+    // Encrypt
+    const encrypted = encrypt(message, key);
+    console.log('Encrypted data (with IV):', encrypted.toString('hex'));
+
+    // Decrypt
+    const decrypted = decrypt(encrypted, key);
+    console.log('Decrypted message:', decrypted);
+
+    // Try decrypting with wrong IV to show it fails
+    const wrongIV = Buffer.alloc(16, 0); // Different IV
+    const encryptedWithoutOriginalIV = Buffer.concat([
+        wrongIV,
+        encrypted.slice(16)
+    ]);
+
+    const wrongDecryption = decrypt(encryptedWithoutOriginalIV, key);
+    console.log('Decrypted with wrong IV:', wrongDecryption); // Will produce garbage or throw error
+
+} catch (error) {
+    console.error('Encryption/Decryption failed:', error);
+}`
                 }
             },
             {
@@ -255,6 +304,134 @@ const cipher3 = crypto.createCipheriv('aes-256-cbc', key32, iv);  // 256-bit key
 
 // See available ciphers
 console.log(crypto.getCiphers());`
+                }
+            },
+            {
+                type: "single",
+                question: "What's the best practice for handling large encrypted files in memory?",
+                options: [
+                    "Load entire file at once",
+                    "Use streams and process in chunks",
+                    "Use synchronous operations",
+                    "Increase Node.js memory limit"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "Using streams to process files in chunks is the best practice for handling large encrypted files to prevent memory issues.",
+                    code: `
+const crypto = require('crypto');
+const fs = require('fs');
+const { pipeline } = require('stream/promises');
+
+async function encryptLargeFile(inputFile, outputFile, key, iv) {
+    const readStream = fs.createReadStream(inputFile, {
+        highWaterMark: 1024 * 1024 // 1MB chunks
+    });
+    const cipher = crypto.createCipheriv('aes-256-gcm', key, iv);
+    const writeStream = fs.createWriteStream(outputFile);
+
+    try {
+        await pipeline(readStream, cipher, writeStream);
+        return cipher.getAuthTag();
+    } catch (err) {
+        await fs.promises.unlink(outputFile).catch(() => {});
+        throw err;
+    }
+}`
+                }
+            },
+            {
+                type: "single",
+                question: "What should you do with the IV (Initialization Vector) when encrypting files?",
+                options: [
+                    "Keep it secret",
+                    "Store it with the encrypted file",
+                    "Reuse it for all files",
+                    "Ignore it"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "The IV should be stored with the encrypted file. It doesn't need to be secret but must be unique for each encryption.",
+                    code: `
+cconst crypto = require('crypto');
+const fs = require('fs');
+const { pipeline } = require('stream/promises');
+
+async function encryptFile(inputPath, outputPath, key) {
+    // Validate key length for AES-256
+    if (key.length !== 32) {
+        throw new Error('Key must be 32 bytes for AES-256');
+    }
+
+    try {
+        const iv = crypto.randomBytes(16);
+        const cipher = crypto.createCipheriv('aes-256-gcm', key, iv);
+
+        // Create write stream
+        const output = fs.createWriteStream(outputPath);
+
+        // Write IV first (16 bytes)
+        output.write(iv);
+
+        // Encrypt file content
+        await pipeline(
+            fs.createReadStream(inputPath),
+            cipher,
+            output
+        );
+
+        // Get and write authentication tag (16 bytes)
+        const authTag = cipher.getAuthTag();
+        await fs.promises.appendFile(outputPath, authTag);
+
+        return { iv, authTag }; // Optionally return for verification
+    } catch (error) {
+        // Clean up partial output file if encryption fails
+        if (fs.existsSync(outputPath)) {
+            await fs.promises.unlink(outputPath);
+        }
+        throw error;
+    }
+}
+
+// Corresponding decryption function
+async function decryptFile(inputPath, outputPath, key) {
+    try {
+        // Read the first 16 bytes (IV)
+        const fileHandle = await fs.promises.open(inputPath, 'r');
+        const iv = Buffer.alloc(16);
+        await fileHandle.read(iv, 0, 16, 0);
+
+        // Read the last 16 bytes (auth tag)
+        const stat = await fileHandle.stat();
+        const authTag = Buffer.alloc(16);
+        await fileHandle.read(authTag, 0, 16, stat.size - 16);
+
+        // Create decipher
+        const decipher = crypto.createDecipheriv('aes-256-gcm', key, iv);
+        decipher.setAuthTag(authTag);
+
+        // Create read stream for encrypted data (excluding IV and auth tag)
+        const input = fs.createReadStream(inputPath, {
+            start: 16,
+            end: stat.size - 17
+        });
+
+        // Decrypt
+        await pipeline(
+            input,
+            decipher,
+            fs.createWriteStream(outputPath)
+        );
+
+        await fileHandle.close();
+    } catch (error) {
+        if (fs.existsSync(outputPath)) {
+            await fs.promises.unlink(outputPath);
+        }
+        throw error;
+    }
+}`
                 }
             },
             {
@@ -355,6 +532,70 @@ hexOutput += cipher.final('hex');
 cipher = crypto.createCipheriv('aes-256-cbc', key, iv);
 let base64Output = cipher.update('secret', 'utf8', 'base64');
 base64Output += cipher.final('base64');`
+                }
+            },
+            {
+                type: "fill",
+                question: "The _____ tag in GCM mode verifies file integrity.",
+                answer: "auth",
+                explanation: {
+                    text: "The authentication (auth) tag in GCM mode ensures the encrypted file hasn't been tampered with.",
+                    code: `
+const crypto = require('crypto');
+const fs = require('fs');
+
+async function verifyAndDecrypt(encryptedFile, key) {
+    const fileData = await fs.promises.readFile(encryptedFile);
+
+    const iv = fileData.slice(0, 12);
+    const authTag = fileData.slice(-16);
+    const encrypted = fileData.slice(12, -16);
+
+    const decipher = crypto.createDecipheriv('aes-256-gcm', key, iv);
+    decipher.setAuthTag(authTag);
+
+    try {
+        const decrypted = Buffer.concat([
+            decipher.update(encrypted),
+            decipher.final()
+        ]);
+        return decrypted;
+    } catch (err) {
+        throw new Error('File tampering detected');
+    }
+}`
+                }
+            },
+            {
+                type: "fill",
+                question: "The _____ tag in GCM mode verifies file integrity.",
+                answer: "auth",
+                explanation: {
+                    text: "The authentication (auth) tag in GCM mode ensures the encrypted file hasn't been tampered with.",
+                    code: `
+const crypto = require('crypto');
+const fs = require('fs');
+
+async function verifyAndDecrypt(encryptedFile, key) {
+    const fileData = await fs.promises.readFile(encryptedFile);
+
+    const iv = fileData.slice(0, 12);
+    const authTag = fileData.slice(-16);
+    const encrypted = fileData.slice(12, -16);
+
+    const decipher = crypto.createDecipheriv('aes-256-gcm', key, iv);
+    decipher.setAuthTag(authTag);
+
+    try {
+        const decrypted = Buffer.concat([
+            decipher.update(encrypted),
+            decipher.final()
+        ]);
+        return decrypted;
+    } catch (err) {
+        throw new Error('File tampering detected');
+    }
+}`
                 }
             }
         ]
