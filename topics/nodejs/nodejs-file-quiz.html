@@ -434,7 +434,7 @@ async function appendToLog(message) {
         ]
     };
 
-    function copyToClipboard(text, button) {
+    window.copyToClipboard = function(text, button) {
         navigator.clipboard.writeText(text).then(() => {
             const originalText = button.textContent;
             button.textContent = 'Copied!';
