@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            font-family: system-ui, -apple-system, sans-serif;
+            line-height: 1.6;
+        }
+        .question {
+            background-color: #fff;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .option {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .option:hover {
+            background-color: #f5f5f5;
+            transform: translateX(5px);
+        }
+        .selected {
+            background-color: #e3f2fd;
+        }
+        .correct {
+            background-color: #e8f5e9;
+            border-color: #81c784;
+        }
+        .incorrect {
+            background-color: #ffebee;
+            border-color: #e57373;
+        }
+        .input-answer {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            margin-top: 10px;
+            padding: 8px 16px;
+            background-color: #2196f3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #1976d2;
+        }
+        #score {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.2em;
+        }
+        .feedback {
+            margin-top: 10px;
+            padding: 15px;
+            border-radius: 4px;
+            display: none;
+            line-height: 1.6;
+        }
+        .code-block {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre;
+            overflow-x: auto;
+            line-height: 1.5;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            position: relative;
+        }
+        .copy-button {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .explanation-text {
+            margin-bottom: 10px;
+        }
+        .code-comment {
+            color: #6a737d;
+        }
+        .code-output {
+            color: #0a3069;
+            border-left: 3px solid #2196f3;
+            margin-left: 10px;
+            padding-left: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🔐 AWS S3 Encryption Quiz</h1>
+    <p>Test your knowledge of S3 encryption methods and security best practices!</p>
+    <div id="questions"></div>
+    <div id="score"></div>
+</div>
+
+<script>
+    const quizData = {
+        questions: [
+            {
+                type: "single",
+                question: "Which encryption method encrypts S3 objects before they are uploaded to AWS?",
+                options: [
+                    "Server-Side Encryption (SSE)",
+                    "Client-Side Encryption (CSE)",
+                    "S3-Managed Encryption",
+                    "KMS Encryption"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "Client-Side Encryption (CSE) encrypts data before it is sent to AWS S3, ensuring data is encrypted during transit and at rest.",
+                    code: `
+import { S3Client, PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
+import { EncryptionContext } from "@aws-sdk/client-s3-encryption";
+
+interface EncryptionConfig {
+  region: string;
+  key: Buffer;
+  algorithm: 'aes-256-gcm';
+}
+
+// Upload encrypted data to S3
+export async function uploadEncrypted(
+  config: EncryptionConfig,
+  bucket: string,
+  key: string,
+  data: Buffer | string
+): Promise<void> {
+  const s3 = new S3Client({ region: config.region });
+  const encryption = new EncryptionContext({
+    keys: { key: config.key },  // Master key
+    algorithm: config.algorithm
+  });
+
+  try {
+    const encrypted = await encryption.encrypt(data);
+    await s3.send(new PutObjectCommand({
+      Bucket: bucket,
+      Key: key,
+      Body: encrypted.data,
+      Metadata: {
+        'x-amz-key': encrypted.encryptedKey.toString('base64'),  // Encrypted data key
+        'x-amz-iv': encrypted.iv.toString('base64')  // Initialization vector
+      }
+    }));
+  } finally {
+    await s3.destroy();
+  }
+}
+
+// Download and decrypt data from S3
+export async function downloadDecrypted(
+  config: EncryptionConfig,
+  bucket: string,
+  key: string
+): Promise<Buffer> {
+  const s3 = new S3Client({ region: config.region });
+  const encryption = new EncryptionContext({
+    keys: { key: config.key },  // Same master key used for encryption
+    algorithm: config.algorithm
+  });
+
+  try {
+    const response = await s3.send(new GetObjectCommand({
+      Bucket: bucket,
+      Key: key
+    }));
+
+    if (!response.Body || !response.Metadata) {
+      throw new Error('Missing object body or metadata');
+    }
+
+    // Get the encrypted data key and IV from metadata
+    const encryptedKey = Buffer.from(response.Metadata['x-amz-key'], 'base64');
+    const iv = Buffer.from(response.Metadata['x-amz-iv'], 'base64');
+
+    // Get the encrypted data
+    const encrypted = await response.Body.transformToByteArray();
+
+    // Decrypt everything using master key
+    const decrypted = await encryption.decrypt({
+      data: Buffer.from(encrypted),
+      encryptedKey,
+      iv,
+      algorithm: config.algorithm
+    });
+
+    return Buffer.from(decrypted);
+  } finally {
+    await s3.destroy();
+  }
+}
+
+// Example usage:
+async function example() {
+  const config: EncryptionConfig = {
+    region: 'us-west-2',
+    key: Buffer.from('your-master-key'),
+    algorithm: 'aes-256-gcm'
+  };
+
+  // Upload encrypted file
+  await uploadEncrypted(
+    config,
+    'my-bucket',
+    'secret.txt',
+    'sensitive data'
+  );
+
+  // Download and decrypt file
+  const decrypted = await downloadDecrypted(
+    config,
+    'my-bucket',
+    'secret.txt'
+  );
+
+  console.log(decrypted.toString());  // Prints: 'sensitive data'
+}
+`
+                }
+            },
+            {
+                type: "single",
+                question: "What is the default encryption method for SSE (Server-Side Encryption) in S3?",
+                options: [
+                    "SSE-KMS",
+                    "SSE-C",
+                    "SSE-S3",
+                    "No default encryption"
+                ],
+                correct: 2,
+                explanation: {
+                    text: "SSE-S3 is the default server-side encryption method, using AES-256 encryption managed by AWS.",
+                    code: `
+// Setting default encryption on bucket using AWS SDK
+const params = {
+    Bucket: 'my-bucket',
+    ServerSideEncryptionConfiguration: {
+        Rules: [
+            {
+                ApplyServerSideEncryptionByDefault: {
+                    SSEAlgorithm: 'AES256' // SSE-S3
+                }
+            }
+        ]
+    }
+};
+
+s3.putBucketEncryption(params).promise()
+    .then(() => console.log('Default encryption set'))
+    .catch(err => console.error('Error:', err));`
+                }
+            },
+            {
+                type: "single",
+                question: "Which S3 encryption method requires you to manage your own encryption keys?",
+                options: [
+                    "SSE-S3",
+                    "SSE-KMS",
+                    "SSE-C",
+                    "Default Encryption"
+                ],
+                correct: 2,
+                explanation: {
+                    text: "SSE-C (Server-Side Encryption with Customer-Provided Keys) requires you to manage and provide your own encryption keys.",
+                    code: `
+// Using SSE-C with AWS SDK
+const crypto = require('crypto');
+
+// Generate a key for SSE-C
+const key = crypto.randomBytes(32);
+
+const params = {
+    Bucket: 'my-bucket',
+    Key: 'my-encrypted-file',
+    Body: fileData,
+    SSECustomerAlgorithm: 'AES256',
+    SSECustomerKey: key,
+    SSECustomerKeyMD5: crypto
+        .createHash('md5')
+        .update(key)
+        .digest('base64')
+};
+
+s3.putObject(params).promise()
+    .then(() => console.log('Object uploaded with SSE-C'))
+    .catch(err => console.error('Error:', err));`
+                }
+            },
+            {
+                type: "single",
+                question: "Which S3 encryption feature allows you to enforce encryption for all objects in a bucket?",
+                options: [
+                    "Bucket Policy",
+                    "Default Encryption",
+                    "Access Points",
+                    "CORS Configuration"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "Default Encryption is a bucket-level setting that automatically encrypts all objects uploaded to the bucket.",
+                    code: `
+// AWS CloudFormation template for bucket with enforced encryption
+{
+    "Resources": {
+        "EncryptedBucket": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {
+                "BucketName": "my-encrypted-bucket",
+                "BucketEncryption": {
+                    "ServerSideEncryptionConfiguration": [
+                        {
+                            "ServerSideEncryptionByDefault": {
+                                "SSEAlgorithm": "aws:kms",
+                                "KMSMasterKeyID": "arn:aws:kms:region:account:key/key-id"
+                            },
+                            "BucketKeyEnabled": true
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}`
+                }
+            },
+            {
+                type: "single",
+                question: "What is the main advantage of using SSE-KMS over SSE-S3?",
+                options: [
+                    "Better performance",
+                    "Lower cost",
+                    "Additional audit trail and key rotation",
+                    "Simpler implementation"
+                ],
+                correct: 2,
+                explanation: {
+                    text: "SSE-KMS provides additional features like audit trail of key usage, automatic key rotation, and separate permissions for key usage.",
+                    code: `
+// Using SSE-KMS with AWS SDK
+const params = {
+    Bucket: 'my-bucket',
+    Key: 'my-file',
+    Body: data,
+    ServerSideEncryption: 'aws:kms',
+    SSEKMSKeyId: 'arn:aws:kms:region:account:key/key-id'
+};
+
+// Upload with KMS encryption
+s3.putObject(params).promise()
+    .then(() => console.log('Object uploaded with SSE-KMS'))
+    .catch(err => console.error('Error:', err));
+
+// Checking encryption status
+s3.getObjectAttributes({
+    Bucket: 'my-bucket',
+    Key: 'my-file',
+    ObjectAttributes: ['ObjectParts', 'StorageClass', 'ObjectSize', 'ServerSideEncryption']
+}).promise()
+    .then(data => console.log('Encryption:', data.ServerSideEncryption));`
+                }
+            },
+            {
+                type: "fill",
+                question: "To enforce encryption in transit, you must use _____ protocol for S3 API calls.",
+                answer: "HTTPS",
+                explanation: {
+                    text: "HTTPS (TLS) must be used for secure data transfer to and from S3, which can be enforced through bucket policies.",
+                    code: `
+// Bucket policy enforcing HTTPS
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "EnforceHTTPS",
+            "Effect": "Deny",
+            "Principal": "*",
+            "Action": "s3:*",
+            "Resource": [
+                "arn:aws:s3:::my-bucket",
+                "arn:aws:s3:::my-bucket/*"
+            ],
+            "Condition": {
+                "Bool": {
+                    "aws:SecureTransport": "false"
+                }
+            }
+        }
+    ]
+}`
+                }
+            },
+            {
+                type: "fill",
+                question: "_____ is the AWS service used to manage encryption keys with SSE-KMS.",
+                answer: "KMS",
+                explanation: {
+                    text: "AWS Key Management Service (KMS) is used to create and manage encryption keys for SSE-KMS encryption.",
+                    code: `
+// Creating and using a KMS key for S3
+const AWS = require('aws-sdk');
+const kms = new AWS.KMS();
+
+async function setupKMSEncryption() {
+    // Create KMS key
+    const key = await kms.createKey({
+        Description: 'Key for S3 encryption',
+        KeyUsage: 'ENCRYPT_DECRYPT',
+        Origin: 'AWS_KMS'
+    }).promise();
+
+    // Configure bucket to use KMS key
+    await s3.putBucketEncryption({
+        Bucket: 'my-bucket',
+        ServerSideEncryptionConfiguration: {
+            Rules: [{
+                ApplyServerSideEncryptionByDefault: {
+                    SSEAlgorithm: 'aws:kms',
+                    KMSMasterKeyID: key.KeyMetadata.Arn
+                }
+            }]
+        }
+    }).promise();
+
+    return key.KeyMetadata.KeyId;
+}`
+                }
+            },
+            {
+                type: "fill",
+                question: "The ___-server-side-encryption-customer-key header is required when uploading objects with SSE-C encryption.",
+                answer: "x-amz",
+                explanation: {
+                    text: "The x-amz-server-side-encryption-customer-key header must contain the base64-encoded encryption key for SSE-C uploads.",
+                    code: `
+// Example of SSE-C upload with headers
+PUT /my-object HTTP/1.1
+Host: my-bucket.s3.amazonaws.com
+Authorization: AWS4-HMAC-SHA256 Credential=your-credentials
+x-amz-server-side-encryption-customer-algorithm: AES256
+x-amz-server-side-encryption-customer-key: <base64-encoded-key>
+x-amz-server-side-encryption-customer-key-MD5: <base64-encoded-MD5-key>
+Content-Length: 1234
+}`
+                }
+            },
+            {
+                type: "fill",
+                question: "_____ is the encryption algorithm used by SSE-S3.",
+                answer: "AES-256",
+                explanation: {
+                    text: "SSE-S3 uses the Advanced Encryption Standard (AES) algorithm with 256-bit keys for encryption.",
+                    code: `
+// Configuring SSE-S3 encryption
+const params = {
+    Bucket: 'my-bucket',
+    Key: 'my-file',
+    Body: fileData,
+    ServerSideEncryption: 'AES256' // SSE-S3
+};
+
+s3.putObject(params).promise()
+    .then(() => {
+        // Verify encryption
+        return s3.getObjectAttributes({
+            Bucket: 'my-bucket',
+            Key: 'my-file',
+            ObjectAttributes: ['ServerSideEncryption']
+        }).promise();
+    })
+    .then(data => console.log('Encryption Algorithm:', data.ServerSideEncryption));`
+                }
+            },
+            {
+                type: "fill",
+                question: "A _____ policy can be used to deny uploads of unencrypted objects to S3.",
+                answer: "bucket",
+                explanation: {
+                    text: "A bucket policy can enforce encryption requirements for all object uploads to the bucket.",
+                    code: `
+// Bucket policy denying unencrypted uploads
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "DenyUnencryptedUploads",
+            "Effect": "Deny",
+            "Principal": "*",
+            "Action": "s3:PutObject",
+            "Resource": "arn:aws:s3:::my-bucket/*",
+            "Condition": {
+                "StringNotEquals": {
+                    "s3:x-amz-server-side-encryption": "aws:kms"
+                }
+            }
+        }
+    ]
+}`
+                }
+            }
+        ]
+    };
+
+    window.copyToClipboard = function(text, button) {
+        navigator.clipboard.writeText(text).then(() => {
+            const originalText = button.textContent;
+            button.textContent = 'Copied!';
+            setTimeout(() => {
+                button.textContent = originalText;
+            }, 2000);
+        }).catch(err => {
+            console.error('Failed to copy:', err);
+            button.textContent = 'Failed to copy';
+            setTimeout(() => {
+                button.textContent = originalText;
+            }, 2000);
+        });
+    }
+
+
+    function formatCodeExample(code) {
+        return code.split('\n').map(line => {
+            if (line.includes('//')) {
+                const [code, comment] = line.split('//');
+                return `${code}<span class="code-comment">// ${comment}</span>`;
+            }
+            return line;
+        }).join('\n');
+    }
+
+    function createQuiz() {
+        const questionsContainer = document.getElementById('questions');
+
+        quizData.questions.forEach((q, index) => {
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'question';
+            questionDiv.innerHTML = `<div><strong>Question ${index + 1}:</strong> ${q.question}</div>`;
+
+            if (q.type === 'single') {
+                const optionsDiv = document.createElement('div');
+                optionsDiv.className = 'options';
+
+                q.options.forEach((option, optIndex) => {
+                    const optionDiv = document.createElement('div');
+                    optionDiv.className = 'option';
+                    optionDiv.textContent = option;
+                    optionDiv.onclick = () => checkAnswer(optIndex, q.correct, optionDiv, questionDiv, q.explanation);
+                    optionsDiv.appendChild(optionDiv);
+                });
+
+                questionDiv.appendChild(optionsDiv);
+            } else {
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.className = 'input-answer';
+                input.placeholder = 'Type your answer here';
+
+                const submitBtn = document.createElement('button');
+                submitBtn.textContent = 'Submit';
+                submitBtn.onclick = () => checkFillAnswer(input.value, q.answer, questionDiv, q.explanation);
+
+                questionDiv.appendChild(input);
+                questionDiv.appendChild(submitBtn);
+            }
+
+            const feedbackDiv = document.createElement('div');
+            feedbackDiv.className = 'feedback';
+            questionDiv.appendChild(feedbackDiv);
+
+            questionsContainer.appendChild(questionDiv);
+        });
+
+        updateScore();
+    }
+
+    function checkFillAnswer(input, answer, questionDiv, explanation) {
+        // Check if question has already been answered
+        if (questionDiv.querySelector('.feedback').style.display === 'block') {
+            return; // Already answered
+        }
+
+        // Get or create input element
+        const inputElement = questionDiv.querySelector('.input-answer');
+        if (inputElement) {
+            inputElement.disabled = true; // Disable input after submission
+        }
+
+        // Compare answer (case-insensitive)
+        if (input.toLowerCase().trim() === answer.toLowerCase().trim()) {
+            score++;
+            showFeedback(questionDiv, explanation, true);
+        } else {
+            showFeedback(questionDiv, {
+                text: `The correct answer is: ${answer}. ${explanation.text}`,
+                code: explanation.code
+            }, false);
+        }
+
+        answeredQuestions++;
+        updateScore();
+    }
+    function showFeedback(questionDiv, explanation, isCorrect) {
+        const feedbackDiv = questionDiv.querySelector('.feedback');
+        feedbackDiv.style.display = 'block';
+        feedbackDiv.innerHTML = ''; // Clear existing content
+
+        // Create and append explanation text
+        const explanationText = document.createElement('div');
+        explanationText.className = 'explanation-text';
+        explanationText.innerHTML = `${isCorrect ? '✅' : '❌'} ${explanation.text}`;
+        feedbackDiv.appendChild(explanationText);
+
+        // Create and append code block if code exists
+        if (explanation.code) {
+            const codeBlock = document.createElement('div');
+            codeBlock.className = 'code-block';
+            codeBlock.id = 'code-' + Math.random().toString(36).substr(2, 9);
+
+            // Create pre element for code
+            const pre = document.createElement('pre');
+            pre.innerHTML = formatCodeExample(explanation.code);
+            codeBlock.appendChild(pre);
+
+            // Create copy button
+            const copyButton = document.createElement('button');
+            copyButton.className = 'copy-button';
+            copyButton.textContent = 'Copy';
+            copyButton.addEventListener('click', () => {
+                copyToClipboard(explanation.code, copyButton);
+            });
+            codeBlock.appendChild(copyButton);
+
+            feedbackDiv.appendChild(codeBlock);
+        }
+
+        // Set background color based on correctness
+        feedbackDiv.style.backgroundColor = isCorrect ? '#e8f5e9' : '#ffebee';
+    }
+
+    function checkAnswer(selected, correct, optionDiv, questionDiv, explanation) {
+        if (questionDiv.querySelector('.correct') || questionDiv.querySelector('.incorrect')) {
+            return;
+        }
+
+        const options = questionDiv.getElementsByClassName('option');
+        options[correct].classList.add('correct');
+
+        if (selected === correct) {
+            score++;
+            optionDiv.classList.add('correct');
+            showFeedback(questionDiv, explanation, true);
+        } else {
+            optionDiv.classList.add('incorrect');
+            showFeedback(questionDiv, explanation, false);
+        }
+
+        answeredQuestions++;
+        updateScore();
+    }
+
+    function updateScore() {
+        const scoreDiv = document.getElementById('score');
+        const percentage = (score / quizData.questions.length) * 100;
+        scoreDiv.innerHTML = `
+                <h3>Your Score: ${score}/${quizData.questions.length}</h3>
+                <p>Percentage: ${percentage.toFixed(1)}%</p>
+                ${answeredQuestions === quizData.questions.length ?
+            `<p>${percentage >= 70 ? '🎉 Great job! You have a solid understanding of Node.js core modules!' :
+                'Keep learning! Review the explanations to strengthen your knowledge of Node.js core modules.'}</p>` : ''}
+            `;
+    }
+
+    let score = 0;
+    let answeredQuestions = 0;
+    createQuiz();
+</script>
+</body>
+</html>
