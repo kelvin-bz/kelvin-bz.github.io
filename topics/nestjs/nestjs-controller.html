@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            font-family: system-ui, -apple-system, sans-serif;
+            line-height: 1.6;
+        }
+        .question {
+            background-color: #fff;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .option {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .option:hover {
+            background-color: #f5f5f5;
+            transform: translateX(5px);
+        }
+        .selected {
+            background-color: #e3f2fd;
+        }
+        .correct {
+            background-color: #e8f5e9;
+            border-color: #81c784;
+        }
+        .incorrect {
+            background-color: #ffebee;
+            border-color: #e57373;
+        }
+        .input-answer {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            margin-top: 10px;
+            padding: 8px 16px;
+            background-color: #2196f3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #1976d2;
+        }
+        #score {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.2em;
+        }
+        .feedback {
+            margin-top: 10px;
+            padding: 15px;
+            border-radius: 4px;
+            display: none;
+            line-height: 1.6;
+        }
+        .code-block {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre;
+            overflow-x: auto;
+            line-height: 1.5;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            position: relative;
+        }
+        .copy-button {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .explanation-text {
+            margin-bottom: 10px;
+        }
+        .code-comment {
+            color: #6a737d;
+        }
+        .code-output {
+            color: #0a3069;
+            border-left: 3px solid #2196f3;
+            margin-left: 10px;
+            padding-left: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🔄 NestJS Controllers Quiz</h1>
+    <p>Test your knowledge of NestJS controllers, decorators, and request handling patterns!</p>
+    <div id="questions"></div>
+    <div id="score"></div>
+</div>
+
+
+<script>
+    const quizData = {
+        questions: [
+            {
+                type: "single",
+                question: "Which decorator is used to define a basic route handler in NestJS?",
+                options: [
+                    "@Route()",
+                    "@Handler()",
+                    "@Controller()",
+                    "@Path()"
+                ],
+                correct: 2,
+                explanation: {
+                    text: "@Controller() is the primary decorator for defining route handlers in NestJS. It marks a class as a controller that can handle incoming requests.",
+                    code: `
+import { Controller, Get } from '@nestjs/common';
+
+@Controller('cats')
+export class CatsController {
+    @Get()
+    findAll(): string[] {
+        return ['Fluffy', 'Whiskers', 'Mittens'];
+    }
+
+    @Get(':id')
+    findOne(@Param('id') id: string): string {
+        return \`Cat with id \${id}\`;
+    }
+}`
+                }
+            },
+            {
+                type: "single",
+                question: "What's the correct way to define a route parameter in NestJS?",
+                options: [
+                    "@Param(':id')",
+                    ":id in the route path",
+                    "{id} in the route path",
+                    "[id] in the route path"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "Route parameters in NestJS are defined using a colon (:) prefix in the route path, and accessed using the @Param() decorator.",
+                    code: `
+import { Controller, Get, Param } from '@nestjs/common';
+
+@Controller('products')
+export class ProductsController {
+    @Get(':category/:id')
+    findProduct(
+        @Param('category') category: string,
+        @Param('id') id: string
+    ) {
+        return {
+            category,
+            id,
+            message: \`Product \${id} in category \${category}\`
+        };
+    }
+}`
+                }
+            },
+
+            {
+                type: "single",
+                question: "How do you handle query parameters in NestJS routes?",
+                options: [
+                    "@QueryParam() decorator",
+                    "@Query() decorator",
+                    "@RequestQuery() decorator",
+                    "@Params() decorator"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "The @Query() decorator is used to extract query parameters from the request URL in NestJS.",
+                    code: `
+import { Controller, Get, Query } from '@nestjs/common';
+
+@Controller('search')
+export class SearchController {
+    @Get()
+    search(
+        @Query('q') searchTerm: string,
+        @Query('page') page: number = 1,
+        @Query('limit') limit: number = 10
+    ) {
+        return {
+            searchTerm,
+            page,
+            limit,
+            message: \`Searching for \${searchTerm} on page \${page}\`
+        };
+    }
+
+    // You can also get all query params as an object
+    @Get('all-params')
+    searchWithAllParams(@Query() allParams: any) {
+        return { params: allParams };
+    }
+}`
+                }
+            },
+            {
+                type: "single",
+                question: "What's the purpose of route wildcards in NestJS?",
+                options: [
+                    "To handle undefined routes",
+                    "To match multiple route patterns",
+                    "To redirect routes",
+                    "To validate routes"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "Route wildcards in NestJS allow you to match multiple route patterns using asterisk (*) characters.",
+                    code: `
+import { Controller, Get } from '@nestjs/common';
+
+@Controller('files')
+export class FilesController {
+    @Get('*.pdf')
+    getPdfFiles() {
+        return 'Handles all PDF files';
+    }
+
+    @Get('documents/**')
+    getAllDocuments() {
+        return 'Handles all routes under documents/';
+    }
+
+    @Get('download/*.*')
+    downloadAnyFile() {
+        return 'Handles any file download';
+    }
+}`
+                }
+            },
+            {
+                type: "single",
+                question: "Which decorator is used to inject a service into a controller?",
+                options: [
+                    "@Service()",
+                    "@Inject()",
+                    "@Injectable()",
+                    "constructor parameter"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "In many cases, you won’t see an explicit decorator because the framework automatically injects services via the constructor (e.g., constructor(private readonly service: MyService)).\n" +
+                        "However, if you’re injecting a custom provider or a named provider, @Inject('TOKEN') is indeed the decorator you’d use.",
+                    code: `
+import { Controller, Injectable, Inject } from '@nestjs/common';
+
+@Injectable()
+class UsersService {
+    findAll() {
+        return ['user1', 'user2'];
+    }
+}
+
+@Controller('users')
+export class UsersController {
+    constructor(
+        private readonly usersService: UsersService,
+        @Inject('CONFIG') private config: any
+    ) {}
+
+    @Get()
+    findAll() {
+        return this.usersService.findAll();
+    }
+}`
+                }
+            },
+            {
+                type: "single",
+                question: "How do you handle request body data in a NestJS controller?",
+                options: [
+                    "@RequestBody decorator",
+                    "@BodyParam decorator",
+                    "@Body decorator",
+                    "@Data decorator"
+                ],
+                correct: 2,
+                explanation: {
+                    text: "The @Body() decorator is used to extract and validate the request body in NestJS controllers.",
+                    code: `
+import { Controller, Post, Body } from '@nestjs/common';
+
+class CreateUserDto {
+    readonly name: string;
+    readonly email: string;
+}
+
+@Controller('users')
+export class UsersController {
+    @Post()
+    create(@Body() createUserDto: CreateUserDto) {
+        return {
+            message: 'User created',
+            user: createUserDto
+        };
+    }
+
+    @Post('partial')
+    updatePartial(@Body('name') name: string) {
+        return { message: 'Name updated', name };
+    }
+}`
+                }
+            },
+            {
+                type: "single",
+                question: "What's the correct way to handle response headers in a NestJS controller?",
+                options: [
+                    "@Headers decorator",
+                    "@Response decorator",
+                    "@Header decorator",
+                    "@SetHeader decorator"
+                ],
+                correct: 2,
+                explanation: {
+                    text: "The @Header() decorator is used to set custom response headers in NestJS controllers.",
+                    code: `
+import { Controller, Get, Header } from '@nestjs/common';
+
+@Controller('files')
+export class FilesController {
+    @Get('download')
+    @Header('Content-Type', 'application/json')
+    @Header('Cache-Control', 'none')
+    download() {
+        return { file: 'data' };
+    }
+
+    @Get('report')
+    @Header('Content-Disposition', 'attachment; filename=report.pdf')
+    getReport() {
+        return 'report data';
+    }
+}`
+                }
+            },
+            {
+                type: "single",
+                question: "Which decorator is used to extract a specific header from the request?",
+                options: [
+                    "@RequestHeader()",
+                    "@Header()",
+                    "@Headers()",
+                    "@SetHeader()"
+                ],
+                correct: 2,
+                explanation: {
+                    text: "@Headers() decorator can extract either all headers or a specific header from the request.",
+                    code: `
+import { Controller, Get, Headers } from '@nestjs/common';
+
+@Controller('api')
+export class ApiController {
+    @Get('info')
+    getInfo(@Headers() headers: Record<string, string>) {
+        return {
+            userAgent: headers['user-agent'],
+            host: headers.host
+        };
+    }
+
+    @Get('auth-check')
+    checkAuth(@Headers('authorization') auth: string) {
+        return {
+            hasAuth: !!auth,
+            token: auth?.replace('Bearer ', '')
+        };
+    }
+}`
+                }
+            },
+            {
+                type: "fill",
+                question: "Use @Controller('_______') to prefix all routes in a controller with 'api'.",
+                answer: "api",
+                explanation: {
+                    text: "The @Controller() decorator can take a prefix that will be applied to all routes in that controller.",
+                    code: `
+import { Controller, Get, Post } from '@nestjs/common';
+
+@Controller('api')
+export class ApiController {
+    @Get('users')  // Full path: /api/users
+    getUsers() {
+        return 'Getting users';
+    }
+
+    @Post('users') // Full path: /api/users
+    createUser() {
+        return 'Creating user';
+    }
+
+    @Get('settings') // Full path: /api/settings
+    getSettings() {
+        return 'Getting settings';
+    }
+}`
+                }
+            },
+            {
+                type: "fill",
+                question: "The _______ decorator is used to extract route parameters in NestJS.",
+                answer: "Param",
+                explanation: {
+                    text: "The @Param() decorator extracts parameters from the request URL in NestJS routes.",
+                    code: `
+import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
+
+@Controller('users')
+export class UsersController {
+    @Get(':id')
+    findOne(@Param('id') id: string) {
+        return \`User \${id}\`;
+    }
+
+    @Get(':userId/posts/:postId')
+    getUserPost(
+        @Param('userId', ParseIntPipe) userId: number,
+        @Param('postId', ParseIntPipe) postId: number
+    ) {
+        return {
+            userId,
+            postId,
+            message: \`Post \${postId} from user \${userId}\`
+        };
+    }
+}`
+                }
+            },
+            {
+                type: "fill",
+                question: "The @_______(HttpStatus.CREATED) decorator sets the response status code to 201.",
+                answer: "HttpCode",
+                explanation: {
+                    text: "The @HttpCode() decorator allows you to specify the HTTP status code returned by a route handler.",
+                    code: `
+import { Controller, Post, HttpCode, HttpStatus } from '@nestjs/common';
+
+@Controller('orders')
+export class OrdersController {
+    @Post()
+    @HttpCode(HttpStatus.CREATED)
+    create() {
+        return 'Order created';
+    }
+
+    @Post('validate')
+    @HttpCode(HttpStatus.OK) // Returns 200 instead of default 201
+    validate() {
+        return 'Order validated';
+    }
+}`
+                }
+            },
+            {
+                type: "fill",
+                question: "Use @_______ to handle raw request payload in NestJS controllers.",
+                answer: "RawBody",
+                explanation: {
+                    text: "The @RawBody() decorator allows access to the raw request payload buffer in NestJS controllers.",
+                    code: `
+import { Controller, Post, RawBody } from '@nestjs/common';
+
+@Controller('webhook')
+export class WebhookController {
+    @Post()
+    handleWebhook(@RawBody() rawBody: Buffer) {
+        // Verify webhook signature
+        const signature = createHmac('sha256', 'secret')
+            .update(rawBody)
+            .digest('hex');
+
+        // Process raw payload
+        const payload = JSON.parse(rawBody.toString());
+
+        return {
+            received: true,
+            signature,
+            payloadSize: rawBody.length
+        };
+    }
+}`
+                }
+            },
+            {
+                type: "fill",
+                question: "The _______ decorator is used to access the underlying platform's request object.",
+                answer: "Req",
+                explanation: {
+                    text: "The @Req() decorator provides access to the underlying platform's (Express by default) request object.",
+                    code: `
+import { Controller, Get, Req } from '@nestjs/common';
+import { Request } from 'express';
+
+@Controller('advanced')
+export class AdvancedController {
+    @Get()
+    findAll(@Req() request: Request) {
+        return {
+            url: request.url,
+            headers: request.headers,
+            cookies: request.cookies,
+            method: request.method
+        };
+    }
+
+    @Get('custom')
+    getCustom(@Req() req: Request) {
+        return {
+            userAgent: req.headers['user-agent'],
+            ip: req.ip,
+            secure: req.secure
+        };
+    }
+}`
+                }
+            },
+            {
+                type: "fill",
+                question: "Use res._______ to send a JSON response when using the response object.",
+                answer: "json",
+                explanation: {
+                    text: "When using the response object directly, use the json() method to send JSON responses.",
+                    code: `
+import { Controller, Get, Post, Res } from '@nestjs/common';
+import { Response } from 'express';
+
+@Controller('api')
+export class ApiController {
+    @Get('data')
+    getData(@Res() res: Response) {
+        return res
+            .status(200)
+            .json({
+                success: true,
+                data: { message: 'Hello World' }
+            });
+    }
+
+    @Post('create')
+    create(@Res() res: Response) {
+        return res
+            .status(201)
+            .json({
+                id: 'new-id',
+                created: new Date()
+            });
+    }
+}`
+                }
+            }
+        ]
+    };
+
+    window.copyToClipboard = function(text, button) {
+        navigator.clipboard.writeText(text).then(() => {
+            const originalText = button.textContent;
+            button.textContent = 'Copied!';
+            setTimeout(() => {
+                button.textContent = originalText;
+            }, 2000);
+        });
+    }
+
+    function formatCodeExample(code) {
+        return code.split('\n').map(line => {
+            if (line.includes('//')) {
+                const [code, comment] = line.split('//');
+                return `${code}<span class="code-comment">// ${comment}</span>`;
+            }
+            return line;
+        }).join('\n');
+    }
+
+    function createQuiz() {
+        const questionsContainer = document.getElementById('questions');
+
+        quizData.questions.forEach((q, index) => {
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'question';
+            questionDiv.innerHTML = `<div><strong>Question ${index + 1}:</strong> ${q.question}</div>`;
+
+            if (q.type === 'single') {
+                const optionsDiv = document.createElement('div');
+                optionsDiv.className = 'options';
+
+                q.options.forEach((option, optIndex) => {
+                    const optionDiv = document.createElement('div');
+                    optionDiv.className = 'option';
+                    optionDiv.textContent = option;
+                    optionDiv.onclick = () => checkAnswer(optIndex, q.correct, optionDiv, questionDiv, q.explanation);
+                    optionsDiv.appendChild(optionDiv);
+                });
+
+                questionDiv.appendChild(optionsDiv);
+            } else {
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.className = 'input-answer';
+                input.placeholder = 'Type your answer here';
+
+                const submitBtn = document.createElement('button');
+                submitBtn.textContent = 'Submit';
+                submitBtn.onclick = () => checkFillAnswer(input.value, q.answer, questionDiv, q.explanation);
+
+                questionDiv.appendChild(input);
+                questionDiv.appendChild(submitBtn);
+            }
+
+            const feedbackDiv = document.createElement('div');
+            feedbackDiv.className = 'feedback';
+            questionDiv.appendChild(feedbackDiv);
+
+            questionsContainer.appendChild(questionDiv);
+        });
+
+        updateScore();
+    }
+
+    function checkFillAnswer(input, answer, questionDiv, explanation) {
+        // Check if question has already been answered
+        if (questionDiv.querySelector('.feedback').style.display === 'block') {
+            return; // Already answered
+        }
+
+        // Get or create input element
+        const inputElement = questionDiv.querySelector('.input-answer');
+        if (inputElement) {
+            inputElement.disabled = true; // Disable input after submission
+        }
+
+        // Compare answer (case-insensitive)
+        if (input.toLowerCase().trim() === answer.toLowerCase().trim()) {
+            score++;
+            showFeedback(questionDiv, explanation, true);
+        } else {
+            showFeedback(questionDiv, {
+                text: `The correct answer is: ${answer}. ${explanation.text}`,
+                code: explanation.code
+            }, false);
+        }
+
+        answeredQuestions++;
+        updateScore();
+    }
+    function showFeedback(questionDiv, explanation, isCorrect) {
+        const feedbackDiv = questionDiv.querySelector('.feedback');
+        feedbackDiv.style.display = 'block';
+
+        const codeId = 'code-' + Math.random().toString(36).substr(2, 9);
+
+        feedbackDiv.innerHTML = `
+                <div class="explanation-text">
+                    ${isCorrect ? '✅' : '❌'} ${explanation.text}
+                </div>
+                ${explanation.code ? `
+                    <div class="code-block" id="${codeId}">
+                        ${formatCodeExample(explanation.code)}
+                        <button class="copy-button" onclick="copyToClipboard(\`${explanation.code}\`, this)">Copy</button>
+                    </div>
+                ` : ''}
+            `;
+
+        feedbackDiv.style.backgroundColor = isCorrect ? '#e8f5e9' : '#ffebee';
+    }
+
+    function checkAnswer(selected, correct, optionDiv, questionDiv, explanation) {
+        if (questionDiv.querySelector('.correct') || questionDiv.querySelector('.incorrect')) {
+            return;
+        }
+
+        const options = questionDiv.getElementsByClassName('option');
+        options[correct].classList.add('correct');
+
+        if (selected === correct) {
+            score++;
+            optionDiv.classList.add('correct');
+            showFeedback(questionDiv, explanation, true);
+        } else {
+            optionDiv.classList.add('incorrect');
+            showFeedback(questionDiv, explanation, false);
+        }
+
+        answeredQuestions++;
+        updateScore();
+    }
+
+    function updateScore() {
+        const scoreDiv = document.getElementById('score');
+        const percentage = (score / quizData.questions.length) * 100;
+        scoreDiv.innerHTML = `
+                <h3>Your Score: ${score}/${quizData.questions.length}</h3>
+                <p>Percentage: ${percentage.toFixed(1)}%</p>
+                ${answeredQuestions === quizData.questions.length ?
+            `<p>${percentage >= 70 ? '🎉 Great job! You have a solid understanding of Node.js core modules!' :
+                'Keep learning! Review the explanations to strengthen your knowledge of Node.js core modules.'}</p>` : ''}
+            `;
+    }
+
+    let score = 0;
+    let answeredQuestions = 0;
+    createQuiz();
+</script>
+</body>
+</html>
