@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            font-family: system-ui, -apple-system, sans-serif;
+            line-height: 1.6;
+        }
+        .question {
+            background-color: #fff;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .option {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .option:hover {
+            background-color: #f5f5f5;
+            transform: translateX(5px);
+        }
+        .selected {
+            background-color: #e3f2fd;
+        }
+        .correct {
+            background-color: #e8f5e9;
+            border-color: #81c784;
+        }
+        .incorrect {
+            background-color: #ffebee;
+            border-color: #e57373;
+        }
+        .input-answer {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            margin-top: 10px;
+            padding: 8px 16px;
+            background-color: #2196f3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #1976d2;
+        }
+        #score {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.2em;
+        }
+        .feedback {
+            margin-top: 10px;
+            padding: 15px;
+            border-radius: 4px;
+            display: none;
+            line-height: 1.6;
+        }
+        .code-block {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre;
+            overflow-x: auto;
+            line-height: 1.5;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            position: relative;
+        }
+        .copy-button {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .explanation-text {
+            margin-bottom: 10px;
+        }
+        .code-comment {
+            color: #6a737d;
+        }
+        .code-output {
+            color: #0a3069;
+            border-left: 3px solid #2196f3;
+            margin-left: 10px;
+            padding-left: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🔌 Node.js File Handling Quiz</h1>
+    <p>Test your knowledge of Node.js Websocket!</p>
+    <div id="questions"></div>
+    <div id="score"></div>
+</div>
+
+
+<script>
+    const quizData = {
+        questions: [
+            {
+                type: "single",
+                question: "Which scenario would be LEAST suitable for using WebSocket?",
+                options: [
+                    "Real-time chat application",
+                    "Static blog content delivery",
+                    "Live sports score updates",
+                    "Collaborative document editing"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "WebSocket is ideal for real-time, bidirectional communication scenarios but unnecessary for static content delivery where HTTP requests are sufficient.",
+                    code: `
+// Example of WebSocket use cases:
+
+// 1. Real-time Chat
+wss.on('connection', function connection(ws) {
+    ws.on('message', function incoming(message) {
+        // Broadcast message to all clients
+        wss.clients.forEach(function each(client) {
+            if (client.readyState === WebSocket.OPEN) {
+                client.send(message);
+            }
+        });
+    });
+});
+
+// 2. Live Sports Updates
+const scores = {
+    homeTeam: 0,
+    awayTeam: 0
+};
+
+function updateScore(newScore) {
+    scores = newScore;
+    // Send updates to all connected clients
+    wss.clients.forEach(function each(client) {
+        if (client.readyState === WebSocket.OPEN) {
+            client.send(JSON.stringify({
+                type: 'scoreUpdate',
+                data: scores
+            }));
+        }
+    });
+}
+
+// 3. Collaborative Editing
+let document = '';
+wss.on('connection', function connection(ws) {
+    ws.on('message', function incoming(change) {
+        const update = JSON.parse(change);
+        document = applyChange(document, update);
+        // Broadcast changes to all clients
+        broadcastDocumentUpdate(update);
+    });
+});
+
+// NOT recommended for WebSocket:
+// Static content delivery - Use HTTP instead
+app.get('/blog-post', (req, res) => {
+    res.send(blogContent); // Simple HTTP is better here
+});`
+                }
+            },
+            {
+                type: "single",
+                question: "Which module is commonly used to implement WebSocket server in Node.js?",
+                options: [
+                    "websocket",
+                    "ws",
+                    "socket",
+                    "node-websocket"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "The 'ws' module is one of the most popular WebSocket client and server implementations for Node.js.",
+                    code: `
+// Server implementation using ws
+const WebSocket = require('ws');
+
+const wss = new WebSocket.Server({ port: 8080 });
+
+wss.on('connection', function connection(ws) {
+    console.log('New client connected');
+
+    ws.on('message', function incoming(message) {
+        console.log('received: %s', message);
+
+        // Broadcast to all connected clients
+        wss.clients.forEach(function each(client) {
+            if (client !== ws && client.readyState === WebSocket.OPEN) {
+                client.send(message);
+            }
+        });
+    });
+
+    ws.send('Welcome to the WebSocket server!');
+});`
+                }
+            },
+            {
+                type: "single",
+                question: "How do you implement heartbeat to keep WebSocket connections alive?",
+                options: [
+                    "Using setInterval to ping clients",
+                    "WebSocket automatically handles it",
+                    "Using HTTP keep-alive",
+                    "Connections never timeout"
+                ],
+                correct: 0,
+                explanation: {
+                    text: "Implementing heartbeat using ping/pong messages helps detect stale connections and keep the connection alive.",
+                    code: `
+const WebSocket = require('ws');
+
+function heartbeat() {
+    this.isAlive = true;
+}
+
+const wss = new WebSocket.Server({ port: 8080 });
+
+wss.on('connection', function(ws) {
+    ws.isAlive = true;
+    ws.on('pong', heartbeat);
+});
+
+// Check if connections are alive every 30 seconds
+const interval = setInterval(function ping() {
+    wss.clients.forEach(function each(ws) {
+        if (ws.isAlive === false) {
+            return ws.terminate();
+        }
+
+        ws.isAlive = false;
+        ws.ping();
+    });
+}, 30000);
+
+wss.on('close', function close() {
+    clearInterval(interval);
+});`
+                }
+            },
+            {
+                type: "single",
+                question: "What's the best way to handle WebSocket connection errors?",
+                options: [
+                    "Ignore them",
+                    "Log and close connection",
+                    "Add event listeners for error and close events",
+                    "Restart the server"
+                ],
+                correct: 2,
+                explanation: {
+                    text: "Proper error handling involves listening to both 'error' and 'close' events and implementing appropriate recovery mechanisms.",
+                    code: `
+const WebSocket = require('ws');
+const ws = new WebSocket('ws://localhost:8080');
+
+ws.on('error', function error(err) {
+    console.error('WebSocket error occurred:', err);
+    // Implement recovery logic
+    setTimeout(connectWebSocket, 5000); // Reconnect after 5 seconds
+});
+
+ws.on('close', function close() {
+    console.log('Connection closed');
+    // Implement reconnection logic
+    if (!ws.intentionallyClosed) {
+        setTimeout(connectWebSocket, 1000);
+    }
+});
+
+function connectWebSocket() {
+    try {
+        const ws = new WebSocket('ws://localhost:8080');
+        // Setup event handlers
+        setupWebSocket(ws);
+    } catch (err) {
+        console.error('Connection failed:', err);
+        setTimeout(connectWebSocket, 5000);
+    }
+}`
+                }
+            },
+            {
+                type: "single",
+                question: "How do you implement secure WebSocket (WSS) in Node.js?",
+                options: [
+                    "Use regular WebSocket with HTTPS",
+                    "Add SSL/TLS certificates to WebSocket server",
+                    "Enable secure flag",
+                    "WebSocket is already secure"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "Secure WebSocket (WSS) requires SSL/TLS certificates and proper server configuration.",
+                    code: `
+const https = require('https');
+const WebSocket = require('ws');
+const fs = require('fs');
+
+// SSL certificate configuration
+const server = https.createServer({
+    cert: fs.readFileSync('/path/to/cert.pem'),
+    key: fs.readFileSync('/path/to/key.pem')
+});
+
+// Create secure WebSocket server
+const wss = new WebSocket.Server({ server });
+
+wss.on('connection', function connection(ws) {
+    console.log('Secure connection established');
+    ws.send('Welcome to secure WebSocket server');
+});
+
+server.listen(8080, function listening() {
+    console.log('Secure WebSocket server running on port 8080');
+});`
+                }
+            },
+            {
+                type: "single",
+                question: "What's the correct way to broadcast messages to all connected clients?",
+                options: [
+                    "Send individually to each client",
+                    "Use a broadcast method",
+                    "Iterate through wss.clients",
+                    "Use publish/subscribe"
+                ],
+                correct: 2,
+                explanation: {
+                    text: "Broadcasting involves iterating through all connected clients and sending messages to each active connection.",
+                    code: `
+const WebSocket = require('ws');
+const wss = new WebSocket.Server({ port: 8080 });
+
+function broadcast(message, sender) {
+    wss.clients.forEach(function each(client) {
+        // Check if client is open and not the sender
+        if (client.readyState === WebSocket.OPEN && client !== sender) {
+            try {
+                // Send as string if message is object
+                if (typeof message === 'object') {
+                    client.send(JSON.stringify(message));
+                } else {
+                    client.send(message);
+                }
+            } catch (e) {
+                console.error('Broadcast error:', e);
+            }
+        }
+    });
+}
+
+wss.on('connection', function connection(ws) {
+    ws.on('message', function incoming(message) {
+        // Broadcast received message
+        broadcast(message, ws);
+    });
+});`
+                }
+            },
+            {
+                type: "single",
+                question: "What is the recommended way to authenticate WebSocket connections in Node.js?",
+                options: [
+                    "Send credentials in the WebSocket message after connection",
+                    "Use HTTP headers during the initial WebSocket handshake",
+                    "Include authentication token in the WebSocket URL query parameters",
+                    "No authentication is needed for WebSockets"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "The most secure way to authenticate WebSocket connections is during the initial handshake using HTTP headers. This allows you to validate credentials before establishing the WebSocket connection.",
+                    code: `
+// Server-side WebSocket authentication
+const WebSocket = require('ws');
+const jwt = require('jsonwebtoken');
+
+const wss = new WebSocket.Server({
+    port: 8080,
+    // Verify client during handshake
+    verifyClient: async ({ req }, callback) => {
+        try {
+            // Get token from Authorization header
+            const authHeader = req.headers['authorization'];
+            if (!authHeader) {
+                return callback(false, 401, 'Unauthorized');
+            }
+
+            const token = authHeader.split(' ')[1];
+
+            // Verify JWT token
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+            // Attach user data to request for later use
+            req.user = decoded;
+
+            callback(true);
+        } catch (err) {
+            console.error('Authentication error:', err);
+            callback(false, 401, 'Invalid token');
+        }
+    }
+});
+
+// Handle authenticated connections
+wss.on('connection', function connection(ws, req) {
+    // req.user is available from verifyClient
+    const userId = req.user.id;
+
+    console.log(\`User \${userId} connected\`);
+
+    // Store user info in WebSocket instance
+    ws.userId = userId;
+
+    ws.on('message', function(message) {
+        // Handle authenticated messages
+        console.log(\`Message from user \${ws.userId}: \${message}\`);
+    });
+});
+
+// Client-side implementation
+const token = 'your-jwt-token';
+const ws = new WebSocket('ws://localhost:8080', {
+    headers: {
+        'Authorization': \`Bearer \${token}\`
+    }
+});
+
+ws.onopen = () => {
+    console.log('Connected with authentication');
+};
+
+ws.onerror = (error) => {
+    console.error('WebSocket error:', error);
+};`
+                }
+            },
+            {
+                type: "fill",
+                question: "The WebSocket _______ event is fired when a connection is established.",
+                answer: "open",
+                explanation: {
+                    text: "The 'open' event indicates that the WebSocket connection has been established successfully.",
+                    code: `
+const WebSocket = require('ws');
+const ws = new WebSocket('ws://localhost:8080');
+
+ws.on('open', function open() {
+    console.log('Connected to server');
+
+    // Send initial message
+    ws.send('Client connected!');
+});
+
+// Complete connection handling
+ws.on('open', function open() {
+    console.log('Connected');
+});
+
+ws.on('message', function message(data) {
+    console.log('Received:', data);
+});
+
+ws.on('close', function close() {
+    console.log('Disconnected');
+});
+
+ws.on('error', function error(err) {
+    console.error('WebSocket error:', err);
+});`
+                }
+            },
+            {
+                type: "fill",
+                question: "Use ws._______ to check if a WebSocket connection is still active.",
+                answer: "readyState",
+                explanation: {
+                    text: "The readyState property indicates the current state of the WebSocket connection.",
+                    code: `
+const WebSocket = require('ws');
+
+function checkConnection(ws) {
+    switch (ws.readyState) {
+        case WebSocket.CONNECTING:
+            console.log('Connecting...'); // 0
+            break;
+        case WebSocket.OPEN:
+            console.log('Connected');     // 1
+            break;
+        case WebSocket.CLOSING:
+            console.log('Closing...');    // 2
+            break;
+        case WebSocket.CLOSED:
+            console.log('Closed');        // 3
+            break;
+        default:
+            console.log('Unknown state');
+    }
+}
+
+// Usage in connection monitoring
+setInterval(() => {
+    wss.clients.forEach(client => {
+        if (client.readyState === WebSocket.OPEN) {
+            client.ping();
+        }
+    });
+}, 30000);`
+                }
+            },
+            {
+                type: "fill",
+                question: "The WebSocket _______ method gracefully closes the connection.",
+                answer: "close",
+                explanation: {
+                    text: "The close() method initiates a graceful shutdown of the WebSocket connection.",
+                    code: `
+const WebSocket = require('ws');
+const ws = new WebSocket('ws://localhost:8080');
+
+function closeConnection(code = 1000, reason = 'Normal closure') {
+    try {
+        ws.close(code, reason);
+    } catch (err) {
+        console.error('Error closing connection:', err);
+    }
+}
+
+// Handle different closure scenarios
+ws.on('close', function close(code, reason) {
+    console.log(\`Connection closed: \${code} - \${reason}\`);
+
+    // Common close codes:
+    // 1000: Normal closure
+    // 1001: Going away
+    // 1002: Protocol error
+    // 1003: Unsupported data
+    // 1006: Abnormal closure
+    // 1007: Invalid frame payload data
+    // 1008: Policy violation
+    // 1009: Message too big
+    // 1010: Mandatory extension
+    // 1011: Internal server error
+});`
+                }
+            },
+            {
+                type: "fill",
+                question: "Use the _______ event to handle incoming messages in WebSocket.",
+                answer: "message",
+                explanation: {
+                    text: "The 'message' event is triggered when data is received through the WebSocket connection.",
+                    code: `
+const WebSocket = require('ws');
+const wss = new WebSocket.Server({ port: 8080 });
+
+wss.on('connection', function connection(ws) {
+    ws.on('message', function incoming(data) {
+        try {
+            // Handle different types of messages
+            if (data instanceof Buffer) {
+                console.log('Received binary data');
+                // Handle binary data
+            } else {
+                // Parse JSON messages
+                const message = JSON.parse(data);
+
+                switch(message.type) {
+                    case 'chat':
+                        handleChatMessage(message);
+                        break;
+                    case 'notification':
+                        handleNotification(message);
+                        break;
+                    default:
+                        console.log('Unknown message type:', message.type);
+                }
+            }
+        } catch (err) {
+            console.error('Error processing message:', err);
+        }
+    });
+});`
+                }
+            },
+            {
+                type: "fill",
+                question: "The _______ property in ws module defines the maximum message size in bytes.",
+                answer: "maxPayload",
+                explanation: {
+                    text: "maxPayload sets the maximum allowed message size to prevent memory overflow attacks.",
+                    code: `
+const WebSocket = require('ws');
+
+// Create server with message size limit
+const wss = new WebSocket.Server({
+    port: 8080,
+    maxPayload: 50 * 1024, // 50KB limit
+    perMessageDeflate: {
+        zlibDeflateOptions: {
+            // Tune compression
+            chunkSize: 1024,
+            memLevel: 7,
+            level: 3
+        },
+        zlibInflateOptions: {
+            chunkSize: 10 * 1024
+        },
+        // Below means no context takeover
+        clientNoContextTakeover: true,
+        serverNoContextTakeover: true,
+        // Below is the server threshold
+        serverMaxWindowBits: 10,
+        // Below is the client threshold
+        clientMaxWindowBits: 10,
+        // Disable compression
+        concurrencyLimit: 10
+    }
+});
+
+// Handle payload errors
+wss.on('connection', function connection(ws) {
+    ws.on('error', function error(err) {
+        if (err.code === 'WS_ERR_UNSUPPORTED_MESSAGE_LENGTH') {
+            console.error('Message exceeds size limit');
+        }
+    });
+});`
+                }
+            }
+        ]
+    };
+
+
+    window.copyToClipboard = function(text, button) {
+        navigator.clipboard.writeText(text).then(() => {
+            const originalText = button.textContent;
+            button.textContent = 'Copied!';
+            setTimeout(() => {
+                button.textContent = originalText;
+            }, 2000);
+        });
+    }
+
+    function formatCodeExample(code) {
+        return code.split('\n').map(line => {
+            if (line.includes('//')) {
+                const [code, comment] = line.split('//');
+                return `${code}<span class="code-comment">// ${comment}</span>`;
+            }
+            return line;
+        }).join('\n');
+    }
+
+    function createQuiz() {
+        const questionsContainer = document.getElementById('questions');
+
+        quizData.questions.forEach((q, index) => {
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'question';
+            questionDiv.innerHTML = `<div><strong>Question ${index + 1}:</strong> ${q.question}</div>`;
+
+            if (q.type === 'single') {
+                const optionsDiv = document.createElement('div');
+                optionsDiv.className = 'options';
+
+                q.options.forEach((option, optIndex) => {
+                    const optionDiv = document.createElement('div');
+                    optionDiv.className = 'option';
+                    optionDiv.textContent = option;
+                    optionDiv.onclick = () => checkAnswer(optIndex, q.correct, optionDiv, questionDiv, q.explanation);
+                    optionsDiv.appendChild(optionDiv);
+                });
+
+                questionDiv.appendChild(optionsDiv);
+            } else {
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.className = 'input-answer';
+                input.placeholder = 'Type your answer here';
+
+                const submitBtn = document.createElement('button');
+                submitBtn.textContent = 'Submit';
+                submitBtn.onclick = () => checkFillAnswer(input.value, q.answer, questionDiv, q.explanation);
+
+                questionDiv.appendChild(input);
+                questionDiv.appendChild(submitBtn);
+            }
+
+            const feedbackDiv = document.createElement('div');
+            feedbackDiv.className = 'feedback';
+            questionDiv.appendChild(feedbackDiv);
+
+            questionsContainer.appendChild(questionDiv);
+        });
+
+        updateScore();
+    }
+
+    function checkFillAnswer(input, answer, questionDiv, explanation) {
+        // Check if question has already been answered
+        if (questionDiv.querySelector('.feedback').style.display === 'block') {
+            return; // Already answered
+        }
+
+        // Get or create input element
+        const inputElement = questionDiv.querySelector('.input-answer');
+        if (inputElement) {
+            inputElement.disabled = true; // Disable input after submission
+        }
+
+        // Compare answer (case-insensitive)
+        if (input.toLowerCase().trim() === answer.toLowerCase().trim()) {
+            score++;
+            showFeedback(questionDiv, explanation, true);
+        } else {
+            showFeedback(questionDiv, {
+                text: `The correct answer is: ${answer}. ${explanation.text}`,
+                code: explanation.code
+            }, false);
+        }
+
+        answeredQuestions++;
+        updateScore();
+    }
+    function showFeedback(questionDiv, explanation, isCorrect) {
+        const feedbackDiv = questionDiv.querySelector('.feedback');
+        feedbackDiv.style.display = 'block';
+
+        const codeId = 'code-' + Math.random().toString(36).substr(2, 9);
+
+        feedbackDiv.innerHTML = `
+                <div class="explanation-text">
+                    ${isCorrect ? '✅' : '❌'} ${explanation.text}
+                </div>
+                ${explanation.code ? `
+                    <div class="code-block" id="${codeId}">
+                        ${formatCodeExample(explanation.code)}
+                        <button class="copy-button" onclick="copyToClipboard(\`${explanation.code}\`, this)">Copy</button>
+                    </div>
+                ` : ''}
+            `;
+
+        feedbackDiv.style.backgroundColor = isCorrect ? '#e8f5e9' : '#ffebee';
+    }
+
+    function checkAnswer(selected, correct, optionDiv, questionDiv, explanation) {
+        if (questionDiv.querySelector('.correct') || questionDiv.querySelector('.incorrect')) {
+            return;
+        }
+
+        const options = questionDiv.getElementsByClassName('option');
+        options[correct].classList.add('correct');
+
+        if (selected === correct) {
+            score++;
+            optionDiv.classList.add('correct');
+            showFeedback(questionDiv, explanation, true);
+        } else {
+            optionDiv.classList.add('incorrect');
+            showFeedback(questionDiv, explanation, false);
+        }
+
+        answeredQuestions++;
+        updateScore();
+    }
+
+    function updateScore() {
+        const scoreDiv = document.getElementById('score');
+        const percentage = (score / quizData.questions.length) * 100;
+        scoreDiv.innerHTML = `
+                <h3>Your Score: ${score}/${quizData.questions.length}</h3>
+                <p>Percentage: ${percentage.toFixed(1)}%</p>
+                ${answeredQuestions === quizData.questions.length ?
+            `<p>${percentage >= 70 ? '🎉 Great job! You have a solid understanding of Node.js core modules!' :
+                'Keep learning! Review the explanations to strengthen your knowledge of Node.js core modules.'}</p>` : ''}
+            `;
+    }
+
+    let score = 0;
+    let answeredQuestions = 0;
+    createQuiz();
+</script>
+</body>
+</html>
