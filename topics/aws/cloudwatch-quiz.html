@@ -4,17 +4,17 @@
     <meta charset="UTF-8">
     <style>
         .container {
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
             padding: 20px;
             font-family: system-ui, -apple-system, sans-serif;
+            line-height: 1.6;
         }
         .question {
-            margin-bottom: 20px;
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
             background-color: #fff;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         .options {
@@ -38,11 +38,11 @@
             background-color: #e3f2fd;
         }
         .correct {
-            background-color: #c8e6c9;
+            background-color: #e8f5e9;
             border-color: #81c784;
         }
         .incorrect {
-            background-color: #ffcdd2;
+            background-color: #ffebee;
             border-color: #e57373;
         }
         .input-answer {
@@ -76,228 +76,671 @@
         }
         .feedback {
             margin-top: 10px;
-            padding: 10px;
+            padding: 15px;
             border-radius: 4px;
             display: none;
+            line-height: 1.6;
         }
-        code {
+        .code-block {
             background-color: #f5f5f5;
-            padding: 2px 4px;
+            padding: 15px;
             border-radius: 4px;
-            font-family: monospace;
+            margin: 10px 0;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre;
+            overflow-x: auto;
+            line-height: 1.5;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            position: relative;
+        }
+        .copy-button {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .explanation-text {
+            margin-bottom: 10px;
+        }
+        .code-comment {
+            color: #6a737d;
+        }
+        .code-output {
+            color: #0a3069;
+            border-left: 3px solid #2196f3;
+            margin-left: 10px;
+            padding-left: 10px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>☁️ AWS CloudWatch Quiz</h1>
-        <p>Test your knowledge of AWS CloudWatch monitoring, metrics, logs, and alerts!</p>
-        <div id="questions"></div>
-        <div id="score"></div>
-    </div>
 
-    <script>
-        const quizData = {
-            questions: [
+<div class="container">
+    <h1>🔐 AWS S3 Encryption Quiz</h1>
+    <p>Test your knowledge of S3 encryption methods and security best practices!</p>
+    <div id="questions"></div>
+    <div id="score"></div>
+</div>
+
+<script>
+    const quizData = {
+        questions: [
+            {
+                type: "single",
+                question: "What is the default metric resolution (monitoring interval) in CloudWatch for basic monitoring?",
+                options: [
+                    "1 minute",
+                    "3 minutes",
+                    "5 minutes",
+                    "10 minutes"
+                ],
+                correct: 2,
+                explanation: {
+                    text: "Basic monitoring in CloudWatch provides metrics at 5-minute intervals at no additional charge. For more frequent monitoring, you can enable detailed monitoring for 1-minute intervals.",
+                    code: `
+import { CloudWatchClient, PutMetricDataCommand } from "@aws-sdk/client-cloudwatch";
+
+async function publishMetric() {
+    const client = new CloudWatchClient({});
+
+    try {
+        const command = new PutMetricDataCommand({
+            Namespace: "MyApplication",
+            MetricData: [{
+                MetricName: "RequestLatency",
+                Value: 100,
+                Unit: "Milliseconds",
+                StorageResolution: 60  // 1-minute resolution (detailed monitoring)
+                // Default resolution is 300 (5-minutes) if not specified
+            }]
+        });
+
+        await client.send(command);
+        console.log("Metric published successfully");
+    } catch (error) {
+        console.error("Error publishing metric:", error);
+    }
+}`
+                }
+            },
+            {
+                type: "single",
+                question: "Which CloudWatch feature allows you to automatically respond to resource changes in your AWS environment?",
+                options: [
+                    "CloudWatch Metrics",
+                    "CloudWatch Events",
+                    "CloudWatch Logs",
+                    "CloudWatch Dashboard"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "CloudWatch Events (now part of Amazon EventBridge) delivers a near real-time stream of system events that describe changes in AWS resources, allowing automated response to these changes.",
+                    code: `
+import { EventBridgeClient, PutRuleCommand, PutTargetsCommand } from "@aws-sdk/client-eventbridge";
+
+async function createEventRule() {
+    const client = new EventBridgeClient({});
+
+    try {
+        // Create rule
+        await client.send(new PutRuleCommand({
+            Name: "EC2StateChange",
+            Description: "Monitor EC2 instance state changes",
+            EventPattern: JSON.stringify({
+                source: ["aws.ec2"],
+                detailType: ["EC2 Instance State-change Notification"]
+            }),
+            State: "ENABLED"
+        }));
+
+        // Add Lambda function as target
+        await client.send(new PutTargetsCommand({
+            Rule: "EC2StateChange",
+            Targets: [{
+                Id: "SendToLambda",
+                Arn: "arn:aws:lambda:region:account:function:myFunction"
+            }]
+        }));
+
+        console.log("Event rule created successfully");
+    } catch (error) {
+        console.error("Error creating event rule:", error);
+    }
+}`
+                }
+            },
+            {
+                type: "single",
+                question: "How long are CloudWatch log events retained by default?",
+                options: [
+                    "1 month",
+                    "2 months",
+                    "3 months",
+                    "Indefinitely"
+                ],
+                correct: 0,
+                explanation: {
+                    text: "By default, CloudWatch Logs retains log events for 1 month. You can modify the retention period for each log group, with possible values ranging from 1 day to 10 years, or set it to never expire.",
+                    code: `
+import { CloudWatchLogsClient, PutRetentionPolicyCommand } from "@aws-sdk/client-cloudwatch-logs";
+
+async function setLogRetention() {
+    const client = new CloudWatchLogsClient({});
+
+    try {
+        const command = new PutRetentionPolicyCommand({
+            logGroupName: "/aws/lambda/myFunction",
+            retentionInDays: 90  // Set to 90 days
+        });
+
+        await client.send(command);
+        console.log("Log retention policy updated");
+    } catch (error) {
+        console.error("Error setting retention policy:", error);
+    }
+}`
+                }
+            },
+            {
+                type: "single",
+                question: "Which of these is NOT a valid CloudWatch metric statistic?",
+                options: [
+                    "Average",
+                    "Sum",
+                    "Median",
+                    "Maximum"
+                ],
+                correct: 2,
+                explanation: {
+                    text: "CloudWatch supports several statistics including Average, Sum, Minimum, Maximum, Sample Count, and percentiles, but Median is not a supported statistic type. Use percentiles (p50) for median-like measurements.",
+                    code: `
+import { CloudWatchClient, GetMetricStatisticsCommand } from "@aws-sdk/client-cloudwatch";
+
+async function getMetricStats() {
+    const client = new CloudWatchClient({});
+
+    try {
+        const command = new GetMetricStatisticsCommand({
+            Namespace: "AWS/EC2",
+            MetricName: "CPUUtilization",
+            Statistics: [
+                "Average",
+                "Maximum",
+                "Minimum",
+                "SampleCount",
+                "Sum"
+            ],
+            ExtendedStatistics: [
+                "p50",  // Use p50 for median equivalent
+                "p90",
+                "p99"
+            ],
+            Period: 300,  // 5 minutes
+            StartTime: new Date(Date.now() - 3600000),  // 1 hour ago
+            EndTime: new Date()
+        });
+
+        const response = await client.send(command);
+        console.log("Metric statistics:", response.Datapoints);
+    } catch (error) {
+        console.error("Error getting statistics:", error);
+    }
+}`
+                }
+            },
+            {
+                type: "single",
+                question: "What is the minimum period for a CloudWatch alarm evaluation?",
+                options: [
+                    "10 seconds",
+                    "30 seconds",
+                    "1 minute",
+                    "5 minutes"
+                ],
+                correct: 0,
+                explanation: {
+                    text: "CloudWatch alarms can be evaluated as frequently as 10 seconds with high-resolution custom metrics. Standard resolution metrics can be evaluated at a minimum of 1-minute intervals.",
+                    code: `
+import { CloudWatchClient, PutMetricAlarmCommand } from "@aws-sdk/client-cloudwatch";
+
+async function createHighResolutionAlarm() {
+    const client = new CloudWatchClient({});
+
+    try {
+        const command = new PutMetricAlarmCommand({
+            AlarmName: "HighResolutionAlarm",
+            MetricName: "TransactionLatency",
+            Namespace: "MyApplication",
+            Period: 10,  // 10-second evaluation
+            EvaluationPeriods: 3,
+            Threshold: 100,
+            ComparisonOperator: "GreaterThanThreshold",
+            TreatMissingData: "breaching",
+            AlarmDescription: "Alarm when latency exceeds 100ms",
+            AlarmActions: ["arn:aws:sns:region:account:topic:Alerts"],
+            StatisticType: "Average"
+        });
+
+        await client.send(command);
+        console.log("High-resolution alarm created");
+    } catch (error) {
+        console.error("Error creating alarm:", error);
+    }
+}`
+                }
+            },
+            {
+                type: "fill",
+                question: "The CloudWatch feature that allows you to create visualizations of your metrics is called CloudWatch ______.",
+                answer: "dashboard",
+                explanation: {
+                    text: "CloudWatch Dashboards are customizable home pages in the CloudWatch console that you can use to monitor your resources in a single view.",
+                    code: `
+import { CloudWatchClient, PutDashboardCommand } from "@aws-sdk/client-cloudwatch";
+
+async function createDashboard() {
+    const client = new CloudWatchClient({});
+
+    const dashboardBody = {
+        widgets: [{
+            type: "metric",
+            properties: {
+                metrics: [
+                    ["AWS/EC2", "CPUUtilization", "InstanceId", "i-1234567890"]
+                ],
+                period: 300,
+                stat: "Average",
+                region: "us-west-2",
+                title: "EC2 CPU Utilization"
+            }
+        }]
+    };
+
+    try {
+        const command = new PutDashboardCommand({
+            DashboardName: "ApplicationMetrics",
+            DashboardBody: JSON.stringify(dashboardBody)
+        });
+
+        await client.send(command);
+        console.log("Dashboard created successfully");
+    } catch (error) {
+        console.error("Error creating dashboard:", error);
+    }
+}`
+                }
+            },
+            {
+                type: "fill",
+                question: "CloudWatch ______ are points of data about your resources and applications that CloudWatch collects and tracks.",
+                answer: "metrics",
+                explanation: {
+                    text: "CloudWatch Metrics are data points about your resources' performance. They are the fundamental concept in CloudWatch monitoring.",
+                    code: `
+import { CloudWatchClient, PutMetricDataCommand } from "@aws-sdk/client-cloudwatch";
+
+async function publishCustomMetrics() {
+    const client = new CloudWatchClient({});
+
+    try {
+        const command = new PutMetricDataCommand({
+            Namespace: "MyApplication",
+            MetricData: [
                 {
-                    type: "single",
-                    question: "What is the default metric resolution (monitoring interval) in CloudWatch for basic monitoring?",
-                    options: [
-                        "1 minute",
-                        "3 minutes",
-                        "5 minutes",
-                        "10 minutes"
+                    MetricName: "OrderCount",
+                    Value: 42,
+                    Unit: "Count",
+                    Dimensions: [
+                        {
+                            Name: "ServiceName",
+                            Value: "OrderService"
+                        }
                     ],
-                    correct: 2,
-                    explanation: "Basic monitoring in CloudWatch provides metrics at 5-minute intervals at no additional charge. For more frequent monitoring, you can enable detailed monitoring for 1-minute intervals."
+                    Timestamp: new Date()
                 },
                 {
-                    type: "single",
-                    question: "Which CloudWatch feature allows you to automatically respond to resource changes in your AWS environment?",
-                    options: [
-                        "CloudWatch Metrics",
-                        "CloudWatch Events",
-                        "CloudWatch Logs",
-                        "CloudWatch Dashboard"
-                    ],
-                    correct: 1,
-                    explanation: "CloudWatch Events (now part of Amazon EventBridge) delivers a near real-time stream of system events that describe changes in AWS resources, allowing automated response to these changes."
-                },
-                {
-                    type: "single",
-                    question: "How long are CloudWatch log events retained by default?",
-                    options: [
-                        "1 month",
-                        "2 months",
-                        "3 months",
-                        "Indefinitely"
-                    ],
-                    correct: 0,
-                    explanation: "By default, CloudWatch Logs retains log events for 1 month. You can modify the retention period for each log group, with possible values ranging from 1 day to 10 years, or set it to never expire."
-                },
-                {
-                    type: "single",
-                    question: "Which of these is NOT a valid CloudWatch metric statistic?",
-                    options: [
-                        "Average",
-                        "Sum",
-                        "Median",
-                        "Maximum"
-                    ],
-                    correct: 2,
-                    explanation: "CloudWatch supports several statistics including Average, Sum, Minimum, Maximum, Sample Count, and percentiles, but Median is not a supported statistic type. Use percentiles (p50) for median-like measurements."
-                },
-                {
-                    type: "single",
-                    question: "What is the minimum period for a CloudWatch alarm evaluation?",
-                    options: [
-                        "10 seconds",
-                        "30 seconds",
-                        "1 minute",
-                        "5 minutes"
-                    ],
-                    correct: 0,
-                    explanation: "CloudWatch alarms can be evaluated as frequently as 10 seconds with high-resolution custom metrics. Standard resolution metrics can be evaluated at a minimum of 1-minute intervals."
-                },
-                {
-                    type: "fill",
-                    question: "The CloudWatch feature that allows you to create visualizations of your metrics is called CloudWatch ______.",
-                    answer: "dashboard",
-                    explanation: "CloudWatch Dashboards are customizable home pages in the CloudWatch console that you can use to monitor your resources in a single view."
-                },
-                {
-                    type: "fill",
-                    question: "CloudWatch ______ are points of data about your resources and applications that CloudWatch collects and tracks.",
-                    answer: "metrics",
-                    explanation: "CloudWatch Metrics are data points about your resources' performance. They are the fundamental concept in CloudWatch monitoring."
-                },
-                {
-                    type: "fill",
-                    question: "To collect custom metrics from your applications and services, you need to use the CloudWatch ______ API.",
-                    answer: "PutMetricData",
-                    explanation: "The PutMetricData API call is used to publish custom metric data points to CloudWatch from your applications."
-                },
-                {
-                    type: "fill",
-                    question: "CloudWatch ______ Agent is used to collect additional system-level metrics from Amazon EC2 instances and on-premises servers.",
-                    answer: "unified",
-                    explanation: "The CloudWatch Unified Agent is the recommended way to collect additional system-level metrics and logs from your EC2 instances and on-premises servers."
-                },
-                {
-                    type: "fill",
-                    question: "CloudWatch Logs ______ allows you to search and analyze your log data using a powerful query language.",
-                    answer: "insights",
-                    explanation: "CloudWatch Logs Insights enables you to search and analyze log data interactively using a purpose-built query language."
+                    MetricName: "OrderValue",
+                    Value: 123.45,
+                    Unit: "None",
+                    Dimensions: [
+                        {
+                            Name: "ServiceName",
+                            Value: "OrderService"
+                        }
+                    ]
                 }
             ]
-        };
+        });
 
-        let score = 0;
-        let answeredQuestions = 0;
-
-        function createQuiz() {
-            const questionsContainer = document.getElementById('questions');
-            
-            quizData.questions.forEach((q, index) => {
-                const questionDiv = document.createElement('div');
-                questionDiv.className = 'question';
-                questionDiv.innerHTML = `<div><strong>Question ${index + 1}:</strong> ${q.question}</div>`;
-
-                if (q.type === 'single') {
-                    const optionsDiv = document.createElement('div');
-                    optionsDiv.className = 'options';
-                    
-                    q.options.forEach((option, optIndex) => {
-                        const optionDiv = document.createElement('div');
-                        optionDiv.className = 'option';
-                        optionDiv.textContent = option;
-                        optionDiv.onclick = () => checkAnswer(optIndex, q.correct, optionDiv, questionDiv, q.explanation);
-                        optionsDiv.appendChild(optionDiv);
-                    });
-
-                    questionDiv.appendChild(optionsDiv);
-                } else {
-                    const input = document.createElement('input');
-                    input.type = 'text';
-                    input.className = 'input-answer';
-                    input.placeholder = 'Type your answer here';
-                    
-                    const submitBtn = document.createElement('button');
-                    submitBtn.textContent = 'Submit';
-                    submitBtn.onclick = () => checkFillAnswer(input.value, q.answer, questionDiv, q.explanation);
-                    
-                    questionDiv.appendChild(input);
-                    questionDiv.appendChild(submitBtn);
+        await client.send(command);
+        console.log("Custom metrics published");
+    } catch (error) {
+        console.error("Error publishing metrics:", error);
+    }
+}`
                 }
+            },
+            {
+                type: "fill",
+                question: "To collect custom metrics from your applications and services, you need to use the CloudWatch ______ API.",
+                answer: "PutMetricData",
+                explanation: {
+                    text: "The PutMetricData API call is used to publish custom metric data points to CloudWatch from your applications.",
+                    code: `
+import { CloudWatchClient, PutMetricDataCommand } from "@aws-sdk/client-cloudwatch";
 
-                const feedbackDiv = document.createElement('div');
-                feedbackDiv.className = 'feedback';
-                questionDiv.appendChild(feedbackDiv);
-                
-                questionsContainer.appendChild(questionDiv);
+async function publishBatchMetrics() {
+    const client = new CloudWatchClient({});
+
+    try {
+        const metrics = [];
+        // Collect metrics over time
+        for(let i = 0; i < 20; i++) {
+            metrics.push({
+                MetricName: "APILatency",
+                Value: Math.random() * 100,
+                Unit: "Milliseconds",
+                Dimensions: [
+                    {
+                        Name: "Endpoint",
+                        Value: "/api/users"
+                    }
+                ],
+                Timestamp: new Date(Date.now() - (i * 60000))  // Last 20 minutes
             });
-
-            updateScore();
         }
 
-        function checkAnswer(selected, correct, optionDiv, questionDiv, explanation) {
-            if (questionDiv.querySelector('.correct') || questionDiv.querySelector('.incorrect')) {
-                return; // Already answered
-            }
+        // Batch publish (up to 20 metrics per call)
+        const command = new PutMetricDataCommand({
+            Namespace: "MyApplication",
+            MetricData: metrics
+        });
 
-            const options = questionDiv.getElementsByClassName('option');
-            options[correct].classList.add('correct');
-            
-            if (selected === correct) {
-                score++;
-                optionDiv.classList.add('correct');
-                showFeedback(questionDiv, `Correct! 🎉 ${explanation}`, true);
+        await client.send(command);
+        console.log("Batch metrics published");
+    } catch (error) {
+        console.error("Error publishing batch metrics:", error);
+    }
+}`
+                }
+            },
+            {
+                type: "fill",
+                question: "CloudWatch ______ Agent is used to collect additional system-level metrics from Amazon EC2 instances and on-premises servers.",
+                answer: "unified",
+                explanation: {
+                    text: "The CloudWatch Unified Agent is the recommended way to collect additional system-level metrics and logs from your EC2 instances and on-premises servers.",
+                    code: `
+// Example CloudWatch Agent Configuration
+{
+    "agent": {
+        "metrics_collection_interval": 60,
+        "run_as_user": "cwagent"
+    },
+    "metrics": {
+        "metrics_collected": {
+            "cpu": {
+                "measurement": [
+                    "cpu_usage_idle",
+                    "cpu_usage_user",
+                    "cpu_usage_system"
+                ],
+                "metrics_collection_interval": 60,
+                "totalcpu": true
+            },
+            "disk": {
+                "measurement": [
+                    "used_percent",
+                    "inodes_free"
+                ],
+                "metrics_collection_interval": 60,
+                "resources": [
+                    "*"
+                ]
+            },
+            "memory": {
+                "measurement": [
+                    "mem_used_percent",
+                    "mem_available",
+                    "mem_total"
+                ],
+                "metrics_collection_interval": 60
+            }
+        }
+    },
+    "logs": {
+        "logs_collected": {
+            "files": {
+                "collect_list": [
+                    {
+                        "file_path": "/var/log/application.log",
+                        "log_group_name": "application-logs",
+                        "log_stream_name": "{instance_id}-application"
+                    }
+                ]
+            }
+        }
+    }
+}`
+                }
+            },
+            {
+                type: "fill",
+                question: "CloudWatch Logs ______ allows you to search and analyze your log data using a powerful query language.",
+                answer: "insights",
+                explanation: {
+                    text: "CloudWatch Logs Insights enables you to search and analyze log data interactively using a purpose-built query language.",
+                    code: `
+// Example CloudWatch Logs Insights Queries
+
+// Count errors by type
+fields @timestamp, @message
+| filter @message like /Error/
+| parse @message /Error: (?<error_type>.*?):/
+| stats count(*) as error_count by error_type
+| sort error_count desc
+
+// Calculate average response time by API endpoint
+fields @timestamp, @message
+| parse @message /path=(?<endpoint>\/api\/[^ ]*) latency=(?<latency>[0-9]*)/
+| stats avg(latency) as avg_latency by endpoint
+| sort avg_latency desc
+
+// Find slow database queries
+fields @timestamp, @message
+| filter @message like /SLOW QUERY/
+| parse @message /duration: (?<duration>[0-9\.]*) sec/
+| filter duration > 1
+| sort by duration desc
+| limit 20
+
+// Track 5xx errors over time
+fields @timestamp, status
+| filter status >= 500
+| stats count(*) as error_count by bin(5m)
+| sort @timestamp desc`
+                }
+            }
+        ]
+    };
+
+    window.copyToClipboard = function(text, button) {
+        navigator.clipboard.writeText(text).then(() => {
+            const originalText = button.textContent;
+            button.textContent = 'Copied!';
+            setTimeout(() => {
+                button.textContent = originalText;
+            }, 2000);
+        }).catch(err => {
+            console.error('Failed to copy:', err);
+            button.textContent = 'Failed to copy';
+            setTimeout(() => {
+                button.textContent = originalText;
+            }, 2000);
+        });
+    }
+
+
+    function formatCodeExample(code) {
+        return code.split('\n').map(line => {
+            if (line.includes('//')) {
+                const [code, comment] = line.split('//');
+                return `${code}<span class="code-comment">// ${comment}</span>`;
+            }
+            return line;
+        }).join('\n');
+    }
+
+    function createQuiz() {
+        const questionsContainer = document.getElementById('questions');
+
+        quizData.questions.forEach((q, index) => {
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'question';
+            questionDiv.innerHTML = `<div><strong>Question ${index + 1}:</strong> ${q.question}</div>`;
+
+            if (q.type === 'single') {
+                const optionsDiv = document.createElement('div');
+                optionsDiv.className = 'options';
+
+                q.options.forEach((option, optIndex) => {
+                    const optionDiv = document.createElement('div');
+                    optionDiv.className = 'option';
+                    optionDiv.textContent = option;
+                    optionDiv.onclick = () => checkAnswer(optIndex, q.correct, optionDiv, questionDiv, q.explanation);
+                    optionsDiv.appendChild(optionDiv);
+                });
+
+                questionDiv.appendChild(optionsDiv);
             } else {
-                optionDiv.classList.add('incorrect');
-                showFeedback(questionDiv, `Incorrect. ${explanation}`, false);
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.className = 'input-answer';
+                input.placeholder = 'Type your answer here';
+
+                const submitBtn = document.createElement('button');
+                submitBtn.textContent = 'Submit';
+                submitBtn.onclick = () => checkFillAnswer(input.value, q.answer, questionDiv, q.explanation);
+
+                questionDiv.appendChild(input);
+                questionDiv.appendChild(submitBtn);
             }
 
-            answeredQuestions++;
-            updateScore();
+            const feedbackDiv = document.createElement('div');
+            feedbackDiv.className = 'feedback';
+            questionDiv.appendChild(feedbackDiv);
+
+            questionsContainer.appendChild(questionDiv);
+        });
+
+        updateScore();
+    }
+
+    function checkFillAnswer(input, answer, questionDiv, explanation) {
+        // Check if question has already been answered
+        if (questionDiv.querySelector('.feedback').style.display === 'block') {
+            return; // Already answered
         }
 
-        function checkFillAnswer(input, correct, questionDiv, explanation) {
-            if (questionDiv.querySelector('.feedback').style.display === 'block') {
-                return; // Already answered
-            }
-
-            if (input.toLowerCase().trim() === correct.toLowerCase().trim()) {
-                score++;
-                showFeedback(questionDiv, `Correct! 🎉 ${explanation}`, true);
-            } else {
-                showFeedback(questionDiv, `Incorrect. The correct answer is: ${correct}. ${explanation}`, false);
-            }
-
-            answeredQuestions++;
-            updateScore();
+        // Get or create input element
+        const inputElement = questionDiv.querySelector('.input-answer');
+        if (inputElement) {
+            inputElement.disabled = true; // Disable input after submission
         }
 
-        function showFeedback(questionDiv, message, isCorrect) {
-            const feedbackDiv = questionDiv.querySelector('.feedback');
-            feedbackDiv.style.display = 'block';
-            feedbackDiv.textContent = message;
-            feedbackDiv.style.backgroundColor = isCorrect ? '#c8e6c9' : '#ffcdd2';
+        // Compare answer (case-insensitive)
+        if (input.toLowerCase().trim() === answer.toLowerCase().trim()) {
+            score++;
+            showFeedback(questionDiv, explanation, true);
+        } else {
+            showFeedback(questionDiv, {
+                text: `The correct answer is: ${answer}. ${explanation.text}`,
+                code: explanation.code
+            }, false);
         }
 
-        function updateScore() {
-            const scoreDiv = document.getElementById('score');
-            const percentage = (score / quizData.questions.length) * 100;
-            scoreDiv.innerHTML = `
+        answeredQuestions++;
+        updateScore();
+    }
+    function showFeedback(questionDiv, explanation, isCorrect) {
+        const feedbackDiv = questionDiv.querySelector('.feedback');
+        feedbackDiv.style.display = 'block';
+        feedbackDiv.innerHTML = ''; // Clear existing content
+
+        // Create and append explanation text
+        const explanationText = document.createElement('div');
+        explanationText.className = 'explanation-text';
+        explanationText.innerHTML = `${isCorrect ? '✅' : '❌'} ${explanation.text}`;
+        feedbackDiv.appendChild(explanationText);
+
+        // Create and append code block if code exists
+        if (explanation.code) {
+            const codeBlock = document.createElement('div');
+            codeBlock.className = 'code-block';
+            codeBlock.id = 'code-' + Math.random().toString(36).substr(2, 9);
+
+            // Create pre element for code
+            const pre = document.createElement('pre');
+            pre.innerHTML = formatCodeExample(explanation.code);
+            codeBlock.appendChild(pre);
+
+            // Create copy button
+            const copyButton = document.createElement('button');
+            copyButton.className = 'copy-button';
+            copyButton.textContent = 'Copy';
+            copyButton.addEventListener('click', () => {
+                copyToClipboard(explanation.code, copyButton);
+            });
+            codeBlock.appendChild(copyButton);
+
+            feedbackDiv.appendChild(codeBlock);
+        }
+
+        // Set background color based on correctness
+        feedbackDiv.style.backgroundColor = isCorrect ? '#e8f5e9' : '#ffebee';
+    }
+
+    function checkAnswer(selected, correct, optionDiv, questionDiv, explanation) {
+        if (questionDiv.querySelector('.correct') || questionDiv.querySelector('.incorrect')) {
+            return;
+        }
+
+        const options = questionDiv.getElementsByClassName('option');
+        options[correct].classList.add('correct');
+
+        if (selected === correct) {
+            score++;
+            optionDiv.classList.add('correct');
+            showFeedback(questionDiv, explanation, true);
+        } else {
+            optionDiv.classList.add('incorrect');
+            showFeedback(questionDiv, explanation, false);
+        }
+
+        answeredQuestions++;
+        updateScore();
+    }
+
+    function updateScore() {
+        const scoreDiv = document.getElementById('score');
+        const percentage = (score / quizData.questions.length) * 100;
+        scoreDiv.innerHTML = `
                 <h3>Your Score: ${score}/${quizData.questions.length}</h3>
                 <p>Percentage: ${percentage.toFixed(1)}%</p>
-                ${answeredQuestions === quizData.questions.length ? 
-                    `<p>${percentage >= 70 ? '🎉 Great job! You have a solid understanding of AWS CloudWatch!' : 
-                    'Keep learning! Review the explanations to strengthen your knowledge of CloudWatch monitoring and observability.'}</p>` : ''}
+                ${answeredQuestions === quizData.questions.length ?
+            `<p>${percentage >= 70 ? '🎉 Great job! You have a solid understanding of Node.js core modules!' :
+                'Keep learning! Review the explanations to strengthen your knowledge of Node.js core modules.'}</p>` : ''}
             `;
-        }
+    }
 
-        // Initialize the quiz
-        createQuiz();
-    </script>
+    let score = 0;
+    let answeredQuestions = 0;
+    createQuiz();
+</script>
 </body>
 </html>
