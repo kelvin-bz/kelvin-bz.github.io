@@ -4,17 +4,17 @@
     <meta charset="UTF-8">
     <style>
         .container {
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
             padding: 20px;
             font-family: system-ui, -apple-system, sans-serif;
+            line-height: 1.6;
         }
         .question {
-            margin-bottom: 20px;
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
             background-color: #fff;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         .options {
@@ -38,11 +38,11 @@
             background-color: #e3f2fd;
         }
         .correct {
-            background-color: #c8e6c9;
+            background-color: #e8f5e9;
             border-color: #81c784;
         }
         .incorrect {
-            background-color: #ffcdd2;
+            background-color: #ffebee;
             border-color: #e57373;
         }
         .input-answer {
@@ -73,19 +73,48 @@
             border-radius: 8px;
             text-align: center;
             font-size: 1.2em;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         .feedback {
             margin-top: 10px;
-            padding: 10px;
+            padding: 15px;
             border-radius: 4px;
             display: none;
+            line-height: 1.6;
         }
-        code {
+        .code-block {
             background-color: #f5f5f5;
-            padding: 2px 4px;
+            padding: 15px;
             border-radius: 4px;
-            font-family: monospace;
+            margin: 10px 0;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre;
+            overflow-x: auto;
+            line-height: 1.5;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            position: relative;
+        }
+        .copy-button {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .explanation-text {
+            margin-bottom: 10px;
+        }
+        .code-comment {
+            color: #6a737d;
+        }
+        .code-output {
+            color: #0a3069;
+            border-left: 3px solid #2196f3;
+            margin-left: 10px;
+            padding-left: 10px;
         }
     </style>
 </head>
@@ -97,104 +126,488 @@
     <div id="score"></div>
 </div>
 
+
 <script>
     const quizData = {
         questions: [
             {
                 type: "single",
-                question: "Which of these is NOT a valid Express.js middleware mounting path?",
+                question: "Which Express.js method is used to serve static files?",
                 options: [
-                    "/user/:id",
-                    "/user/*/profile",
-                    "/user/(.+)/profile",
-                    "/user/{id}/profile"
-                ],
-                correct: 3,
-                explanation: "Express.js doesn't support curly brace syntax for path parameters. It uses ':' for route parameters and regular expressions for pattern matching."
-            },
-            {
-                type: "single",
-                question: "What's the correct order of error handling middleware parameters?",
-                options: [
-                    "(err, req, res)",
-                    "(err, req, res, next)",
-                    "(req, res, next, err)",
-                    "(req, res, err)"
+                    "app.static()",
+                    "express.static()",
+                    "app.public()",
+                    "express.public()"
                 ],
                 correct: 1,
-                explanation: "Error handling middleware in Express must have exactly four arguments: (err, req, res, next). The order is important!"
+                explanation: {
+                    text: "express.static() is the built-in middleware function in Express used to serve static files like images, CSS, JavaScript, etc.",
+                    code: `
+// Basic static file serving
+app.use(express.static('public'));
+
+// Advanced static file configuration
+app.use('/static', express.static('public', {
+    dotfiles: 'ignore',
+    etag: true,
+    extensions: ['html', 'htm'],
+    index: false,
+    maxAge: '1d',
+    redirect: false,
+    setHeaders: function (res, path, stat) {
+        res.set('x-timestamp', Date.now());
+    }
+}));`
+                }
             },
             {
                 type: "single",
-                question: "Which Express.js method is used to serve a rendered view to the client?",
+                question: "What middleware is used to parse JSON requests in Express?",
                 options: [
-                    "res.render()",
-                    "res.view()",
-                    "res.send()",
-                    "res.display()"
-                ],
-                correct: 0,
-                explanation: "res.render() is used to render a view template and send the rendered HTML to the client."
-            },
-            {
-                type: "single",
-                question: "What's the purpose of the 'next()' function in Express middleware?",
-                options: [
-                    "To end the request-response cycle",
-                    "To pass control to the next middleware in the stack",
-                    "To redirect to the next route",
-                    "To start a new request"
-                ],
-                correct: 1,
-                explanation: "next() passes control to the next middleware function in the stack. Without it, the request may hang."
-            },
-            {
-                type: "single",
-                question: "Which setting enables view template caching in Express?",
-                options: [
-                    "app.set('cache', true)",
-                    "app.set('view cache', true)",
-                    "app.enable('view caching')",
-                    "app.cache('views', true)"
+                    "express.parseJSON()",
+                    "express.json()",
+                    "app.json()",
+                    "body.json()"
                 ],
                 correct: 1,
-                explanation: "app.set('view cache', true) enables template caching, which improves performance in production."
+                explanation: {
+                    text: "express.json() is the built-in middleware that parses incoming requests with JSON payloads.",
+                    code: `
+// Basic JSON parsing
+app.use(express.json());
+
+// JSON parsing with configuration
+app.use(express.json({
+    limit: '10mb',
+    strict: true,
+    type: 'application/json',
+    verify: function(req, res, buf, encoding) {
+        // Custom verification
+        if (buf.length > 1024) {
+            throw new Error('Request entity too large');
+        }
+    }
+}));`
+                }
+            },
+            {
+                type: "single",
+                question: "Which HTTP method is used for updating partial resources in REST?",
+                options: [
+                    "POST",
+                    "PUT",
+                    "PATCH",
+                    "UPDATE"
+                ],
+                correct: 2,
+                explanation: {
+                    text: "PATCH is used for partial modifications to a resource, while PUT is used for complete replacement.",
+                    code: `
+// Example of PATCH endpoint
+app.patch('/api/users/:id', async (req, res) => {
+    try {
+        const updates = req.body;
+        const userId = req.params.id;
+
+        // Validate partial update
+        if (Object.keys(updates).length === 0) {
+            return res.status(400).json({ error: 'No updates provided' });
+        }
+
+        const user = await User.findByIdAndUpdate(
+            userId,
+            { $set: updates },
+            { new: true, runValidators: true }
+        );
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        res.json(user);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});`
+                }
+            },
+            {
+                type: "single",
+                question: "What's the correct way to handle asynchronous errors in Express routes?",
+                options: [
+                    "Use try-catch only",
+                    "Use .catch() only",
+                    "Pass errors to next()",
+                    "Throw errors directly"
+                ],
+                correct: 2,
+                explanation: {
+                    text: "Passing errors to next() allows Express's error handling middleware to catch and process them properly.",
+                    code: `
+// Async error handling with next()
+app.get('/api/data', async (req, res, next) => {
+    try {
+        const data = await fetchData();
+        res.json(data);
+    } catch (error) {
+        next(error); // Pass to error handling middleware
+    }
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).json({
+        error: process.env.NODE_ENV === 'production'
+            ? 'Internal server error'
+            : err.message
+    });
+});`
+                }
+            },
+            {
+                type: "single",
+                question: "Which middleware handles URL-encoded form data in Express?",
+                options: [
+                    "express.form()",
+                    "express.urlencoded()",
+                    "express.encoded()",
+                    "express.bodyParser()"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "express.urlencoded() middleware parses incoming requests with URL-encoded payloads.",
+                    code: `
+// Basic URL-encoded parsing
+app.use(express.urlencoded({ extended: false }));
+
+// Advanced configuration
+app.use(express.urlencoded({
+    extended: true,
+    limit: '10mb',
+    parameterLimit: 1000,
+    type: 'application/x-www-form-urlencoded'
+}));
+
+// Handling form submission
+app.post('/submit-form', (req, res) => {
+    const formData = req.body;
+    console.log('Form data:', formData);
+    res.json({ received: true, data: formData });
+});`
+                }
+            },
+            {
+                type: "single",
+                question: "Which Express middleware is used for session handling?",
+                options: [
+                    "express-sessions",
+                    "express-session",
+                    "express.session()",
+                    "session-express"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "express-session is the standard middleware for handling sessions in Express.js applications.",
+                    code: `
+// Session configuration
+const session = require('express-session');
+
+app.use(session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        secure: process.env.NODE_ENV === 'production',
+        httpOnly: true,
+        maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    },
+    store: new MongoStore({
+        url: process.env.MONGODB_URI,
+        collection: 'sessions'
+    })
+}));
+
+// Using sessions
+app.post('/login', (req, res) => {
+    // Set session data
+    req.session.user = {
+        id: user.id,
+        username: user.username
+    };
+    req.session.isAuthenticated = true;
+
+    res.json({ message: 'Logged in successfully' });
+});
+
+// Session-based authentication middleware
+const requireAuth = (req, res, next) => {
+    if (!req.session.isAuthenticated) {
+        return res.status(401).json({ error: 'Not authenticated' });
+    }
+    next();
+};`
+                }
+            },
+            {
+                type: "single",
+                question: "What's the purpose of the express.Router class?",
+                options: [
+                    "To handle HTTP routing",
+                    "To create modular route handlers",
+                    "To parse URL parameters",
+                    "To validate routes"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "express.Router allows you to create modular, mountable route handlers. It's like a mini-application capable of performing middleware and routing functions.",
+                    code: `
+// User routes module
+const express = require('express');
+const router = express.Router();
+
+// Middleware specific to this router
+router.use((req, res, next) => {
+    console.log('User API called:', Date.now());
+    next();
+});
+
+// Route handlers
+router.get('/', getAllUsers);
+router.get('/:id', getUser);
+router.post('/', validateUser, createUser);
+router.put('/:id', validateUser, updateUser);
+router.delete('/:id', deleteUser);
+
+// Nested routes
+router.use('/:userId/posts', postRouter);
+
+// Error handler specific to this router
+router.use((err, req, res, next) => {
+    if (err.name === 'ValidationError') {
+        return res.status(400).json({ error: err.message });
+    }
+    next(err);
+});
+
+module.exports = router;
+
+// In main app
+app.use('/api/users', userRouter);`
+                }
             },
             {
                 type: "fill",
-                question: "To handle CORS in Express.js, you typically use the npm package called: _______",
-                answer: "cors",
-                explanation: "The 'cors' middleware package is commonly used to enable Cross-Origin Resource Sharing in Express applications."
+                question: "To compress response bodies in Express, use the _______ middleware",
+                answer: "compression",
+                explanation: {
+                    text: "compression middleware compresses response bodies for all request that traverse through it.",
+                    code: `
+const compression = require('compression');
+
+// Basic compression setup
+app.use(compression());
+
+// Advanced compression configuration
+app.use(compression({
+    // Filter based on request properties
+    filter: (req, res) => {
+        if (req.headers['x-no-compression']) {
+            return false;
+        }
+        // Use compression for text-based responses
+        return compression.filter(req, res);
+    },
+    // Compression level (0-9)
+    level: 6,
+    // Response size threshold (in bytes)
+    threshold: 1024,
+    // Minimum compression ratio
+    windowBits: 15,
+    memLevel: 8
+}));
+
+// Route example with large response
+app.get('/api/data', (req, res) => {
+    const largeData = generateLargeResponse();
+    res.json(largeData);
+});`
+                }
             },
             {
                 type: "fill",
-                question: "Complete the security middleware: app.use(helmet._____()); // Protects against clickjacking",
-                answer: "frameguard",
-                explanation: "helmet.frameguard() middleware sets the X-Frame-Options header to help prevent clickjacking attacks."
+                question: "The method to access route parameters in Express is: req.______",
+                answer: "params",
+                explanation: {
+                    text: "req.params contains route parameters (named URL segments).",
+                    code: `
+// Route with parameters
+app.get('/users/:userId/posts/:postId', (req, res) => {
+    const { userId, postId } = req.params;
+
+    // Parameter validation
+    if (!validateId(userId) || !validateId(postId)) {
+        return res.status(400).json({
+            error: 'Invalid ID format'
+        });
+    }
+
+    // Using parameters in queries
+    Post.findOne({
+        author: userId,
+        _id: postId
+    })
+    .then(post => {
+        if (!post) {
+            return res.status(404).json({
+                error: 'Post not found'
+            });
+        }
+        res.json(post);
+    })
+    .catch(error => next(error));
+});`
+                }
             },
             {
                 type: "fill",
-                question: "The Express method to serve static files from multiple directories is: app.use([express.______, express.______)]);",
-                answer: "static",
-                explanation: "express.static() middleware can be used multiple times to serve static files from different directories."
+                question: "To redirect in Express, use: res._______(url)",
+                answer: "redirect",
+                explanation: {
+                    text: "res.redirect() sends a redirect response to the client.",
+                    code: `
+// Basic redirect
+app.get('/old-page', (req, res) => {
+    res.redirect('/new-page');
+});
+
+// Redirect with status code
+app.get('/temp-redirect', (req, res) => {
+    res.redirect(302, '/temporary');
+});
+
+// Conditional redirect
+app.get('/dashboard', (req, res) => {
+    if (!req.user) {
+        return res.redirect('/login');
+    }
+    res.render('dashboard');
+});`
+                }
             },
             {
                 type: "fill",
-                question: "To parse cookies in Express.js, the middleware package name is: cookie-_______",
-                answer: "parser",
-                explanation: "cookie-parser middleware is used to parse Cookie header and populate req.cookies."
+                question: "The property to access request headers is: req._______",
+                answer: "headers",
+                explanation: {
+                    text: "req.headers contains the HTTP headers sent in the request.",
+                    code: `
+// Accessing request headers
+app.use((req, res, next) => {
+    // Get specific headers
+    const authToken = req.headers.authorization;
+    const contentType = req.headers['content-type'];
+
+    // Custom header validation
+    if (req.headers['api-key'] !== process.env.API_KEY) {
+        return res.status(401).json({
+            error: 'Invalid API key'
+        });
+    }
+
+    // Log headers in development
+    if (process.env.NODE_ENV === 'development') {
+        console.log('Request headers:', req.headers);
+    }
+
+    next();
+});`
+                }
             },
             {
                 type: "fill",
-                question: "The method to get a query string parameter named 'id' is: req._____.id",
-                answer: "query",
-                explanation: "req.query object contains the parsed query string parameters."
+                question: "Express template engine is set using: app.set('view ______', 'ejs')",
+                answer: "engine",
+                explanation: {
+                    text: "app.set('view engine', 'ejs') configures the template engine for rendering views.",
+                    code: `
+// Template engine configuration
+app.set('view engine', 'ejs');
+app.set('views', './views');
+
+// Using layouts
+app.set('view options', {
+    layout: 'layouts/main'
+});
+
+// Render template with data
+app.get('/profile', (req, res) => {
+    const userData = {
+        name: 'John Doe',
+        email: 'john@example.com',
+        role: 'admin'
+    };
+
+    res.render('profile', {
+        user: userData,
+        title: 'User Profile',
+        isAdmin: true
+    });
+});`
+                }
+            },
+            {
+                type: "fill",
+                question: "To send a JSON response, use: res._______(data)",
+                answer: "json",
+                explanation: {
+                    text: "res.json() sends a JSON response with automatic content-type header setting.",
+                    code: `
+// Sending JSON response
+app.get('/api/user', (req, res) => {
+    const user = {
+        id: 1,
+        name: 'John Doe',
+        email: 'john@example.com'
+    };
+
+    // With status code
+    res.status(200).json(user);
+});
+
+// Error response
+app.use((err, req, res, next) => {
+    res.status(500).json({
+        error: err.message,
+        stack: process.env.NODE_ENV === 'development'
+            ? err.stack
+            : undefined
+    });
+});`
+                }
             }
         ]
     };
 
-    let score = 0;
-    let answeredQuestions = 0;
+    window.copyToClipboard = function(text, button) {
+        navigator.clipboard.writeText(text).then(() => {
+            const originalText = button.textContent;
+            button.textContent = 'Copied!';
+            setTimeout(() => {
+                button.textContent = originalText;
+            }, 2000);
+        });
+    }
+
+    function formatCodeExample(code) {
+        return code.split('\n').map(line => {
+            if (line.includes('//')) {
+                const [code, comment] = line.split('//');
+                return `${code}<span class="code-comment">// ${comment}</span>`;
+            }
+            return line;
+        }).join('\n');
+    }
 
     function createQuiz() {
         const questionsContainer = document.getElementById('questions');
@@ -241,9 +654,56 @@
         updateScore();
     }
 
+    function checkFillAnswer(input, answer, questionDiv, explanation) {
+        // Check if question has already been answered
+        if (questionDiv.querySelector('.feedback').style.display === 'block') {
+            return; // Already answered
+        }
+
+        // Get or create input element
+        const inputElement = questionDiv.querySelector('.input-answer');
+        if (inputElement) {
+            inputElement.disabled = true; // Disable input after submission
+        }
+
+        // Compare answer (case-insensitive)
+        if (input.toLowerCase().trim() === answer.toLowerCase().trim()) {
+            score++;
+            showFeedback(questionDiv, explanation, true);
+        } else {
+            showFeedback(questionDiv, {
+                text: `The correct answer is: ${answer}. ${explanation.text}`,
+                code: explanation.code
+            }, false);
+        }
+
+        answeredQuestions++;
+        updateScore();
+    }
+    function showFeedback(questionDiv, explanation, isCorrect) {
+        const feedbackDiv = questionDiv.querySelector('.feedback');
+        feedbackDiv.style.display = 'block';
+
+        const codeId = 'code-' + Math.random().toString(36).substr(2, 9);
+
+        feedbackDiv.innerHTML = `
+                <div class="explanation-text">
+                    ${isCorrect ? '✅' : '❌'} ${explanation.text}
+                </div>
+                ${explanation.code ? `
+                    <div class="code-block" id="${codeId}">
+                        ${formatCodeExample(explanation.code)}
+                        <button class="copy-button" onclick="copyToClipboard(\`${explanation.code}\`, this)">Copy</button>
+                    </div>
+                ` : ''}
+            `;
+
+        feedbackDiv.style.backgroundColor = isCorrect ? '#e8f5e9' : '#ffebee';
+    }
+
     function checkAnswer(selected, correct, optionDiv, questionDiv, explanation) {
         if (questionDiv.querySelector('.correct') || questionDiv.querySelector('.incorrect')) {
-            return; // Already answered
+            return;
         }
 
         const options = questionDiv.getElementsByClassName('option');
@@ -252,37 +712,14 @@
         if (selected === correct) {
             score++;
             optionDiv.classList.add('correct');
-            showFeedback(questionDiv, `Correct! 🎉 ${explanation}`, true);
+            showFeedback(questionDiv, explanation, true);
         } else {
             optionDiv.classList.add('incorrect');
-            showFeedback(questionDiv, `Incorrect. ${explanation}`, false);
+            showFeedback(questionDiv, explanation, false);
         }
 
         answeredQuestions++;
         updateScore();
-    }
-
-    function checkFillAnswer(input, correct, questionDiv, explanation) {
-        if (questionDiv.querySelector('.feedback').style.display === 'block') {
-            return; // Already answered
-        }
-
-        if (input.toLowerCase().trim() === correct.toLowerCase().trim()) {
-            score++;
-            showFeedback(questionDiv, `Correct! 🎉 ${explanation}`, true);
-        } else {
-            showFeedback(questionDiv, `Incorrect. The correct answer is: ${correct}. ${explanation}`, false);
-        }
-
-        answeredQuestions++;
-        updateScore();
-    }
-
-    function showFeedback(questionDiv, message, isCorrect) {
-        const feedbackDiv = questionDiv.querySelector('.feedback');
-        feedbackDiv.style.display = 'block';
-        feedbackDiv.textContent = message;
-        feedbackDiv.style.backgroundColor = isCorrect ? '#c8e6c9' : '#ffcdd2';
     }
 
     function updateScore() {
@@ -292,12 +729,13 @@
                 <h3>Your Score: ${score}/${quizData.questions.length}</h3>
                 <p>Percentage: ${percentage.toFixed(1)}%</p>
                 ${answeredQuestions === quizData.questions.length ?
-            `<p>${percentage >= 70 ? '🎉 Great job! You have a solid understanding of Express.js!' :
-                'Keep learning! Review the explanations to strengthen your Express.js knowledge.'}</p>` : ''}
+            `<p>${percentage >= 70 ? '🎉 Great job! You have a solid understanding of Node.js core modules!' :
+                'Keep learning! Review the explanations to strengthen your knowledge of Node.js core modules.'}</p>` : ''}
             `;
     }
 
-    // Initialize the quiz
+    let score = 0;
+    let answeredQuestions = 0;
     createQuiz();
 </script>
 </body>
