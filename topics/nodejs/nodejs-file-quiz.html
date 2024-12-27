@@ -143,19 +143,83 @@
                 explanation: {
                     text: "The Node.js file system module is imported using require('fs'). In modern Node.js, you can also use ESM imports.",
                     code: `
-// CommonJS import
+//1. Traditional callback-based 'fs'
 const fs = require('fs');
 
-// Modern ESM import
-import * as fs from 'fs';
-import { readFile, writeFile } from 'fs';
-import { promises as fsPromises } from 'fs';
-
-// Now you can use fs methods
-fs.readFile('example.txt', 'utf8', (err, data) => {
+fs.readFile('input.txt', 'utf8', (err, data) => {
     if (err) throw err;
     console.log(data);
-});`
+});
+
+fs.writeFile('output.txt', 'Hello World', 'utf8', (err) => {
+    if (err) throw err;
+    console.log('File written');
+});
+
+//2. Modern promise-based 'fs/promises'
+const fs = require('fs/promises');
+
+async function readFile() {
+    const data = await fs.readFile('input.txt', 'utf8');
+    console.log(data);
+}
+
+async function writeFile() {
+    await fs.writeFile('output.txt', 'Hello World', 'utf8');
+    console.log('File written');
+}
+
+//3. Using destructured promises from 'fs'
+const { promises: fsPromises } = require('fs');
+
+async function readWithPromises() {
+    const data = await fsPromises.readFile('input.txt', 'utf8');
+    console.log(data);
+}
+
+async function writeWithPromises() {
+    await fsPromises.writeFile('output.txt', 'Hello World', 'utf8');
+    console.log('File written');
+}
+`
+                }
+            },
+            {
+                type: "single",
+                question: "Which of the following is a valid way to import the file system module for promise-based operations in Node.js?",
+                options: [
+                    "const fs = require('fs/promises')",
+                    "const { promises: fsPromises } = require('fs')",
+                    "const fsPromises = require('fs').promises",
+                    "All of the above"
+                ],
+                correct: 3,
+                explanation: {
+                    text: "All three methods are valid ways to import the promise-based file system module in Node.js. Each approach has its own use case and they all provide access to promise-based file operations.",
+                    code: `
+// Method 1: Direct promise-based import
+const fs = require('fs/promises');
+async function example1() {
+    const content = await fs.readFile('file.txt', 'utf8');
+}
+
+// Method 2: Destructuring promises from fs
+const { promises: fsPromises } = require('fs');
+async function example2() {
+    const content = await fsPromises.readFile('file.txt', 'utf8');
+}
+
+// Method 3: Using the promises property
+const fsPromises = require('fs').promises;
+async function example3() {
+    const content = await fsPromises.readFile('file.txt', 'utf8');
+}
+
+// All methods achieve the same result with slightly different syntax
+// Choose based on your specific needs:
+// - Method 1: Modern, clean syntax
+// - Method 2: Explicit about using promises
+// - Method 3: Alternative syntax, same functionality`
                 }
             },
             {
@@ -430,6 +494,99 @@ async function appendToLog(message) {
     }
 }`
                 }
+            },
+            {
+                type: "fill",
+                question: {
+                    text:  "Complete all three events in this code",
+                    code: `const fs = require('fs');
+const stream = fs.createReadStream('largeFile.txt');
+
+stream.on('____', (chunk) => {
+   console.log('Received chunk:', chunk.toString());
+});
+
+stream.on('____', () => {
+   console.log('Finished reading file');
+});
+
+stream.on('____', (err) => {
+   console.error('Error reading file:', err);
+});`
+                },                answer: "data end error",
+                explanation: {
+                    text: "The three main events for readable streams are: 'data' for receiving chunks, 'end' when reading completes, and 'error' for handling errors.",
+                    code: `const fs = require('fs');
+const stream = fs.createReadStream('largeFile.txt');
+
+stream.on('data', (chunk) => {
+   console.log('Received chunk:', chunk.toString());
+});
+
+stream.on('end', () => {
+   console.log('Finished reading file');
+});
+
+stream.on('error', (err) => {
+   console.error('Error reading file:', err);
+});`
+                }
+            },
+            {
+                type: "fill",
+                question: {
+                    text: "Complete the code to handle both permission denied and file not found errors when reading a file asynchronously",
+                    code: `const fs = require('fs/promises');
+
+async function readSecureFile(filepath) {
+    try {
+        const data = await fs.readFile(filepath, 'utf-8');
+        console.log('File content:', data);
+    } catch (error) {
+        if (error.code === '____') {
+            console.error('Permission denied: Cannot access file');
+        } else if (error.code === '____') {
+            console.error('File not found');
+        } else {
+            console.error('Error reading file:', error);
+        }
+    }
+}`
+                },
+                answer: "EACCES ENOENT",
+                explanation: {
+                    text: "The 'EACCES' error code indicates a permission denied error when trying to access a file. This occurs when the process doesn't have sufficient permissions to read the file. Combined with 'ENOENT' (no entry) error handling, this covers the two most common file access errors.",
+                    code: `const fs = require('fs/promises');
+
+async function readSecureFile(filepath) {
+    try {
+        const data = await fs.readFile(filepath, 'utf-8');
+        console.log('File content:', data);
+    } catch (error) {
+        switch (error.code) {
+            case 'EACCES':
+                console.error('Permission denied: Cannot access file');
+                // Handle permission error (e.g., request elevated privileges)
+                break;
+            case 'ENOENT':
+                console.error('File not found');
+                // Handle missing file (e.g., create file or use default)
+                break;
+            default:
+                console.error('Error reading file:', error);
+        }
+    }
+}
+
+// Example usage
+async function example() {
+    // Try reading a file without permission
+    await readSecureFile('/etc/passwd');  // Will likely trigger EACCES
+
+    // Try reading a non-existent file
+    await readSecureFile('nonexistent.txt');  // Will trigger ENOENT
+}`
+                }
             }
         ]
     };
@@ -460,7 +617,14 @@ async function appendToLog(message) {
         quizData.questions.forEach((q, index) => {
             const questionDiv = document.createElement('div');
             questionDiv.className = 'question';
-            questionDiv.innerHTML = `<div><strong>Question ${index + 1}:</strong> ${q.question}</div>`;
+            const text = typeof q.question === 'string' ? q.question : q.question.text;
+            const code = typeof q.question === 'string' ? '' : q.question.code;
+
+            questionDiv.innerHTML = `<div>
+                <strong>Question ${index + 1}:</strong>
+                ${text}
+                ${code ? `<pre class="code-block">${formatCodeExample(code)}</pre>` : ''}
+            </div>`;
 
             if (q.type === 'single') {
                 const optionsDiv = document.createElement('div');
