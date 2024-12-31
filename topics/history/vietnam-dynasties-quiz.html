@@ -264,12 +264,12 @@
         updateScore();
     }
 
-    function showFeedback(questionDiv, explanation, isCorrect) {
+    function showFeedback(questionDiv, answer, explanation, isCorrect) {
         const feedbackDiv = questionDiv.querySelector('.feedback');
         feedbackDiv.style.display = 'block';
         feedbackDiv.innerHTML = `
         <div class="explanation-text">
-            ${isCorrect ? '✅' : '❌'} ${explanation.text}
+            ${isCorrect ? '✅' : '❌'} ${answer}. ${explanation.text}
         </div>
     `;
         feedbackDiv.style.backgroundColor = isCorrect ? '#e8f5e9' : '#ffebee';
@@ -290,7 +290,7 @@
             score++;
         }
 
-        showFeedback(questionDiv, explanation, isCorrect);
+        showFeedback(questionDiv, answer, explanation, isCorrect);
         answeredQuestions++;
         updateScore();
     }
