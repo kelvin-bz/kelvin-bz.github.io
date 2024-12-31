@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            font-family: system-ui, -apple-system, sans-serif;
+            line-height: 1.6;
+        }
+        .question {
+            background-color: #fff;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .option {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .option:hover {
+            background-color: #f5f5f5;
+            transform: translateX(5px);
+        }
+        .selected {
+            background-color: #e3f2fd;
+        }
+        .correct {
+            background-color: #e8f5e9;
+            border-color: #81c784;
+        }
+        .incorrect {
+            background-color: #ffebee;
+            border-color: #e57373;
+        }
+        .input-answer {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            margin-top: 10px;
+            padding: 8px 16px;
+            background-color: #2196f3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #1976d2;
+        }
+        #score {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.2em;
+        }
+        .feedback {
+            margin-top: 10px;
+            padding: 15px;
+            border-radius: 4px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>📚 Vietnamese Dynasties History Quiz</h1>
+    <p>Test your knowledge about the historical dynasties of Vietnam!</p>
+    <div id="questions"></div>
+    <div id="score"></div>
+</div>
+
+<script>
+    const quizData = {
+        questions: [
+            {
+                type: "single",
+                question: "Who ended over 1000 years of Chinese domination with the Bach Dang victory in 938?",
+                options: [
+                    "Dinh Bo Linh",
+                    "Ngo Quyen",
+                    "Le Hoan",
+                    "Ly Cong Uan"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "Ngo Quyen defeated the Southern Han forces in the Battle of Bach Dang in 938, ending the period of Chinese domination and beginning Vietnam's era of independence.",
+                    code: ""
+                }
+            },
+            {
+                type: "single",
+                question: "Which emperor moved the capital from Hoa Lu to Thang Long (Hanoi) in 1010?",
+                options: [
+                    "Ly Thai To",
+                    "Ly Thanh Tong",
+                    "Tran Thai Tong",
+                    "Le Thai To"
+                ],
+                correct: 0,
+                explanation: {
+                    text: "Ly Thai To (Ly Cong Uan) issued the Edict to move the capital in 1010, relocating it from Hoa Lu to Thang Long (modern-day Hanoi).",
+                    code: ""
+                }
+            },
+            {
+                type: "single",
+                question: "How many times did the Tran Dynasty defeat the Mongol invasions?",
+                options: [
+                    "Once",
+                    "Twice",
+                    "Three times",
+                    "Four times"
+                ],
+                correct: 2,
+                explanation: {
+                    text: "Under the leadership of Tran Hung Dao, Vietnamese forces defeated the Mongol-Yuan invasions three times in 1258, 1285, and 1288.",
+                    code: ""
+                }
+            },
+            {
+                type: "single",
+                question: "Which emperor is considered to have brought Vietnamese feudalism to its peak?",
+                options: [
+                    "Ly Thanh Tong",
+                    "Tran Nhan Tong",
+                    "Le Thanh Tong",
+                    "Gia Long"
+                ],
+                correct: 2,
+                explanation: {
+                    text: "Le Thanh Tong implemented comprehensive reforms in administration, law, education, and economy. His reign is considered the peak of Vietnamese feudalism.",
+                    code: ""
+                }
+            },
+            {
+                type: "single",
+                question: "Who initiated the Vietnamese southward expansion (Nam Tien)?",
+                options: [
+                    "Nguyen Hoang",
+                    "Nguyen Hue",
+                    "Gia Long",
+                    "Trinh Tung"
+                ],
+                correct: 0,
+                explanation: {
+                    text: "Nguyen Hoang (Lord Tien) began the Nguyen Lords' southern expansion when he became governor of Thuan Hoa - Quang Nam region in 1558.",
+                    code: ""
+                }
+            },
+            {
+                type: "fill",
+                question: "In 968, ______ unified the country after defeating 12 warlords and established the kingdom of Dai Co Viet.",
+                answer: "Dinh Bo Linh",
+                explanation: {
+                    text: "Dinh Bo Linh (Emperor Dinh Tien Hoang) unified the country after defeating 12 warlords, proclaimed himself emperor, and named the country Dai Co Viet in 968.",
+                    code: ""
+                }
+            },
+            {
+                type: "fill",
+                question: "The Battle of ______ in 1288 was the Tran Dynasty's final victory over the Mongol-Yuan forces.",
+                answer: "Bach Dang",
+                explanation: {
+                    text: "The Battle of Bach Dang in 1288, led by Tran Hung Dao, was the final decisive victory that completely defeated the Mongol-Yuan invasion forces.",
+                    code: ""
+                }
+            },
+            {
+                type: "fill",
+                question: "Emperor ______ divided the country into 13 administrative regions and issued the National Code of Laws.",
+                answer: "Le Thanh Tong",
+                explanation: {
+                    text: "Le Thanh Tong implemented administrative reforms, dividing the country into 13 administrative regions and promulgating the National Code of Laws.",
+                    code: ""
+                }
+            },
+            {
+                type: "fill",
+                question: "______ defeated the Qing forces in the Dong Da victory of 1789.",
+                answer: "Quang Trung",
+                explanation: {
+                    text: "Quang Trung (Nguyen Hue) led the Tay Son forces to victory against the Qing army in the Battle of Dong Da in early 1789.",
+                    code: ""
+                }
+            },
+            {
+                type: "fill",
+                question: "The ______ Dynasty (1802-1945) was the last Vietnamese feudal dynasty.",
+                answer: "Nguyen",
+                explanation: {
+                    text: "The Nguyen Dynasty, founded by Gia Long in 1802, was Vietnam's last feudal dynasty, ending in 1945.",
+                    code: ""
+                }
+            }
+        ]
+    };
+
+    let score = 0;
+    let answeredQuestions = 0;
+
+    function createQuiz() {
+        const questionsContainer = document.getElementById('questions');
+
+        quizData.questions.forEach((q, index) => {
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'question';
+            questionDiv.innerHTML = `<div><strong>Question ${index + 1}:</strong> ${q.question}</div>`;
+
+            if (q.type === 'single') {
+                const optionsDiv = document.createElement('div');
+                optionsDiv.className = 'options';
+
+                q.options.forEach((option, optIndex) => {
+                    const optionDiv = document.createElement('div');
+                    optionDiv.className = 'option';
+                    optionDiv.textContent = option;
+                    optionDiv.onclick = () => checkAnswer(optIndex, q.correct, optionDiv, questionDiv, q.explanation);
+                    optionsDiv.appendChild(optionDiv);
+                });
+
+                questionDiv.appendChild(optionsDiv);
+            } else {
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.className = 'input-answer';
+                input.placeholder = 'Type your answer here';
+
+                const submitBtn = document.createElement('button');
+                submitBtn.textContent = 'Check';
+                submitBtn.onclick = () => checkFillAnswer(input.value, q.answer, questionDiv, q.explanation);
+
+                questionDiv.appendChild(input);
+                questionDiv.appendChild(submitBtn);
+            }
+
+            const feedbackDiv = document.createElement('div');
+            feedbackDiv.className = 'feedback';
+            questionDiv.appendChild(feedbackDiv);
+
+            questionsContainer.appendChild(questionDiv);
+        });
+
+        updateScore();
+    }
+
+    function showFeedback(questionDiv, explanation, isCorrect) {
+        const feedbackDiv = questionDiv.querySelector('.feedback');
+        feedbackDiv.style.display = 'block';
+        feedbackDiv.innerHTML = `
+        <div class="explanation-text">
+            ${isCorrect ? '✅' : '❌'} ${explanation.text}
+        </div>
+    `;
+        feedbackDiv.style.backgroundColor = isCorrect ? '#e8f5e9' : '#ffebee';
+    }
+
+    function checkFillAnswer(input, answer, questionDiv, explanation) {
+        if (questionDiv.querySelector('.feedback').style.display === 'block') {
+            return;
+        }
+
+        const inputElement = questionDiv.querySelector('.input-answer');
+        if (inputElement) {
+            inputElement.disabled = true;
+        }
+
+        const isCorrect = input.toLowerCase().trim() === answer.toLowerCase().trim();
+        if (isCorrect) {
+            score++;
+        }
+
+        showFeedback(questionDiv, explanation, isCorrect);
+        answeredQuestions++;
+        updateScore();
+    }
+
+    function checkAnswer(selected, correct, optionDiv, questionDiv, explanation) {
+        if (questionDiv.querySelector('.correct') || questionDiv.querySelector('.incorrect')) {
+            return;
+        }
+
+        const options = questionDiv.getElementsByClassName('option');
+        options[correct].classList.add('correct');
+
+        if (selected === correct) {
+            score++;
+            optionDiv.classList.add('correct');
+            showFeedback(questionDiv, explanation, true);
+        } else {
+            optionDiv.classList.add('incorrect');
+            showFeedback(questionDiv, explanation, false);
+        }
+
+        answeredQuestions++;
+        updateScore();
+    }
+
+    function updateScore() {
+        const scoreDiv = document.getElementById('score');
+        const percentage = (score / quizData.questions.length) * 100;
+        scoreDiv.innerHTML = `
+        <h3>Your Score: ${score}/${quizData.questions.length}</h3>
+        <p>Percentage: ${percentage.toFixed(1)}%</p>
+        ${answeredQuestions === quizData.questions.length ?
+            `<p>${percentage >= 70 ?
+                '🎉 Excellent! You have a strong understanding of Vietnamese dynasties!' :
+                'Keep learning to better understand the history of Vietnamese dynasties!'}</p>` : ''}
+    `;
+    }
+
+    createQuiz();
+</script>
+</body>
+</html>
