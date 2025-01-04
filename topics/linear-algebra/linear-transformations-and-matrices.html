@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Basic Vectors Quiz</title>
+    <style>
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            font-family: system-ui, -apple-system, sans-serif;
+            line-height: 1.6;
+            text-align: left;
+
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .option {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .option:hover {
+            background-color: #f5f5f5;
+            transform: translateX(5px);
+        }
+        .selected {
+            background-color: #e3f2fd;
+        }
+        .correct {
+            background-color: #e8f5e9;
+            border-color: #81c784;
+        }
+        .incorrect {
+            background-color: #ffebee;
+            border-color: #e57373;
+        }
+        .input-answer {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            margin-top: 10px;
+            padding: 8px 16px;
+            background-color: #2196f3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #1976d2;
+        }
+        #score {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.2em;
+        }
+        .feedback {
+            margin-top: 10px;
+            padding: 15px;
+            border-radius: 4px;
+            display: none;
+            line-height: 1.6;
+            text-align: left;
+            margin-left: 0; /* Optional for left alignment */
+
+        }
+        .code-block {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre;
+            overflow-x: auto;
+            line-height: 1.5;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            position: relative;
+        }
+
+        .question {
+            background-color: #fff;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .question-inline {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .question-inline strong {
+            white-space: nowrap;
+        }
+
+        /* For vector notation spacing */
+        .MathJax {
+            margin: 0 4px;
+        }
+    </style>
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$$', '$$']],
+                displayMath: [['$$', '$$']],
+                processEscapes: true
+            },
+            options: {
+                skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+            },
+            chtml: {
+                displayAlign: 'left', // Align display-style equations to the left
+                displayIndent: '0em' // No additional indentation
+            },
+            startup: {
+                pageReady: () => {
+                    return MathJax.startup.defaultPageReady().then(() => {
+                        // Custom handling after MathJax is ready
+                    });
+                }
+            }
+        };
+    </script>
+    <script type="text/javascript" id="MathJax-script" async
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+    </script>
+</head>
+<body>
+<div class="container">
+    <h1>Linear transformations and matrices</h1>
+    <iframe width="952" height="536" src="https://www.youtube.com/embed/kYB8IZa5AuE?si=v-GHWLlfJOMyVKnZ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+    </br>
+
+    <div id="questions"></div>
+    <div id="score"></div>
+</div>
+
+<script>
+    const quizData = {
+        questions: [
+            {
+                type: "single",
+                question: "What does it mean for a transformation to be linear in two dimensions?",
+                options: [
+                    "All lines must remain lines without curving, and the origin must remain fixed in place",
+                    "All lines must become curves, and the origin can move",
+                    "Only horizontal and vertical lines must remain straight",
+                    "The transformation must only rotate the space"
+                ],
+                correct: 0,
+                explanation: {
+                    text: "A linear transformation in 2D must preserve two key properties: all lines remain straight (not curved) and the origin (0,0) stays fixed in place. This means grid lines remain parallel and evenly spaced throughout the transformation.",
+                    code: `
+import numpy as np
+
+def is_linear_transformation(matrix, points):
+    # Test if transformation preserves lines
+    # Apply transformation to a line of points
+    transformed_points = np.dot(matrix, points)
+
+    # Check if points remain collinear after transformation
+    x = transformed_points[0]
+    y = transformed_points[1]
+
+    # Points are collinear if cross product is zero
+    cross_product = x[:-1] * y[1:] - x[1:] * y[:-1]
+    return np.allclose(cross_product, 0)`
+                }
+            },
+            {
+                type: "fill",
+                question: "If $$\\vec{i}$$ lands on coordinates (1, -2) and $$\\vec{j}$$ lands on coordinates (3, 0), what are the coordinates of the transformed vector $$\\vec{v} = \\begin{pmatrix} 2 \\\\ 1 \\end{pmatrix}$$? Enter the x-coordinate.",
+                answer: "5",
+                explanation: {
+                    text: "Using the linear transformation formula: The transformed vector is 2(1, -2) + 1(3, 0) = (2 - 4) + (3, 0) = (5, -4). The x-coordinate is 5.",
+                    code: `
+import numpy as np
+
+# Define transformation matrix
+matrix = np.array([[1, 3],
+                   [-2, 0]])
+
+# Define vector
+v = np.array([2, 1])
+
+# Apply transformation
+result = np.dot(matrix, v)
+print(f"Transformed vector: {result}")  # [5, -4]`
+                }
+            },
+            {
+                type: "single",
+                question: "What fully describes a two-dimensional linear transformation?",
+                options: [
+                    "The coordinates where i-hat and j-hat land (four numbers)",
+                    "The angle of rotation only",
+                    "The coordinates of three vectors",
+                    "The scaling factor in x and y directions"
+                ],
+                correct: 0,
+                explanation: {
+                    text: "A 2D linear transformation is completely described by just four numbers - the two coordinates for where i-hat lands and the two coordinates for where j-hat lands. These four numbers form the 2x2 transformation matrix.",
+                    code: `
+import numpy as np
+
+# Define where i-hat lands (first column)
+i_hat_transformed = np.array([1, -2])
+
+# Define where j-hat lands (second column)
+j_hat_transformed = np.array([3, 0])
+
+# Create transformation matrix
+transformation_matrix = np.column_stack([i_hat_transformed, j_hat_transformed])
+print("Transformation Matrix:")
+print(transformation_matrix)`
+                }
+            },
+            {
+                type: "fill",
+                question: "For a 90-degree counterclockwise rotation matrix $$\\begin{pmatrix} 0 & -1 \\\\ 1 & 0 \\end{pmatrix}$$, what is the y-coordinate of the transformed vector $$\\vec{v} = \\begin{pmatrix} 1 \\\\ 0 \\end{pmatrix}$$?",
+                answer: "1",
+                explanation: {
+                    text: "A 90-degree counterclockwise rotation transforms (1,0) to (0,1). Using matrix multiplication: [0(-1) + (-1)(0), 1(1) + 0(0)] = [0, 1]. The y-coordinate is 1.",
+                    code: `
+import numpy as np
+
+# 90-degree counterclockwise rotation matrix
+rotation_matrix = np.array([[0, -1],
+                           [1, 0]])
+
+# Vector [1, 0]
+vector = np.array([1, 0])
+
+# Apply rotation
+rotated = np.dot(rotation_matrix, vector)
+print(f"Original vector: {vector}")
+print(f"Rotated vector: {rotated}")  # [0, 1]`
+                }
+            },
+            {
+                type: "single",
+                question: "What happens when the vectors that i-hat and j-hat land on are linearly dependent?",
+                options: [
+                    "The transformation squishes all of 2D space onto a line",
+                    "The transformation stretches space infinitely",
+                    "The transformation rotates space by 90 degrees",
+                    "The transformation reflects space across the y-axis"
+                ],
+                correct: 0,
+                explanation: {
+                    text: "When i-hat and j-hat land on linearly dependent vectors (one is a scaled version of the other), the transformation collapses all of 2D space onto the line containing these vectors. This is called dimension reduction.",
+                    code: `
+import numpy as np
+
+# Example of linearly dependent transformation
+# Both columns are scalar multiples of each other
+matrix = np.array([[2, 4],
+                   [1, 2]])
+
+# Check rank (will be 1 for linearly dependent columns)
+rank = np.linalg.matrix_rank(matrix)
+print(f"Matrix rank: {rank}")
+
+# Transform some points to see collapse
+points = np.array([[1, 2, 3],
+                   [1, 2, 3]])
+transformed = np.dot(matrix, points)
+print("Transformed points (all lie on a line):")
+print(transformed)`
+                }
+            },
+            {
+                type: "fill",
+                question: "In a shear transformation where i-hat remains fixed at (1,0) and j-hat moves to (1,1), what is the x-coordinate of the transformed vector $$\\vec{v} = \\begin{pmatrix} 0 \\\\ 2 \\end{pmatrix}$$?",
+                answer: "2",
+                explanation: {
+                    text: "For a shear transformation with matrix $$\\begin{pmatrix} 1 & 1 \\\\ 0 & 1 \\end{pmatrix}$$, the transformed vector is calculated as: 0(1,0) + 2(1,1) = (2,2). The x-coordinate is 2.",
+                    code: `
+import numpy as np
+
+# Shear transformation matrix
+shear_matrix = np.array([[1, 1],
+                         [0, 1]])
+
+# Vector [0, 2]
+vector = np.array([0, 2])
+
+# Apply shear
+sheared = np.dot(shear_matrix, vector)
+print(f"Original vector: {vector}")
+print(f"Sheared vector: {sheared}")  # [2, 2]`
+                }
+            },
+            {
+                type: "single",
+                question: "What is preserved in a linear transformation?",
+                options: [
+                    "The relative spacing between parallel grid lines",
+                    "The absolute distance between all points",
+                    "The angle between any two lines",
+                    "The area of all shapes"
+                ],
+                correct: 0,
+                explanation: {
+                    text: "Linear transformations preserve the relative spacing between parallel grid lines, meaning if lines were evenly spaced before the transformation, they remain evenly spaced after (though the absolute spacing may change).",
+                    code: `
+import numpy as np
+
+# Create a grid of evenly spaced points
+x = np.linspace(-2, 2, 5)
+y = np.linspace(-2, 2, 5)
+X, Y = np.meshgrid(x, y)
+
+# Define a linear transformation
+matrix = np.array([[2, 1],
+                   [1, 2]])
+
+# Transform grid points while preserving relative spacing
+points = np.vstack([X.flatten(), Y.flatten()])
+transformed = np.dot(matrix, points)
+print("Original vs Transformed grid points:")
+print(points[:, :5])  # First 5 original points
+print(transformed[:, :5])  # First 5 transformed points`
+                }
+            },
+            {
+                type: "fill",
+                question: "If a transformation matrix is $$\\begin{pmatrix} 2 & 1 \\\\ 1 & 2 \\end{pmatrix}$$, what is the x-coordinate where j-hat (0,1) lands?",
+                answer: "1",
+                explanation: {
+                    text: "The second column of the transformation matrix tells us where j-hat (0,1) lands. Looking at the matrix, j-hat lands at (1,2).",
+                    code: `
+import numpy as np
+
+# Define transformation matrix
+matrix = np.array([[2, 1],
+                   [1, 2]])
+
+# j-hat vector
+j_hat = np.array([0, 1])
+
+# Transform j-hat
+transformed_j = np.dot(matrix, j_hat)
+print(f"j-hat lands at: {transformed_j}")  # [1, 2]`
+                }
+            },
+            {
+                type: "single",
+                question: "How is matrix-vector multiplication related to linear transformations?",
+                options: [
+                    "It computes where a vector lands after applying the transformation",
+                    "It calculates the inverse of the transformation",
+                    "It determines if the transformation is linear",
+                    "It finds the eigenvectors of the transformation"
+                ],
+                correct: 0,
+                explanation: {
+                    text: "Matrix-vector multiplication is the computational method for finding where a vector lands after applying a linear transformation. The matrix columns represent where the basis vectors land, and multiplying by a vector computes the appropriate linear combination.",
+                    code: `
+import numpy as np
+
+# Define transformation (e.g., rotation by 45 degrees)
+theta = np.pi/4  # 45 degrees
+matrix = np.array([[np.cos(theta), -np.sin(theta)],
+                   [np.sin(theta), np.cos(theta)]])
+
+# Vector to transform
+v = np.array([1, 0])
+
+# Apply transformation through matrix multiplication
+transformed = np.dot(matrix, v)
+print(f"Original vector: {v}")
+print(f"Transformed vector: {transformed}")
+print(f"Verification: length preserved = {np.allclose(np.linalg.norm(v), np.linalg.norm(transformed))}")`
+                }
+            },
+            {
+                type: "fill",
+                question: "In a rotation matrix for a 180-degree rotation $$\\begin{pmatrix} -1 & 0 \\\\ 0 & -1 \\end{pmatrix}$$, what is the y-coordinate of the transformed vector $$\\vec{v} = \\begin{pmatrix} 1 \\\\ 2 \\end{pmatrix}$$?",
+                answer: "-2",
+                explanation: {
+                    text: "A 180-degree rotation negates both coordinates. The transformed vector will be (-1, -2). The y-coordinate is -2.",
+                    code: `
+import numpy as np
+
+# 180-degree rotation matrix
+rotation_matrix = np.array([[-1, 0],
+                           [0, -1]])
+
+# Vector [1, 2]
+vector = np.array([1, 2])
+
+# Apply rotation
+rotated = np.dot(rotation_matrix, vector)
+print(f"Original vector: {vector}")
+print(f"Rotated vector: {rotated}")  # [-1, -2]`
+                }
+            }
+        ]
+    };
+
+
+    function formatCodeExample(code) {
+        return code.split('\n').map(line => {
+            if (line.includes('//')) {
+                const [code, comment] = line.split('//');
+                return `${code}<span class="code-comment">// ${comment}</span>`;
+            }
+            return line;
+        }).join('\n');
+    }
+
+    function createMultipleChoice(question, container) {
+        // Create radio buttons container
+        const optionsDiv = document.createElement('div');
+        optionsDiv.className = 'options';
+
+        // Create each option as a radio button
+        question.options.forEach((option, index) => {
+            // Create option wrapper
+            const optionWrapper = document.createElement('label');
+            optionWrapper.className = 'option';
+
+            // Create radio input
+            const radio = document.createElement('input');
+            radio.type = 'radio';
+            radio.name = `question-${question.id}`;
+            radio.value = index;
+            radio.className = 'option-input';
+
+            // Create option text
+            const optionText = document.createElement('span');
+            optionText.className = 'option-text';
+            optionText.innerHTML = option;
+
+            // Add click handler
+            optionWrapper.onclick = () => {
+                checkAnswer(
+                    index,
+                    question.correct,
+                    optionWrapper,
+                    container,
+                    question.explanation
+                );
+            };
+
+            // Assemble option
+            optionWrapper.appendChild(radio);
+            optionWrapper.appendChild(optionText);
+            optionsDiv.appendChild(optionWrapper);
+        });
+
+        container.appendChild(optionsDiv);
+
+    }
+
+    function createFillInBlank(question, container) {
+        // Create input container
+        const inputContainer = document.createElement('div');
+        inputContainer.className = 'input-container';
+
+        // Create text input
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'input-answer';
+        input.placeholder = 'Enter your answer';
+
+        // Create submit button
+        const submitBtn = document.createElement('button');
+        submitBtn.className = 'submit-btn';
+        submitBtn.textContent = 'Submit Answer';
+        submitBtn.onclick = () => {
+            checkFillAnswer(
+                input.value,
+                question.answer,
+                container,
+                question.explanation
+            );
+        };
+
+        // Add enter key support
+        input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                submitBtn.click();
+            }
+        });
+
+        // Assemble input container
+        inputContainer.appendChild(input);
+        inputContainer.appendChild(submitBtn);
+        container.appendChild(inputContainer);
+    }
+
+    function createQuiz() {
+        const questionsContainer = document.getElementById('questions');
+
+        quizData.questions.forEach((q, index) => {
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'question';
+
+            // Modify this part to handle the question display inline
+            let questionText = q.question;
+            if (typeof q.question === 'object') {
+                // If question has multiple parts, join them with spaces
+                questionText = [
+                    `Given two vectors`,
+                    q.question.vector1,
+                    'and',
+                    q.question.vector2,
+                    q.question.ending
+                ].join(' ');
+            }
+
+            const questionContent = document.createElement('div');
+            questionContent.className = 'question-inline';
+            questionContent.innerHTML = `<strong>Question ${index + 1}:</strong> ${questionText}`;
+
+            questionDiv.appendChild(questionContent);
+
+            if (q.type === 'single') {
+                createMultipleChoice(q, questionDiv);
+            } else if (q.type === 'fill') {
+                createFillInBlank(q, questionDiv);
+            }
+
+            const feedbackDiv = document.createElement('div');
+            feedbackDiv.className = 'feedback';
+            questionDiv.appendChild(feedbackDiv);
+
+            questionsContainer.appendChild(questionDiv);
+        });
+        MathJax.typeset(); // Re-render equations
+    }
+
+    function checkFillAnswer(input, answer, questionDiv, explanation) {
+        if (questionDiv.querySelector('.feedback').style.display === 'block') {
+            return;
+        }
+
+        const inputElement = questionDiv.querySelector('.input-answer');
+        if (inputElement) {
+            inputElement.disabled = true;
+        }
+
+        if (input.toLowerCase().trim() === answer.toLowerCase().trim()) {
+            score++;
+            showFeedback(questionDiv, explanation, true);
+        } else {
+            showFeedback(questionDiv, {
+                text: `The correct answer is: ${answer}. ${explanation.text}`,
+                code: explanation.code
+            }, false);
+        }
+
+        answeredQuestions++;
+        updateScore();
+    }
+
+    function showFeedback(questionDiv, explanation, isCorrect) {
+        const feedbackDiv = questionDiv.querySelector('.feedback');
+        feedbackDiv.style.display = 'block';
+
+        const codeId = 'code-' + Math.random().toString(36).substr(2, 9);
+        const sanitizedCode = explanation.code.replace(/`/g, '\\`'); // Escape backticks
+        feedbackDiv.innerHTML = `
+                <div class="explanation-text">
+                    ${isCorrect ? '✅' : '❌'} ${explanation.text}
+                </div>
+                ${explanation.code.trim() ? `
+                    <div class="code-block" id="${codeId}">
+                        ${formatCodeExample(sanitizedCode)}
+                    </div>
+                ` : ''}
+            `;
+
+        feedbackDiv.style.backgroundColor = isCorrect ? '#e8f5e9' : '#ffebee';
+        MathJax.typeset(); // Re-render equations
+    }
+
+    function checkAnswer(selected, correct, optionDiv, questionDiv, explanation) {
+        if (questionDiv.querySelector('.correct') || questionDiv.querySelector('.incorrect')) {
+            return;
+        }
+
+        const options = questionDiv.getElementsByClassName('option');
+        options[correct].classList.add('correct');
+        debugger;
+        if (selected === correct) {
+            score++;
+            optionDiv.classList.add('correct');
+            showFeedback(questionDiv, explanation, true);
+        } else {
+            optionDiv.classList.add('incorrect');
+            showFeedback(questionDiv, explanation, false);
+        }
+
+        answeredQuestions++;
+        updateScore();
+    }
+
+    function updateScore() {
+        const scoreDiv = document.getElementById('score');
+        const percentage = (score / quizData.questions.length) * 100;
+        scoreDiv.innerHTML = `
+                <h3>Your Score: ${score}/${quizData.questions.length}</h3>
+                <p>Percentage: ${percentage.toFixed(1)}%</p>
+                ${answeredQuestions === quizData.questions.length ?
+            `<p>${percentage >= 70 ? '🎉 Great job! You have a solid understanding of vector mathematics!' :
+                'Keep practicing! Review the explanations to strengthen your understanding of vectors.'}</p>` : ''}
+            `;
+    }
+
+    let score = 0;
+    let answeredQuestions = 0;
+    createQuiz();
+</script>
+</body>
+</html>

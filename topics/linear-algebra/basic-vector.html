@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Basic Vectors Quiz</title>
+    <style>
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            font-family: system-ui, -apple-system, sans-serif;
+            line-height: 1.6;
+            text-align: left;
+
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .option {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .option:hover {
+            background-color: #f5f5f5;
+            transform: translateX(5px);
+        }
+        .selected {
+            background-color: #e3f2fd;
+        }
+        .correct {
+            background-color: #e8f5e9;
+            border-color: #81c784;
+        }
+        .incorrect {
+            background-color: #ffebee;
+            border-color: #e57373;
+        }
+        .input-answer {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            margin-top: 10px;
+            padding: 8px 16px;
+            background-color: #2196f3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #1976d2;
+        }
+        #score {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.2em;
+        }
+        .feedback {
+            margin-top: 10px;
+            padding: 15px;
+            border-radius: 4px;
+            display: none;
+            line-height: 1.6;
+            text-align: left;
+            margin-left: 0; /* Optional for left alignment */
+
+        }
+        .code-block {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre;
+            overflow-x: auto;
+            line-height: 1.5;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            position: relative;
+        }
+
+        .question {
+            background-color: #fff;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .question-inline {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .question-inline strong {
+            white-space: nowrap;
+        }
+
+        /* For vector notation spacing */
+        .MathJax {
+            margin: 0 4px;
+        }
+    </style>
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$$', '$$']],
+                displayMath: [['$$', '$$']],
+                processEscapes: true
+            },
+            options: {
+                skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+            },
+            chtml: {
+                displayAlign: 'left', // Align display-style equations to the left
+                displayIndent: '0em' // No additional indentation
+            },
+            startup: {
+                pageReady: () => {
+                    return MathJax.startup.defaultPageReady().then(() => {
+                        // Custom handling after MathJax is ready
+                    });
+                }
+            }
+        };
+    </script>
+    <script type="text/javascript" id="MathJax-script" async
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+    </script>
+</head>
+<body>
+<div class="container">
+    <h1>📐 Basic Vectors Quiz</h1>
+    <p>Test your knowledge of vector mathematics and operations!</p>
+
+    <iframe width="952" height="536" src="https://www.youtube.com/embed/fNk_zzaMoSs?si=VSmNOGyBNh1Bw1VN" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+    </br>
+    <iframe width="952" height="536" src="https://www.youtube.com/embed/k7RM-ot2NWY?si=Wq35PJzns6pqZQ_r" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+    <div id="questions"></div>
+    <div id="score"></div>
+</div>
+
+<script>
+    const quizData = {
+        questions: [
+            {
+                type: "single",
+                question: "What is a vector?",
+                options: [
+                    "A mathematical object with both magnitude and direction",
+                    "A mathematical object with only magnitude",
+                    "A mathematical object with only direction",
+                    "A mathematical object with neither magnitude nor direction"
+                ],
+                correct: 0,
+                explanation: {
+                    text: "A vector is a mathematical object that has both magnitude (length) and direction. This is in contrast to a scalar, which only has magnitude. For example, velocity is a vector (speed in a specific direction) while speed alone is a scalar. Common examples of vectors include: displacement, velocity, acceleration, and force.",
+                    code: `
+import numpy as np
+
+# Creating a 2D vector
+vector_2d = np.array([3, 4])
+
+# Calculate magnitude (length)
+magnitude = np.linalg.norm(vector_2d)
+
+# Calculate direction (angle with x-axis in radians)
+direction = np.arctan2(vector_2d[1], vector_2d[0])
+
+print(f"Vector: {vector_2d}")
+print(f"Magnitude: {magnitude}")
+print(f"Direction (radians): {direction}")
+print(f"Direction (degrees): {np.degrees(direction)}")`
+                }
+            },
+            {
+                type: "single",
+                question: "Which of the following real-world quantities is NOT typically represented as a vector?",
+                options: [
+                    "Temperature at a point",
+                    "Velocity of a car",
+                    "Gravitational force",
+                    "Wind direction and speed"
+                ],
+                correct: 0,
+                explanation: {
+                    text: "Temperature at a point is a scalar quantity because it only has magnitude (the temperature value) without an associated direction. In contrast, velocity, force, and wind are all vector quantities because they have both magnitude and direction. Temperature gradient (rate of change of temperature in space) would be a vector, but temperature itself is a scalar.",
+                    code: `
+import numpy as np
+
+# Example of scalar (temperature)
+temperature = 25.5  # Celsius
+
+# Example of vector (wind velocity)
+wind_velocity = np.array([10, 5])  # [East component, North component]
+wind_speed = np.linalg.norm(wind_velocity)
+wind_direction = np.degrees(np.arctan2(wind_velocity[1], wind_velocity[0]))
+
+print(f"Temperature (scalar): {temperature}°C")
+print(f"Wind velocity (vector): {wind_velocity} m/s")
+print(f"Wind speed: {wind_speed} m/s")
+print(f"Wind direction: {wind_direction}° from East")`
+                }
+            },
+            {
+                type: "single",
+                question: "What happens when you multiply a vector by a negative scalar?",
+                options: [
+                    "The vector gets flipped around and scaled by the absolute value",
+                    "The vector only gets shorter",
+                    "The vector only changes direction",
+                    "The vector disappears"
+                ],
+                correct: 0,
+                explanation: {
+                    text: "When multiplying a vector by a negative scalar (like -1.8), the vector first gets flipped around (reversed direction) and then gets stretched out by the absolute value of that scalar.",
+                    code: `
+# Example of negative scalar multiplication
+import numpy as np
+
+# Create vector
+original_vector = np.array([3, 4])
+scalar = -1.8
+
+# Multiply vector by scalar
+scaled_vector = scalar * original_vector
+
+print("Original vector:", original_vector)
+print("After scaling by", scalar, ":", scaled_vector)
+`
+                }
+            },
+            {
+                type: "single",
+                question: "What defines a linear combination of two vectors?",
+                options: [
+                    "Scaling each vector and adding them together",
+                    "Multiplying two vectors element-wise",
+                    "Taking the cross product of two vectors",
+                    "Finding the average of two vectors"
+                ],
+                correct: 0,
+                explanation: {
+                    text: "A linear combination involves scaling each vector by some scalar value and then adding the resulting vectors together. This is a fundamental concept in linear algebra.",
+                    code: `
+import numpy as np
+
+# Define two vectors
+v1 = np.array([1, 2])
+v2 = np.array([3, -1])
+
+# Create a linear combination with scalars 2 and -1
+scalar1, scalar2 = 2, -1
+linear_combo = scalar1 * v1 + scalar2 * v2
+
+print(f"Vector 1: {v1}")
+print(f"Vector 2: {v2}")
+print(f"Linear combination (2v1 - v2): {linear_combo}")
+`
+                }
+            },
+            {
+                type: "single",
+                question: "When are three vectors in 3D space linearly independent?",
+                options: [
+                    "When none can be expressed as a linear combination of the others",
+                    "When they all have the same length",
+                    "When they are all perpendicular to each other",
+                    "When they all point in different directions"
+                ],
+                correct: 0,
+                explanation: {
+                    text: "Three vectors are linearly independent if none of them can be expressed as a linear combination of the others. This means they truly give us access to all three dimensions of space.",
+                    code: "",
+                }
+            },
+            {
+                type: "fill",
+                question: "In linear algebra, vectors are typically rooted at what point in the coordinate system? (one word answer)",
+                answer: "origin",
+                explanation: {
+                    text: "In linear algebra, vectors are almost always rooted at the origin of the coordinate system, unlike in physics where vectors can be placed anywhere in space.",
+                    code: `
+// Vector representation from origin
+const vector = {
+    x: 3,  // x-coordinate from origin
+    y: 4   // y-coordinate from origin
+};
+
+// Calculate distance from origin (magnitude)
+const magnitude = Math.sqrt(vector.x ** 2 + vector.y ** 2);
+console.log("Distance from origin:", magnitude);`
+                }
+            },
+            {
+                type: "fill",
+                question: "If $$\\vec{v} = \\begin{pmatrix} 3 \\\\ 4 \\end{pmatrix}$$, what is its magnitude? (Enter the numerical value)",
+                answer: "5",
+                explanation: {
+                    text: "The magnitude of a 2D vector is calculated using the Pythagorean theorem: $$|\\vec{v}| = \\sqrt{v_x^2 + v_y^2} = \\sqrt{3^2 + 4^2} = \\sqrt{9 + 16} = \\sqrt{25} = 5$$. This represents the length of the vector, or its displacement from the origin.",
+                    code: `
+import numpy as np
+
+# Create a 2D vector
+v = np.array([3, 4])
+
+# Calculate magnitude
+magnitude = np.linalg.norm(v)
+print(f"Vector: {v}")
+print(f"Magnitude: {magnitude}")`
+                }
+            },
+            {
+                type: "fill",
+                question: "If $$\\vec{v_1} = \\begin{pmatrix} 3 \\\\ 0 \\end{pmatrix}$$ and $$\\vec{v_2} = \\begin{pmatrix} 0 \\\\ 2 \\end{pmatrix}$$, what is the y-coordinate of $$2\\vec{v_1} + 3\\vec{v_2}$$?",
+                answer: "6",
+                explanation: {
+                    text: "To find the y-coordinate, we multiply each vector by its scalar and add the results. The y-coordinate of v₁ is 0 and the y-coordinate of v₂ is 2. So: 2(0) + 3(2) = 0 + 6 = 6",
+                    code: `
+import numpy as np
+
+v1 = np.array([3, 0])
+v2 = np.array([0, 2])
+
+# Calculate linear combination
+result = 2 * v1 + 3 * v2
+print(f"Vector 1: {v1}")
+print(f"Vector 2: {v2}")
+print(f"Linear combination result: {result}")
+print(f"Y-coordinate: {result[1]}")
+`
+                }
+            },
+
+        ]
+    };
+
+
+    function formatCodeExample(code) {
+        return code.split('\n').map(line => {
+            if (line.includes('//')) {
+                const [code, comment] = line.split('//');
+                return `${code}<span class="code-comment">// ${comment}</span>`;
+            }
+            return line;
+        }).join('\n');
+    }
+
+    function createMultipleChoice(question, container) {
+        // Create radio buttons container
+        const optionsDiv = document.createElement('div');
+        optionsDiv.className = 'options';
+
+        // Create each option as a radio button
+        question.options.forEach((option, index) => {
+            // Create option wrapper
+            const optionWrapper = document.createElement('label');
+            optionWrapper.className = 'option';
+
+            // Create radio input
+            const radio = document.createElement('input');
+            radio.type = 'radio';
+            radio.name = `question-${question.id}`;
+            radio.value = index;
+            radio.className = 'option-input';
+
+            // Create option text
+            const optionText = document.createElement('span');
+            optionText.className = 'option-text';
+            optionText.innerHTML = option;
+
+            // Add click handler
+            optionWrapper.onclick = () => {
+                checkAnswer(
+                    index,
+                    question.correct,
+                    optionWrapper,
+                    container,
+                    question.explanation
+                );
+            };
+
+            // Assemble option
+            optionWrapper.appendChild(radio);
+            optionWrapper.appendChild(optionText);
+            optionsDiv.appendChild(optionWrapper);
+        });
+
+        container.appendChild(optionsDiv);
+
+    }
+
+    function createFillInBlank(question, container) {
+        // Create input container
+        const inputContainer = document.createElement('div');
+        inputContainer.className = 'input-container';
+
+        // Create text input
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'input-answer';
+        input.placeholder = 'Enter your answer';
+
+        // Create submit button
+        const submitBtn = document.createElement('button');
+        submitBtn.className = 'submit-btn';
+        submitBtn.textContent = 'Submit Answer';
+        submitBtn.onclick = () => {
+            checkFillAnswer(
+                input.value,
+                question.answer,
+                container,
+                question.explanation
+            );
+        };
+
+        // Add enter key support
+        input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                submitBtn.click();
+            }
+        });
+
+        // Assemble input container
+        inputContainer.appendChild(input);
+        inputContainer.appendChild(submitBtn);
+        container.appendChild(inputContainer);
+    }
+
+    function createQuiz() {
+        const questionsContainer = document.getElementById('questions');
+
+        quizData.questions.forEach((q, index) => {
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'question';
+
+            // Modify this part to handle the question display inline
+            let questionText = q.question;
+            if (typeof q.question === 'object') {
+                // If question has multiple parts, join them with spaces
+                questionText = [
+                    `Given two vectors`,
+                    q.question.vector1,
+                    'and',
+                    q.question.vector2,
+                    q.question.ending
+                ].join(' ');
+            }
+
+            const questionContent = document.createElement('div');
+            questionContent.className = 'question-inline';
+            questionContent.innerHTML = `<strong>Question ${index + 1}:</strong> ${questionText}`;
+
+            questionDiv.appendChild(questionContent);
+
+            if (q.type === 'single') {
+                createMultipleChoice(q, questionDiv);
+            } else if (q.type === 'fill') {
+                createFillInBlank(q, questionDiv);
+            }
+
+            const feedbackDiv = document.createElement('div');
+            feedbackDiv.className = 'feedback';
+            questionDiv.appendChild(feedbackDiv);
+
+            questionsContainer.appendChild(questionDiv);
+        });
+        MathJax.typeset(); // Re-render equations
+    }
+
+    function checkFillAnswer(input, answer, questionDiv, explanation) {
+        if (questionDiv.querySelector('.feedback').style.display === 'block') {
+            return;
+        }
+
+        const inputElement = questionDiv.querySelector('.input-answer');
+        if (inputElement) {
+            inputElement.disabled = true;
+        }
+
+        if (input.toLowerCase().trim() === answer.toLowerCase().trim()) {
+            score++;
+            showFeedback(questionDiv, explanation, true);
+        } else {
+            showFeedback(questionDiv, {
+                text: `The correct answer is: ${answer}. ${explanation.text}`,
+                code: explanation.code
+            }, false);
+        }
+
+        answeredQuestions++;
+        updateScore();
+    }
+
+    function showFeedback(questionDiv, explanation, isCorrect) {
+        const feedbackDiv = questionDiv.querySelector('.feedback');
+        feedbackDiv.style.display = 'block';
+
+        const codeId = 'code-' + Math.random().toString(36).substr(2, 9);
+        const sanitizedCode = explanation.code.replace(/`/g, '\\`'); // Escape backticks
+        feedbackDiv.innerHTML = `
+                <div class="explanation-text">
+                    ${isCorrect ? '✅' : '❌'} ${explanation.text}
+                </div>
+                ${explanation.code.trim() ? `
+                    <div class="code-block" id="${codeId}">
+                        ${formatCodeExample(sanitizedCode)}
+                    </div>
+                ` : ''}
+            `;
+
+        feedbackDiv.style.backgroundColor = isCorrect ? '#e8f5e9' : '#ffebee';
+        MathJax.typeset(); // Re-render equations
+    }
+
+    function checkAnswer(selected, correct, optionDiv, questionDiv, explanation) {
+        if (questionDiv.querySelector('.correct') || questionDiv.querySelector('.incorrect')) {
+            return;
+        }
+
+        const options = questionDiv.getElementsByClassName('option');
+        options[correct].classList.add('correct');
+        debugger;
+        if (selected === correct) {
+            score++;
+            optionDiv.classList.add('correct');
+            showFeedback(questionDiv, explanation, true);
+        } else {
+            optionDiv.classList.add('incorrect');
+            showFeedback(questionDiv, explanation, false);
+        }
+
+        answeredQuestions++;
+        updateScore();
+    }
+
+    function updateScore() {
+        const scoreDiv = document.getElementById('score');
+        const percentage = (score / quizData.questions.length) * 100;
+        scoreDiv.innerHTML = `
+                <h3>Your Score: ${score}/${quizData.questions.length}</h3>
+                <p>Percentage: ${percentage.toFixed(1)}%</p>
+                ${answeredQuestions === quizData.questions.length ?
+            `<p>${percentage >= 70 ? '🎉 Great job! You have a solid understanding of vector mathematics!' :
+                'Keep practicing! Review the explanations to strengthen your understanding of vectors.'}</p>` : ''}
+            `;
+    }
+
+    let score = 0;
+    let answeredQuestions = 0;
+    createQuiz();
+</script>
+</body>
+</html>
