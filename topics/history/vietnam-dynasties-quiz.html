@@ -266,6 +266,7 @@
 
     function showFeedback(questionDiv, answer, explanation, isCorrect) {
         const feedbackDiv = questionDiv.querySelector('.feedback');
+        debugger
         feedbackDiv.style.display = 'block';
         feedbackDiv.innerHTML = `
         <div class="explanation-text">
@@ -299,17 +300,16 @@
         if (questionDiv.querySelector('.correct') || questionDiv.querySelector('.incorrect')) {
             return;
         }
-
         const options = questionDiv.getElementsByClassName('option');
         options[correct].classList.add('correct');
 
         if (selected === correct) {
             score++;
             optionDiv.classList.add('correct');
-            showFeedback(questionDiv, explanation, true);
+            showFeedback(questionDiv, options[correct].textContent, explanation, true);
         } else {
             optionDiv.classList.add('incorrect');
-            showFeedback(questionDiv, explanation, false);
+            showFeedback(questionDiv, options[correct].textContent, explanation, false);
         }
 
         answeredQuestions++;
