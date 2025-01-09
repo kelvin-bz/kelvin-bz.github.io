@@ -1,343 +1,602 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <style>
         .container {
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
             padding: 20px;
             font-family: system-ui, -apple-system, sans-serif;
-        }
-        .code-block {
-            background: #f5f5f5;
-            padding: 20px;
-            border-radius: 8px;
-            overflow-x: auto;
-            white-space: pre;
-            font-family: monospace;
+            line-height: 1.6;
         }
         .question {
-            margin: 20px 0;
-            padding: 15px;
-            border: 1px solid #ddd;
+            background-color: #fff;
+            padding: 20px;
+            margin-bottom: 25px;
             border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-        .option {
-            margin: 10px 0;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        .option:hover {
-            background: #f0f0f0;
-        }
-        .correct {
-            background: #d4edda;
-            border-color: #c3e6cb;
-        }
-        .incorrect {
-            background: #f8d7da;
-            border-color: #f5c6cb;
-        }
-        #score {
-            font-size: 1.2em;
-            margin: 20px 0;
-            padding: 15px;
-            background: #e9ecef;
-            border-radius: 8px;
-        }
-        .fill-blank {
-            display: inline-block;
-            margin: 0 5px;
-        }
-        .fill-blank input {
-            width: 150px;
-            padding: 5px;
-            border: 2px solid #ddd;
-            border-radius: 4px;
-        }
-        .fill-blank input.correct {
-            border-color: #28a745;
-        }
-        .fill-blank input.incorrect {
-            border-color: #dc3545;
-        }
-        .check-answer {
-            background: #007bff;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 4px;
-            cursor: pointer;
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
             margin-top: 10px;
         }
-        .check-answer:hover {
-            background: #0056b3;
+        .option {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .option:hover {
+            background-color: #f5f5f5;
+            transform: translateX(5px);
+        }
+        .selected {
+            background-color: #e3f2fd;
+        }
+        .correct {
+            background-color: #e8f5e9;
+            border-color: #81c784;
+        }
+        .incorrect {
+            background-color: #ffebee;
+            border-color: #e57373;
+        }
+        .input-answer {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            margin-top: 10px;
+            padding: 8px 16px;
+            background-color: #2196f3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #1976d2;
+        }
+        #score {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.2em;
         }
         .feedback {
             margin-top: 10px;
-            padding: 10px;
+            padding: 15px;
             border-radius: 4px;
             display: none;
+            line-height: 1.6;
+        }
+        .code-block {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre;
+            overflow-x: auto;
+            line-height: 1.5;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            position: relative;
+        }
+        .copy-button {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .explanation-text {
+            margin-bottom: 10px;
+        }
+        .code-comment {
+            color: #6a737d;
+        }
+        .code-output {
+            color: #0a3069;
+            border-left: 3px solid #2196f3;
+            margin-left: 10px;
+            padding-left: 10px;
         }
     </style>
 </head>
 <body>
 <div class="container">
-    <h1>🎯 JavaScript Functions: The Deep Dive Quiz 🚀</h1>
-    <p>Test your mastery of functions, arrow functions, binding, and the mystical 'this' keyword!</p>
-
-    <div id="code-example" class="code-block"></div>
     <div id="questions"></div>
     <div id="score"></div>
 </div>
 
+
 <script>
     const quizData = {
-        "title": "JavaScript Functions Deep Dive Quiz 🎯",
-        "description": "Test your understanding of JavaScript functions, arrow functions, binding, and 'this' keyword!",
-        "codeExample": `// Traditional Function
-function greet(name) {
-    return "Hello " + this.title + " " + name;
+        questions: [
+            {
+                type: "single",
+                question: {
+                    text: "What will be logged when this code runs?",
+                    code: `
+function greet() {
+    console.log("Hello, " + this.name);
 }
 
-// Arrow Function
-const greetArrow = (name) => {
-    return "Hello " + this.title + " " + name;
+const person = {
+    name: "John",
+    greet: greet
 };
 
-// Object with methods
+person.greet();`
+                },
+                options: [
+                    "Hello, John",
+                    "Hello, undefined",
+                    "Hello, null",
+                    "TypeError: Cannot read property 'name' of undefined"
+                ],
+                correct: 0,
+                explanation: {
+                    text: "When a function is called as a method of an object, 'this' refers to that object. In this case, person.greet() makes 'this' point to person, so this.name is 'John'.",
+                    code: `
+// Here's what happens step by step:
 const person = {
-    title: "Mr.",
     name: "John",
-    normalGreet: function() {
-        return "Hi, I'm " + this.name;
-    },
-    arrowGreet: () => {
-        return "Hi, I'm " + this.name;
-    },
-    delayedGreet: function() {
-        setTimeout(function() {
-            console.log("Hi, I'm " + this.name);
-        }.bind(this), 1000);
-    },
-    delayedArrowGreet: function() {
-        setTimeout(() => {
-            console.log("Hi, I'm " + this.name);
-        }, 1000);
+    greet: greet
+};
+person.greet();  // 'this' is person
+// So this.name is person.name, which is "John"`
+                }
+            },
+            {
+                type: "single",
+                question: {
+                    text: "What will this code print?",
+                    code: `
+const button = {
+    text: "Click me",
+    click: () => {
+        console.log(this.text);
     }
 };
 
-// Function borrowing
-const teacher = {
-    title: "Professor",
-    subject: "JavaScript"
+button.click();`
+                },
+                options: [
+                    "Click me",
+                    "undefined",
+                    "null",
+                    "[object Window]"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "Arrow functions do not have their own 'this'. They inherit 'this' from the enclosing scope. In this case, 'this' refers to the global scope where text is undefined.",
+                    code: `
+// To fix this and get "Click me", use a regular function:
+const button = {
+    text: "Click me",
+    click: function() {
+        console.log(this.text);  // prints "Click me"
+    }
+};`
+                }
+            },
+            {
+                type: "single",
+                question: {
+                    text: "What is the output of this code?",
+                    code: `
+function makeCounter() {
+    let count = 0;
+    return function() {
+        return ++count;
+    }
+}
+
+const count = makeCounter();
+console.log(count());
+console.log(count());`
+                },
+                options: [
+                    "0, 1",
+                    "1, 2",
+                    "undefined, undefined",
+                    "1, 1"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "This is a closure. The inner function maintains access to count even after makeCounter() finishes. Each call to count() increments the same count variable.",
+                    code: `
+// Let's break it down:
+const count = makeCounter();  // count is now a function
+console.log(count());  // prints 1 (0 + 1)
+console.log(count());  // prints 2 (1 + 1)`
+                }
+            },
+            {
+                type: "single",
+                question: {
+                    text: "What is the result of this code?",
+                    code: `
+const calc = {
+    num: 0,
+    add: function(n) {
+        setTimeout(function() {
+            this.num += n;
+            console.log(this.num);
+        }, 0);
+    }
 };
 
-greet.call(teacher, "Smith");
-greet.apply(teacher, ["Smith"]);
-const boundGreet = greet.bind(teacher);`,
-        "multipleChoice": [
-            {
-                "id": 1,
-                "question": "What will person.arrowGreet() return?",
-                "options": [
-                    { "id": "a", "text": "Hi, I'm John" },
-                    { "id": "b", "text": "Hi, I'm undefined" },
-                    { "id": "c", "text": "TypeError" },
-                    { "id": "d", "text": "Hi, I'm [object Window]" }
+calc.add(5);`
+                },
+                options: [
+                    "5",
+                    "0",
+                    "NaN",
+                    "undefined"
                 ],
-                "correctAnswer": "b",
-                "explanation": "Arrow functions don't have their own 'this' binding. They inherit 'this' from the enclosing scope."
+                correct: 2,
+                explanation: {
+                    text: "The callback function in setTimeout has its own 'this' binding",
+                    code: `
+// Fix using arrow function:
+const calc = {
+    num: 0,
+    add: function(n) {
+        setTimeout(() => {
+            this.num += n;  // 'this' from outer scope
+            console.log(this.num);  // 5
+        }, 0);
+    }
+};`
+                }
             },
             {
-                "id": 2,
-                "question": "What's the difference between .call() and .apply()?",
-                "options": [
-                    { "id": "a", "text": "No difference, they're aliases" },
-                    { "id": "b", "text": ".call() accepts arguments list, .apply() accepts arguments array" },
-                    { "id": "c", "text": ".apply() accepts arguments list, .call() accepts arguments array" },
-                    { "id": "d", "text": "Only .call() can set 'this' context" }
+                type: "single",
+                question: {
+                    text: "What will be logged?",
+                    code: `
+function printName() {
+    console.log(this.name);
+}
+
+const person = { name: "Alice" };
+const boundPrint = printName.bind(person);
+boundPrint();`
+                },
+                options: [
+                    "undefined",
+                    "Alice",
+                    "TypeError",
+                    "null"
                 ],
-                "correctAnswer": "b",
-                "explanation": ".call(context, arg1, arg2) vs .apply(context, [arg1, arg2])"
+                correct: 1,
+                explanation: {
+                    text: "bind() creates a new function with 'this' permanently set to the specified value. In this case, 'this' is bound to person.",
+                    code: `
+// bind() creates a new function where this === person
+const boundPrint = printName.bind(person);
+// So this.name is person.name, which is "Alice"`
+                }
             },
             {
-                "id": 3,
-                "question": "Why does person.delayedArrowGreet() work correctly while traditional delayedGreet() needs .bind(this)?",
-                "options": [
-                    { "id": "a", "text": "Arrow functions are faster" },
-                    { "id": "b", "text": "Arrow functions automatically bind 'this'" },
-                    { "id": "c", "text": "Arrow functions inherit 'this' from their enclosing scope" },
-                    { "id": "d", "text": "setTimeout works differently with arrow functions" }
-                ],
-                "correctAnswer": "c",
-                "explanation": "Arrow functions capture 'this' from their surrounding context when they're created."
+                type: "fill",
+                question: {
+                    text: "Complete the code to create a method that keeps its 'this' binding:",
+                    code: `
+class Timer {
+    constructor() {
+        this.seconds = 0;
+    }
+
+    start() {
+        setInterval(_____ => {
+            this.seconds++;
+        }, 1000);
+    }
+}`
+                },
+                answer: "()",
+                explanation: {
+                    text: "Using an arrow function preserves the 'this' binding from the enclosing scope, allowing us to access the Timer instance inside setInterval.",
+                    code: `
+class Timer {
+    constructor() {
+        this.seconds = 0;
+    }
+
+    start() {
+        setInterval(() => {  // Arrow function keeps 'this' binding
+            this.seconds++;
+        }, 1000);
+    }
+}`
+                }
             },
             {
-                "id": 4,
-                "question": "What's the main difference between .bind() and .call()?",
-                "options": [
-                    { "id": "a", "text": ".bind() creates a new function, .call() executes immediately" },
-                    { "id": "b", "text": ".call() creates a new function, .bind() executes immediately" },
-                    { "id": "c", "text": "They're the same but .bind() is newer" },
-                    { "id": "d", "text": ".bind() can only be used with arrow functions" }
-                ],
-                "correctAnswer": "a",
-                "explanation": ".bind() returns a new function with bound context, while .call() executes the function right away."
+                type: "fill",
+                question: {
+                    text: "Complete the function to create private data using closure:",
+                    code: `
+function createWallet(initialBalance) {
+    let balance = initialBalance;
+
+    return {
+        getBalance: _____ => balance
+    };
+}`
+                },
+                answer: "()",
+                explanation: {
+                    text: "an arrow function will work perfectly fine because it doesn’t rely on the this keyword.",
+                    code: `
+function createWallet(initialBalance) {
+    let balance = initialBalance;  // Private variable
+
+    return {
+        getBalance: () => balance  // Access through closure
+    };
+}`
+                }
             },
             {
-                "id": 5,
-                "question": "Which statement about arrow functions is FALSE?",
-                "options": [
-                    { "id": "a", "text": "They can be used as constructors" },
-                    { "id": "b", "text": "They have a lexical 'this' binding" },
-                    { "id": "c", "text": "They can be shorter than traditional functions" },
-                    { "id": "d", "text": "They don't have their own arguments object" }
-                ],
-                "correctAnswer": "a",
-                "explanation": "Arrow functions cannot be used as constructors and will throw an error if used with 'new'."
-            }
-        ],
-        "fillInBlank": [
-            {
-                "id": 6,
-                "question": "The _____ method is used to call a function with a given this value and arguments provided as an array.",
-                "correctAnswer": "apply",
-                "hint": "It's similar to .call() but takes an array of arguments"
+                type: "fill",
+                question: {
+                    text: "Complete the code to fix the this binding:",
+                    code: `
+const person = {
+    name: "Bob",
+    sayHiLater: function() {
+        setTimeout(_____ {
+            console.log("Hi, " + this.name);
+        }, 1000);
+    }
+};`
+                },
+                answer: "() =>",
+                explanation: {
+                    text: "Using an arrow function in setTimeout preserves the this binding from the outer scope, allowing access to person.name.",
+                    code: `
+const person = {
+    name: "Bob",
+    sayHiLater: function() {
+        setTimeout(() => {  // Arrow function keeps outer this
+            console.log("Hi, " + this.name);  // "Hi, Bob"
+        }, 1000);
+    }
+};`
+                }
             },
             {
-                "id": 7,
-                "question": "Arrow functions use _____ scoping for the 'this' keyword.",
-                "correctAnswer": "lexical",
-                "hint": "This type of scoping means they inherit 'this' from their surrounding code"
+                type: "fill",
+                question: {
+                    text: "Complete the code to enable method chaining:",
+                    code: `
+class Calculator {
+    constructor() {
+        this.value = 0;
+    }
+
+    add(n) {
+        this.value += n;
+        return _____;
+    }
+}`
+                },
+                answer: "this",
+                explanation: {
+                    text: "Returning this from methods enables method chaining by returning the instance itself.",
+                    code: `
+class Calculator {
+    constructor() {
+        this.value = 0;
+    }
+
+    add(n) {
+        this.value += n;
+        return this;  // Enables chaining like calc.add(1).add(2)
+    }
+}`
+                }
             },
             {
-                "id": 8,
-                "question": "The expression () => {} is an example of an _____ function.",
-                "correctAnswer": "arrow",
-                "hint": "This modern function syntax was introduced in ES6"
-            },
-            {
-                "id": 9,
-                "question": "When a method is called on an object, _____ refers to the object itself inside traditional functions.",
-                "correctAnswer": "this",
-                "hint": "It's a special keyword that references the current context"
-            },
-            {
-                "id": 10,
-                "question": "The _____ method creates a new function that, when called, has its 'this' keyword set to a specific value.",
-                "correctAnswer": "bind",
-                "hint": "Unlike call() or apply(), this method returns a new function"
+                type: "fill",
+                question: {
+                    text: "Complete the bind call to set the correct this context:",
+                    code: `
+function greet() {
+    console.log("Hello, " + this.name);
+}
+
+const user = { name: "Alice" };
+const boundGreet = greet._____(user);`
+                },
+                answer: "bind",
+                explanation: {
+                    text: "The bind() method creates a new function with its this value set to the provided value.",
+                    code: `
+function greet() {
+    console.log("Hello, " + this.name);
+}
+
+const user = { name: "Alice" };
+const boundGreet = greet.bind(user);  // Creates new function
+boundGreet();  // Prints "Hello, Alice"`
+                }
             }
         ]
     };
 
-    function init() {
-        document.getElementById('code-example').textContent = quizData.codeExample;
-
-        const questionsContainer = document.getElementById('questions');
-
-        // Multiple Choice Questions
-        quizData.multipleChoice.forEach(q => {
-            const questionDiv = document.createElement('div');
-            questionDiv.className = 'question';
-            questionDiv.innerHTML = `
-                    <h3>Question ${q.id}: ${q.question}</h3>
-                    ${q.options.map(opt => `
-                        <div class="option" data-question="${q.id}" data-option="${opt.id}">
-                            ${opt.id.toUpperCase()}. ${opt.text}
-                        </div>
-                    `).join('')}
-                `;
-            questionsContainer.appendChild(questionDiv);
-        });
-
-        // Fill in the Blank Questions
-        quizData.fillInBlank.forEach(q => {
-            const questionDiv = document.createElement('div');
-            questionDiv.className = 'question';
-            questionDiv.innerHTML = `
-                    <h3>Question ${q.id}: Fill in the blank</h3>
-                    <p>${q.question}</p>
-                    <div class="fill-blank">
-                        <input type="text" id="q${q.id}" placeholder="Type your answer">
-                        <p class="hint"><em>Hint: ${q.hint}</em></p>
-                        <button class="check-answer" onclick="checkFillBlank(${q.id})">Check Answer</button>
-                        <div id="feedback-${q.id}" class="feedback"></div>
-                    </div>
-                `;
-            questionsContainer.appendChild(questionDiv);
-        });
-
-        let score = 0;
-        const scoreDiv = document.getElementById('score');
-        scoreDiv.textContent = `Score: ${score}/${quizData.multipleChoice.length + quizData.fillInBlank.length}`;
-
-        // Multiple Choice Event Listeners
-        document.querySelectorAll('.option').forEach(option => {
-            option.addEventListener('click', function() {
-                const questionId = this.dataset.question;
-                const selectedOption = this.dataset.option;
-                const question = quizData.multipleChoice.find(q => q.id === parseInt(questionId));
-
-                document.querySelectorAll(`[data-question="${questionId}"]`)
-                    .forEach(opt => {
-                        opt.classList.remove('correct', 'incorrect');
-                    });
-
-                if (selectedOption === question.correctAnswer) {
-                    this.classList.add('correct');
-                    if (!this.dataset.scored) {
-                        score++;
-                        this.dataset.scored = 'true';
-                    }
-                } else {
-                    this.classList.add('incorrect');
-                    document.querySelector(`[data-question="${questionId}"][data-option="${question.correctAnswer}"]`)
-                        .classList.add('correct');
-                }
-
-                updateScore();
-            });
+    window.copyToClipboard = function(text, button) {
+        navigator.clipboard.writeText(text).then(() => {
+            const originalText = button.textContent;
+            button.textContent = 'Copied!';
+            setTimeout(() => {
+                button.textContent = originalText;
+            }, 2000);
         });
     }
 
-    function checkFillBlank(questionId) {
-        const input = document.getElementById(`q${questionId}`);
-        const feedback = document.getElementById(`feedback-${questionId}`);
-        const question = quizData.fillInBlank.find(q => q.id === questionId);
-
-        if (input.value.trim().toLowerCase() === question.correctAnswer.toLowerCase()) {
-            input.classList.remove('incorrect');
-            input.classList.add('correct');
-            feedback.style.display = 'block';
-            feedback.className = 'feedback correct';
-            feedback.textContent = "Correct! 🎉";
-            if (!input.dataset.scored) {
-                input.dataset.scored = 'true';
-                updateScore();
+    function formatCodeExample(code) {
+        return code.split('\n').map(line => {
+            if (line.includes('//')) {
+                const [code, comment] = line.split('//');
+                return `${code}<span class="code-comment">// ${comment}</span>`;
             }
-        } else {
-            input.classList.remove('correct');
-            input.classList.add('incorrect');
-            feedback.style.display = 'block';
-            feedback.className = 'feedback incorrect';
-            feedback.textContent = "Try again! Remember: " + question.hint;
+            return line;
+        }).join('\n');
+    }
+
+    function createQuiz() {
+        const questionsContainer = document.getElementById('questions');
+
+        quizData.questions.forEach((q, index) => {
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'question';
+            const text = typeof q.question === 'string' ? q.question : q.question.text;
+            const code = typeof q.question === 'string' ? '' : q.question.code;
+
+            questionDiv.innerHTML = `<div>
+                <strong>Question ${index + 1}:</strong>
+                ${text}
+                ${code ? `<pre class="code-block">${formatCodeExample(code)}</pre>` : ''}
+            </div>`;
+
+            if (q.type === 'single') {
+                const optionsDiv = document.createElement('div');
+                optionsDiv.className = 'options';
+
+                q.options.forEach((option, optIndex) => {
+                    const optionDiv = document.createElement('div');
+                    optionDiv.className = 'option';
+                    optionDiv.textContent = option;
+                    optionDiv.onclick = () => checkAnswer(optIndex, q.correct, optionDiv, questionDiv, q.explanation);
+                    optionsDiv.appendChild(optionDiv);
+                });
+
+                questionDiv.appendChild(optionsDiv);
+            } else {
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.className = 'input-answer';
+                input.placeholder = 'Type your answer here';
+
+                const submitBtn = document.createElement('button');
+                submitBtn.textContent = 'Submit';
+                submitBtn.onclick = () => checkFillAnswer(input.value, q.answer, questionDiv, q.explanation);
+
+                questionDiv.appendChild(input);
+                questionDiv.appendChild(submitBtn);
+            }
+
+            const feedbackDiv = document.createElement('div');
+            feedbackDiv.className = 'feedback';
+            questionDiv.appendChild(feedbackDiv);
+
+            questionsContainer.appendChild(questionDiv);
+        });
+
+        updateScore();
+    }
+
+    function checkFillAnswer(input, answer, questionDiv, explanation) {
+        // Check if question has already been answered
+        if (questionDiv.querySelector('.feedback').style.display === 'block') {
+            return; // Already answered
         }
+
+        // Get or create input element
+        const inputElement = questionDiv.querySelector('.input-answer');
+        if (inputElement) {
+            inputElement.disabled = true; // Disable input after submission
+        }
+
+        // Compare answer (case-insensitive)
+        if (input.toLowerCase().trim() === answer.toLowerCase().trim()) {
+            score++;
+            showFeedback(questionDiv, explanation, true);
+        } else {
+            showFeedback(questionDiv, {
+                text: `The correct answer is: ${answer}. ${explanation.text}`,
+                code: explanation.code
+            }, false);
+        }
+
+        answeredQuestions++;
+        updateScore();
+    }
+    function showFeedback(questionDiv, explanation, isCorrect) {
+        const feedbackDiv = questionDiv.querySelector('.feedback');
+        feedbackDiv.style.display = 'block';
+
+        const codeId = 'code-' + Math.random().toString(36).substr(2, 9);
+
+        feedbackDiv.innerHTML = `
+                <div class="explanation-text">
+                    ${isCorrect ? '✅' : '❌'} ${explanation.text}
+                </div>
+                ${explanation.code ? `
+                    <div class="code-block" id="${codeId}">
+                        ${formatCodeExample(explanation.code)}
+                    </div>
+                ` : ''}
+            `;
+
+        feedbackDiv.style.backgroundColor = isCorrect ? '#e8f5e9' : '#ffebee';
+    }
+
+    function checkAnswer(selected, correct, optionDiv, questionDiv, explanation) {
+        if (questionDiv.querySelector('.correct') || questionDiv.querySelector('.incorrect')) {
+            return;
+        }
+
+        const options = questionDiv.getElementsByClassName('option');
+        options[correct].classList.add('correct');
+
+        if (selected === correct) {
+            score++;
+            optionDiv.classList.add('correct');
+            showFeedback(questionDiv, explanation, true);
+        } else {
+            optionDiv.classList.add('incorrect');
+            showFeedback(questionDiv, explanation, false);
+        }
+
+        answeredQuestions++;
+        updateScore();
     }
 
     function updateScore() {
-        const totalQuestions = quizData.multipleChoice.length + quizData.fillInBlank.length;
-        const correctMultipleChoice = document.querySelectorAll('.option[data-scored="true"]').length;
-        const correctFillBlank = document.querySelectorAll('input[data-scored="true"]').length;
-        const score = correctMultipleChoice + correctFillBlank;
-
-        document.getElementById('score').textContent = `Score: ${score}/${totalQuestions}`;
+        const scoreDiv = document.getElementById('score');
+        const percentage = (score / quizData.questions.length) * 100;
+        scoreDiv.innerHTML = `
+                <h3>Your Score: ${score}/${quizData.questions.length}</h3>
+                <p>Percentage: ${percentage.toFixed(1)}%</p>
+                ${answeredQuestions === quizData.questions.length ?
+            `<p>${percentage >= 70 ? '🎉 Great job! You have a solid understanding of Node.js core modules!' :
+                'Keep learning! Review the explanations to strengthen your knowledge of Node.js core modules.'}</p>` : ''}
+            `;
     }
 
-    init();
+    let score = 0;
+    let answeredQuestions = 0;
+    createQuiz();
 </script>
 </body>
 </html>
