@@ -4,17 +4,17 @@
     <meta charset="UTF-8">
     <style>
         .container {
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
             padding: 20px;
             font-family: system-ui, -apple-system, sans-serif;
+            line-height: 1.6;
         }
         .question {
-            margin-bottom: 20px;
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
             background-color: #fff;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         .options {
@@ -38,11 +38,11 @@
             background-color: #e3f2fd;
         }
         .correct {
-            background-color: #c8e6c9;
+            background-color: #e8f5e9;
             border-color: #81c784;
         }
         .incorrect {
-            background-color: #ffcdd2;
+            background-color: #ffebee;
             border-color: #e57373;
         }
         .input-answer {
@@ -76,237 +76,534 @@
         }
         .feedback {
             margin-top: 10px;
-            padding: 10px;
+            padding: 15px;
             border-radius: 4px;
             display: none;
-        }
-        code {
-            background-color: #f5f5f5;
-            padding: 2px 4px;
-            border-radius: 4px;
-            font-family: monospace;
-            white-space: pre-wrap;
+            line-height: 1.6;
         }
         .code-block {
             background-color: #f5f5f5;
-            padding: 10px;
+            padding: 15px;
             border-radius: 4px;
             margin: 10px 0;
-            font-family: monospace;
-            white-space: pre-wrap;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre;
+            overflow-x: auto;
+            line-height: 1.5;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            position: relative;
+        }
+        .copy-button {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .explanation-text {
+            margin-bottom: 10px;
+        }
+        .code-comment {
+            color: #6a737d;
+        }
+        .code-output {
+            color: #0a3069;
+            border-left: 3px solid #2196f3;
+            margin-left: 10px;
+            padding-left: 10px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🔍 JavaScript Scope Quiz</h1>
-        <p>Test your understanding of JavaScript scoping concepts, including global, local, lexical, and module scope!</p>
-        <div id="questions"></div>
-        <div id="score"></div>
-    </div>
+<div class="container">
+    <div id="questions"></div>
+    <div id="score"></div>
+</div>
 
-    <script>
-        const quizData = {
-            questions: [
-                {
-                    type: "single",
-                    question: "What is the output of this code?\n\n<div class='code-block'>var x = 10;\nfunction test() {\n    var x = 20;\n    console.log(x);\n}\ntest();\nconsole.log(x);</div>",
-                    options: [
-                        "20, 20",
-                        "20, 10",
-                        "10, 10",
-                        "10, 20"
-                    ],
-                    correct: 1,
-                    explanation: "Due to function scope, the inner x (20) shadows the global x (10). The first log prints the local x (20), while the second prints the global x (10)."
+
+<script>
+    const quizData = {
+        questions: [{
+            type: "single",
+            question: {
+                text: "What is lexical scope in JavaScript?",
+                code: `function outer() {
+    let message = "Hello";
+
+    function inner() {
+        console.log(message);
+    }
+
+    inner();
+}`
+            },
+            options: [
+                "The scope determined by where variables are declared in the source code",
+                "The scope determined at runtime",
+                "The scope of global variables only",
+                "The scope of function parameters"
+            ],
+            correct: 0,
+            explanation: {
+                text: "Lexical scope means that the scope of a variable is determined by its location in the source code. Inner functions can access variables from their outer scope based on where they are defined.",
+                code: `
+// inner() has access to message because it's defined
+// in its outer lexical scope:
+function outer() {
+    let message = "Hello";  // accessible to inner()
+
+    function inner() {
+        console.log(message);  // can access message
+    }
+
+    inner();
+}`
+            }
+        },
+            {
+                type: "single",
+                question: {
+                    text: "What will be the output of this code?",
+                    code: `let x = 10;
+function foo() {
+    console.log(x);
+    let x = 20;
+}
+foo();`
                 },
-                {
-                    type: "single",
-                    question: "Which statement about lexical scope is correct?",
-                    options: [
-                        "It's determined by where functions are called",
-                        "It's determined by where functions are defined",
-                        "It changes based on runtime conditions",
-                        "It only applies to arrow functions"
-                    ],
-                    correct: 1,
-                    explanation: "Lexical scope is determined by where functions are defined in the source code, not where they are called. This is also known as static scope."
-                },
-                {
-                    type: "single",
-                    question: "What will this code log?\n\n<div class='code-block'>let counter = 0;\nfunction createIncrementer() {\n    return function() {\n        counter++;\n        return counter;\n    }\n}\nconst inc = createIncrementer();\nconsole.log(inc());</div>",
-                    options: [
-                        "0",
-                        "1",
-                        "undefined",
-                        "ReferenceError"
-                    ],
-                    correct: 1,
-                    explanation: "The inner function has access to the global counter variable through lexical scope. The first call increments it from 0 to 1."
-                },
-                {
-                    type: "single",
-                    question: "In module scope, what's the default visibility of variables and functions?",
-                    options: [
-                        "Everything is public by default",
-                        "Everything is private by default",
-                        "Only functions are public",
-                        "Only variables are public"
-                    ],
-                    correct: 1,
-                    explanation: "In ES6 modules, everything is private by default. You must explicitly export what you want to make available to other modules."
-                },
-                {
-                    type: "single",
-                    question: "What's the main difference between var and let regarding scope?",
-                    options: [
-                        "var has block scope, let has function scope",
-                        "let has block scope, var has function scope",
-                        "Both have block scope",
-                        "Both have function scope"
-                    ],
-                    correct: 1,
-                    explanation: "let has block scope (limited to the block, statement, or expression it's defined in), while var has function scope (limited to the function it's defined in, or global if not in a function)."
-                },
-                {
-                    type: "fill",
-                    question: "The scope where variables can be accessed from anywhere in your JavaScript code is called ______ scope.",
-                    answer: "global",
-                    explanation: "Global scope refers to variables that are accessible throughout your entire JavaScript program."
-                },
-                {
-                    type: "fill",
-                    question: "Variables declared inside a function using 'var' have ______ scope.",
-                    answer: "function",
-                    explanation: "Function scope means the variable is only accessible within the function where it's declared."
-                },
-                {
-                    type: "fill",
-                    question: "When a function can access variables from its outer scope, we call this ______ scope.",
-                    answer: "lexical",
-                    explanation: "Lexical scope (or static scope) refers to the ability of a function to access variables from its containing (enclosing) scope."
-                },
-                {
-                    type: "fill",
-                    question: "To make variables or functions available to other modules, you need to use the ______ keyword.",
-                    answer: "export",
-                    explanation: "The export keyword is used in ES6 modules to make items available for use in other modules via import."
-                },
-                {
-                    type: "fill",
-                    question: "Variables declared with let and const have ______ scope, meaning they are only accessible within their containing block.",
-                    answer: "block",
-                    explanation: "Block scope limits the visibility of variables to the block (denoted by curly braces) in which they are declared."
+                options: [
+                    "10",
+                    "20",
+                    "undefined",
+                    "ReferenceError: Cannot access 'x' before initialization"
+                ],
+                correct: 3,
+                explanation: {
+                    text: "This is an example of the Temporal Dead Zone (TDZ). Even though there's a global 'x', the local 'x' declaration hoists to the top of the function scope but cannot be accessed before its declaration, causing a ReferenceError.",
+                    code: `
+// The code is equivalent to:
+let x = 10;
+function foo() {
+    let x;  // hoisted declaration
+    console.log(x);  // Error: cannot access x before initialization
+    x = 20;
+}
+foo();`
                 }
-            ]
-        };
-
-        let score = 0;
-        let answeredQuestions = 0;
-
-        function createQuiz() {
-            const questionsContainer = document.getElementById('questions');
-            
-            quizData.questions.forEach((q, index) => {
-                const questionDiv = document.createElement('div');
-                questionDiv.className = 'question';
-                questionDiv.innerHTML = `<div><strong>Question ${index + 1}:</strong> ${q.question}</div>`;
-
-                if (q.type === 'single') {
-                    const optionsDiv = document.createElement('div');
-                    optionsDiv.className = 'options';
-                    
-                    q.options.forEach((option, optIndex) => {
-                        const optionDiv = document.createElement('div');
-                        optionDiv.className = 'option';
-                        optionDiv.textContent = option;
-                        optionDiv.onclick = () => checkAnswer(optIndex, q.correct, optionDiv, questionDiv, q.explanation);
-                        optionsDiv.appendChild(optionDiv);
-                    });
-
-                    questionDiv.appendChild(optionsDiv);
-                } else {
-                    const input = document.createElement('input');
-                    input.type = 'text';
-                    input.className = 'input-answer';
-                    input.placeholder = 'Type your answer here';
-                    
-                    const submitBtn = document.createElement('button');
-                    submitBtn.textContent = 'Submit';
-                    submitBtn.onclick = () => checkFillAnswer(input.value, q.answer, questionDiv, q.explanation);
-                    
-                    questionDiv.appendChild(input);
-                    questionDiv.appendChild(submitBtn);
+            },
+            {
+                type: "single",
+                question: {
+                    text: "What will be logged to the console?",
+                    code: `for (var i = 0; i < 3; i++) {
+    setTimeout(() => console.log(i), 1000);
+}`
+                },
+                options: [
+                    "0, 1, 2",
+                    "3, 3, 3",
+                    "undefined, undefined, undefined",
+                    "1, 2, 3"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "Due to var having function scope and the closure capturing the reference to i, by the time the setTimeout callbacks execute, the loop has completed and i is 3.",
+                    code: `
+// To get 0,1,2, you would need to use let or create a new scope:
+for (let i = 0; i < 3; i++) {
+    setTimeout(() => console.log(i), 1000);  // prints 0,1,2
+}`
                 }
-
-                const feedbackDiv = document.createElement('div');
-                feedbackDiv.className = 'feedback';
-                questionDiv.appendChild(feedbackDiv);
-                
-                questionsContainer.appendChild(questionDiv);
-            });
-
-            updateScore();
+            },
+            {
+                type: "single",
+                question: {
+                    text: "What's the result of executing this code?",
+                    code: `const obj = {
+    name: "John",
+    greet: () => {
+        console.log("Hello, " + this.name);
+    }
+};
+obj.greet();`
+                },
+                options: [
+                    "Hello, John",
+                    "Hello, undefined",
+                    "TypeError",
+                    "Hello, [object Window]"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "Arrow functions don't have their own 'this' binding. They inherit 'this' from the enclosing scope. In this case, 'this' refers to the global scope where name is undefined.",
+                    code: `
+// To fix this, use a regular function:
+const obj = {
+    name: "John",
+    greet: function() {
+        console.log("Hello, " + this.name);  // prints "Hello, John"
+    }
+};`
+                }
+            },
+            {
+                type: "single",
+                question: {
+                    text: "What will be the output?",
+                    code: `
+function createCounter() {
+    let count = 0;
+    return {
+        increment: function() { count++; },
+        getCount: function() { return count; }
+    };
+}
+const counter1 = createCounter();
+const counter2 = createCounter();
+counter1.increment();
+console.log(counter1.getCount());
+console.log(counter2.getCount());`
+                },
+                options: [
+                    "1, 1",
+                    "1, 0",
+                    "0, 0",
+                    "undefined, undefined"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "This demonstrates closure scope. Each call to createCounter() creates a new scope with its own count variable. The returned functions maintain access to their original scope's count variable.",
+                    code: `
+// Each instance has its own private scope:
+const counter1 = createCounter();  // scope A: count = 0
+const counter2 = createCounter();  // scope B: count = 0
+counter1.increment();             // scope A: count = 1
+counter2.getCount();             // scope B: count = 0`
+                }
+            },
+            {
+                type: "single",
+                question: {
+                    text: "What happens when we run this code?",
+                    code: `
+function outer() {
+    console.log(inner);
+    function inner() {
+        return "Hello!";
+    }
+}
+outer();`
+                },
+                options: [
+                    "ReferenceError: inner is not defined",
+                    "undefined",
+                    "[Function: inner]",
+                    "Hello!"
+                ],
+                correct: 2,
+                explanation: {
+                    text: "Function declarations are hoisted completely, including their body. This means the inner function is available throughout the outer function's scope, even before its actual declaration in the code.",
+                    code: `
+// The code is processed as:
+function outer() {
+    function inner() {  // hoisted to top
+        return "Hello!";
+    }
+    console.log(inner);  // prints [Function: inner]
+}`
+                }
+            },
+            {
+                type: "fill",
+                question: {
+                    text: "Complete the code to create a private variable using closure:",
+                    code: `function createWallet() {
+    let balance = 0;
+    return {
+        deposit: function(amount) {
+            _______ += amount;
+            return balance;
         }
+    };
+}`
+                },
+                answer: "balance",
+                explanation: {
+                    text: "The closure maintains access to the balance variable in its scope, making it private and accessible only through the returned methods.",
+                    code: `
+function createWallet() {
+    let balance = 0;  // private variable
+    return {
+        deposit: function(amount) {
+            balance += amount;  // can access balance
+            return balance;
+        }
+    };
+}`
+                }
+            },
+            {
+                type: "fill",
+                question: {
+                    text: "Complete the code to fix the this binding issue:",
+                    code: `
+class Timer {
+    constructor() {
+        this.seconds = 0;
+    }
 
-        function checkAnswer(selected, correct, optionDiv, questionDiv, explanation) {
-            if (questionDiv.querySelector('.correct') || questionDiv.querySelector('.incorrect')) {
-                return; // Already answered
+    start() {
+        this.timerId = setInterval(() => ____.seconds++, 1000);
+    }
+}`
+                },
+                answer: "this",
+                explanation: {
+                    text: "Arrow functions inherit 'this' from their enclosing scope, making them ideal for callbacks where you want to preserve the class instance's 'this' context.",
+                    code: `
+class Timer {
+    constructor() {
+        this.seconds = 0;
+    }
+
+    start() {
+        this.timerId = setInterval(() => this.seconds++, 1000);
+    }
+}`
+                }
+            },
+            {
+                type: "fill",
+                question: {
+                    text: "Complete the code to implement method chaining:",
+                    code: `
+class Calculator {
+    constructor() {
+        this.value = 0;
+    }
+
+    add(n) {
+        this.value += n;
+        return _______;
+    }
+}`
+                },
+                answer: "this",
+                explanation: {
+                    text: "Method chaining is implemented by returning 'this' from methods, allowing multiple method calls to be chained together.",
+                    code: `
+class Calculator {
+    constructor() {
+        this.value = 0;
+    }
+
+    add(n) {
+        this.value += n;
+        return this;  // enables chaining
+    }
+}`
+                }
+            },
+            {
+                type: "fill",
+                question: {
+                    text: "Complete the code to create a memoized function:",
+                    code: `
+function memoize(fn) {
+    const cache = new ____;
+
+    return function(____) {
+        const key = JSON.stringify(args); // Serialize arguments as a unique key
+        if (cache.has(key)) {
+            return cache.get(key);
+        }
+        const result = fn(...args); // Call the original function with all arguments
+        cache.set(key, result); // Store the result in the cache
+        return result;
+    };
+}`
+                },
+                answer: "Map ...args",
+                explanation: {
+                    text: "Memoization caches function results using a Map, returning cached results for repeated inputs to avoid recalculation.",
+                    code: `
+function memoize(fn) {
+    const cache = new Map();
+
+    return function(...args) {
+        const key = JSON.stringify(args); // Serialize arguments as a unique key
+        if (cache.has(key)) {
+            return cache.get(key);
+        }
+        const result = fn(...args); // Call the original function with all arguments
+        cache.set(key, result); // Store the result in the cache
+        return result;
+    };
+}`
+                }
             }
+        ]
+    };
 
-            const options = questionDiv.getElementsByClassName('option');
-            options[correct].classList.add('correct');
-            
-            if (selected === correct) {
-                score++;
-                optionDiv.classList.add('correct');
-                showFeedback(questionDiv, `Correct! 🎉 ${explanation}`, true);
+    window.copyToClipboard = function(text, button) {
+        navigator.clipboard.writeText(text).then(() => {
+            const originalText = button.textContent;
+            button.textContent = 'Copied!';
+            setTimeout(() => {
+                button.textContent = originalText;
+            }, 2000);
+        });
+    }
+
+    function formatCodeExample(code) {
+        return code.split('\n').map(line => {
+            if (line.includes('//')) {
+                const [code, comment] = line.split('//');
+                return `${code}<span class="code-comment">// ${comment}</span>`;
+            }
+            return line;
+        }).join('\n');
+    }
+
+    function createQuiz() {
+        const questionsContainer = document.getElementById('questions');
+
+        quizData.questions.forEach((q, index) => {
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'question';
+            const text = typeof q.question === 'string' ? q.question : q.question.text;
+            const code = typeof q.question === 'string' ? '' : q.question.code;
+
+            questionDiv.innerHTML = `<div>
+                <strong>Question ${index + 1}:</strong>
+                ${text}
+                ${code ? `<pre class="code-block">${formatCodeExample(code)}</pre>` : ''}
+            </div>`;
+
+            if (q.type === 'single') {
+                const optionsDiv = document.createElement('div');
+                optionsDiv.className = 'options';
+
+                q.options.forEach((option, optIndex) => {
+                    const optionDiv = document.createElement('div');
+                    optionDiv.className = 'option';
+                    optionDiv.textContent = option;
+                    optionDiv.onclick = () => checkAnswer(optIndex, q.correct, optionDiv, questionDiv, q.explanation);
+                    optionsDiv.appendChild(optionDiv);
+                });
+
+                questionDiv.appendChild(optionsDiv);
             } else {
-                optionDiv.classList.add('incorrect');
-                showFeedback(questionDiv, `Incorrect. ${explanation}`, false);
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.className = 'input-answer';
+                input.placeholder = 'Type your answer here';
+
+                const submitBtn = document.createElement('button');
+                submitBtn.textContent = 'Submit';
+                submitBtn.onclick = () => checkFillAnswer(input.value, q.answer, questionDiv, q.explanation);
+
+                questionDiv.appendChild(input);
+                questionDiv.appendChild(submitBtn);
             }
 
-            answeredQuestions++;
-            updateScore();
+            const feedbackDiv = document.createElement('div');
+            feedbackDiv.className = 'feedback';
+            questionDiv.appendChild(feedbackDiv);
+
+            questionsContainer.appendChild(questionDiv);
+        });
+
+        updateScore();
+    }
+
+    function checkFillAnswer(input, answer, questionDiv, explanation) {
+        // Check if question has already been answered
+        if (questionDiv.querySelector('.feedback').style.display === 'block') {
+            return; // Already answered
         }
 
-        function checkFillAnswer(input, correct, questionDiv, explanation) {
-            if (questionDiv.querySelector('.feedback').style.display === 'block') {
-                return; // Already answered
-            }
-
-            if (input.toLowerCase().trim() === correct.toLowerCase().trim()) {
-                score++;
-                showFeedback(questionDiv, `Correct! 🎉 ${explanation}`, true);
-            } else {
-                showFeedback(questionDiv, `Incorrect. The correct answer is: ${correct}. ${explanation}`, false);
-            }
-
-            answeredQuestions++;
-            updateScore();
+        // Get or create input element
+        const inputElement = questionDiv.querySelector('.input-answer');
+        if (inputElement) {
+            inputElement.disabled = true; // Disable input after submission
         }
 
-        function showFeedback(questionDiv, message, isCorrect) {
-            const feedbackDiv = questionDiv.querySelector('.feedback');
-            feedbackDiv.style.display = 'block';
-            feedbackDiv.textContent = message;
-            feedbackDiv.style.backgroundColor = isCorrect ? '#c8e6c9' : '#ffcdd2';
+        // Compare answer (case-insensitive)
+        if (input.toLowerCase().trim() === answer.toLowerCase().trim()) {
+            score++;
+            showFeedback(questionDiv, explanation, true);
+        } else {
+            showFeedback(questionDiv, {
+                text: `The correct answer is: ${answer}. ${explanation.text}`,
+                code: explanation.code
+            }, false);
         }
 
-        function updateScore() {
-            const scoreDiv = document.getElementById('score');
-            const percentage = (score / quizData.questions.length) * 100;
-            scoreDiv.innerHTML = `
+        answeredQuestions++;
+        updateScore();
+    }
+    function showFeedback(questionDiv, explanation, isCorrect) {
+        const feedbackDiv = questionDiv.querySelector('.feedback');
+        feedbackDiv.style.display = 'block';
+
+        const codeId = 'code-' + Math.random().toString(36).substr(2, 9);
+
+        feedbackDiv.innerHTML = `
+                <div class="explanation-text">
+                    ${isCorrect ? '✅' : '❌'} ${explanation.text}
+                </div>
+                ${explanation.code ? `
+                    <div class="code-block" id="${codeId}">
+                        ${formatCodeExample(explanation.code)}
+                        <button class="copy-button" onclick="copyToClipboard(\`${explanation.code}\`, this)">Copy</button>
+                    </div>
+                ` : ''}
+            `;
+
+        feedbackDiv.style.backgroundColor = isCorrect ? '#e8f5e9' : '#ffebee';
+    }
+
+    function checkAnswer(selected, correct, optionDiv, questionDiv, explanation) {
+        if (questionDiv.querySelector('.correct') || questionDiv.querySelector('.incorrect')) {
+            return;
+        }
+
+        const options = questionDiv.getElementsByClassName('option');
+        options[correct].classList.add('correct');
+
+        if (selected === correct) {
+            score++;
+            optionDiv.classList.add('correct');
+            showFeedback(questionDiv, explanation, true);
+        } else {
+            optionDiv.classList.add('incorrect');
+            showFeedback(questionDiv, explanation, false);
+        }
+
+        answeredQuestions++;
+        updateScore();
+    }
+
+    function updateScore() {
+        const scoreDiv = document.getElementById('score');
+        const percentage = (score / quizData.questions.length) * 100;
+        scoreDiv.innerHTML = `
                 <h3>Your Score: ${score}/${quizData.questions.length}</h3>
                 <p>Percentage: ${percentage.toFixed(1)}%</p>
-                ${answeredQuestions === quizData.questions.length ? 
-                    `<p>${percentage >= 70 ? '🎉 Great job! You have a solid understanding of JavaScript scope concepts!' : 
-                    'Keep studying! Review the explanations to strengthen your understanding of JavaScript scope.'}</p>` : ''}
+                ${answeredQuestions === quizData.questions.length ?
+            `<p>${percentage >= 70 ? '🎉 Great job! You have a solid understanding of Node.js core modules!' :
+                'Keep learning! Review the explanations to strengthen your knowledge of Node.js core modules.'}</p>` : ''}
             `;
-        }
+    }
 
-        // Initialize the quiz
-        createQuiz();
-    </script>
+    let score = 0;
+    let answeredQuestions = 0;
+    createQuiz();
+</script>
 </body>
 </html>
