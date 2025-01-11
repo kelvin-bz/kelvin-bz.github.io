@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Basic Vectors Quiz</title>
+    <style>
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            font-family: system-ui, -apple-system, sans-serif;
+            line-height: 1.6;
+            text-align: left;
+
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .option {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .option:hover {
+            background-color: #f5f5f5;
+            transform: translateX(5px);
+        }
+        .selected {
+            background-color: #e3f2fd;
+        }
+        .correct {
+            background-color: #e8f5e9;
+            border-color: #81c784;
+        }
+        .incorrect {
+            background-color: #ffebee;
+            border-color: #e57373;
+        }
+        .input-answer {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            margin-top: 10px;
+            padding: 8px 16px;
+            background-color: #2196f3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #1976d2;
+        }
+        #score {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.2em;
+        }
+        .feedback {
+            margin-top: 10px;
+            padding: 15px;
+            border-radius: 4px;
+            display: none;
+            line-height: 1.6;
+            text-align: left;
+            margin-left: 0; /* Optional for left alignment */
+
+        }
+        .code-block {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre;
+            overflow-x: auto;
+            line-height: 1.5;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            position: relative;
+        }
+
+        .question {
+            background-color: #fff;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .explanation-text, .question-inline {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .question-inline strong {
+            white-space: nowrap;
+        }
+
+        /* For vector notation spacing */
+        .MathJax {
+            margin: 0 4px;
+        }
+        .source {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1em;
+        }
+        .source a {
+            color: #2196f3;
+            text-decoration: none;
+        }
+        .source a:hover {
+            text-decoration: underline;
+        }
+    </style>
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$$', '$$']],
+                displayMath: [['$$', '$$']],
+                processEscapes: true
+            },
+            options: {
+                skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+            },
+            chtml: {
+                displayAlign: 'left', // Align display-style equations to the left
+                displayIndent: '0em' // No additional indentation
+            },
+            startup: {
+                pageReady: () => {
+                    return MathJax.startup.defaultPageReady().then(() => {
+                        // Custom handling after MathJax is ready
+                    });
+                }
+            }
+        };
+    </script>
+    <script type="text/javascript" id="MathJax-script" async
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+    </script>
+</head>
+<body>
+<div class="container">
+    <h1>Determinant</h1>
+    <div class="source">
+        Source: <a href="https://www.3blue1brown.com/lessons/inverse-matrices" target="_blank">3Blue1Brown - Inverse Matrices</a>
+    </div>
+    <iframe width="952" height="536" src="https://www.youtube.com/embed/uQhTuRlWMxw" title="Inverse matrices, column space and null space | Chapter 7, Essence of linear algebra" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+    <div id="questions"></div>
+    <div id="score"></div>
+</div>
+
+<script>
+    const quizData = {
+        questions: [
+            {
+                type: "single",
+                question: "What condition must be satisfied for a square matrix to have an inverse?",
+                options: [
+                    "The matrix must be symmetric",
+                    "All elements must be positive",
+                    "The matrix must be triangular",
+                    "The determinant must be non-zero",
+                ],
+                correct: 3,
+                explanation: {
+                    text: "A square matrix is invertible if and only if its determinant is non-zero. This means the transformation doesn't collapse space into a lower dimension. When det(A) ≠ 0, the matrix transformation is reversible, meaning there exists a unique inverse matrix A⁻¹ such that AA⁻¹ = A⁻¹A = I.",
+                    code: `
+import numpy as np
+
+# Create a 2x2 matrix
+A = np.array([[4, 7],
+              [2, 6]])
+
+# Calculate determinant
+det_A = np.linalg.det(A)
+print(f"Determinant: {det_A}")
+
+# Check if invertible and find inverse if possible
+if det_A != 0:
+    A_inv = np.linalg.inv(A)
+    print("Matrix is invertible!")
+    print(f"Inverse matrix:\n{A_inv}")
+else:
+    print("Matrix is not invertible")`
+                }
+            },
+            {
+                type: "single",
+                question: "What does it mean geometrically when a matrix has a zero determinant?",
+                options: [
+                    "The transformation rotates space by 90 degrees",
+                    "The transformation collapses space into a lower dimension",
+                    "The transformation preserves area perfectly",
+                    "The transformation reflects space across an axis"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "When a matrix has a determinant of zero, it means the transformation collapses space into a lower dimension (like squishing a plane onto a line or a line onto a point). This is why such matrices aren't invertible - you can't 'unsquish' a line back into a plane with a function, as each point would need to map to multiple points.",
+                    code: `
+import numpy as np
+
+# Example of a matrix that collapses space
+A = np.array([[1, 2],
+              [2, 4]])  # Second row is multiple of first
+
+# Check determinant
+det_A = np.linalg.det(A)
+print(f"Determinant: {det_A}")
+
+# Try to compute rank
+rank = np.linalg.matrix_rank(A)
+print(f"Rank: {rank}")  # Will be less than 2`
+                }
+            },
+            {
+                type: "single",
+                question: "If A is invertible, which of the following is NOT true?",
+                options: [
+                    "A⁻¹A = 0 (zero matrix)",
+                    "det(A⁻¹) = 1/det(A)",
+                    "(A⁻¹)⁻¹ = A",
+                    "A⁻¹A = AA⁻¹ = I"
+                ],
+                correct: 0,
+                explanation: {
+                    text: "For an invertible matrix A, A⁻¹A = AA⁻¹ = I (identity matrix), not 0. This is the defining property of inverse matrices - when multiplied together, they give the identity matrix. This means applying the transformation followed by its inverse returns you to where you started.",
+                    code: `
+import numpy as np
+
+# Create invertible matrix
+A = np.array([[2, 1],
+              [1, 3]])
+
+# Calculate inverse
+A_inv = np.linalg.inv(A)
+
+# Verify A⁻¹A = I
+product = np.dot(A_inv, A)
+print("A⁻¹A =")
+print(product)
+
+# Verify AA⁻¹ = I
+product2 = np.dot(A, A_inv)
+print("\nAA⁻¹ =")
+print(product2)`
+                }
+            },
+            {
+                type: "fill",
+                question: "If $$A = \\begin{pmatrix} 2 & 0 \\\\ 0 & 3 \\end{pmatrix}$$, what is the element in the first row, first column of A⁻¹? Enter the decimal value.",
+                answer: "0.5",
+                explanation: {
+                    text: "For a diagonal matrix, the inverse is found by reciprocating each non-zero element on the diagonal. Since the element at position (1,1) is 2, in the inverse it becomes 1/2 = 0.5. This works because diagonal matrices transform space by scaling along the coordinate axes.",
+                    code: `
+import numpy as np
+
+# Create diagonal matrix
+A = np.array([[2, 0],
+              [0, 3]])
+
+# Calculate inverse
+A_inv = np.linalg.inv(A)
+print("A⁻¹ =")
+print(A_inv)
+
+# For diagonal matrices, we can also manually reciprocate
+A_inv_manual = np.array([[1/2, 0],
+                        [0, 1/3]])
+print("\nManual inverse =")
+print(A_inv_manual)`
+                }
+            }
+            ,
+            {
+                type: "single",
+                question: "What is the column space of a matrix?",
+                options: [
+                    "The set of all columns in the matrix",
+                    "The set of all zeros in the matrix",
+                    "The set of all possible outputs of the linear transformation",
+                    "The set of all vectors perpendicular to the matrix"
+                ],
+                correct: 2,
+                explanation: {
+                    text: "The column space of a matrix is the set of all possible vectors that can be reached by the linear transformation. It's the span of the matrix's columns, meaning all possible linear combinations of the column vectors. Geometrically, it represents all possible outputs when the transformation is applied to any input vector.",
+                    code: `
+import numpy as np
+
+# Create a matrix
+A = np.array([[1, 2],
+              [2, 4]])  # Second column is multiple of first
+
+# Find rank (dimension of column space)
+rank = np.linalg.matrix_rank(A)
+print(f"Rank: {rank}")  # Will be 1 since columns are linearly dependent
+
+# Example vector in column space
+v1 = 3*A[:,0] + 2*A[:,1]  # Linear combination of columns
+print(f"Vector in column space:\n{v1}")
+                `
+                }
+            },
+            {
+                type: "single",
+                question: "What is the rank of a matrix that transforms 3D space onto a plane?",
+                options: [
+                    "2",
+                    "3",
+                    "1",
+                    "0"
+                ],
+                correct: 0,
+                explanation: {
+                    text: "The rank of a matrix is the dimension of its column space (output space). When a 3D transformation maps all vectors onto a plane, the output space is two-dimensional, so the rank is 2. This means there's been a dimensional collapse from 3D to 2D, and the determinant will be zero.",
+                    code: `
+import numpy as np
+
+# Create a rank 2 matrix in 3D
+A = np.array([[1, 0, 1],
+              [0, 1, 0],
+              [2, 0, 2]])  # Third column depends on first
+
+# Verify rank
+rank = np.linalg.matrix_rank(A)
+print(f"Rank: {rank}")
+
+# Check determinant
+det = np.linalg.det(A)
+print(f"Determinant: {det}")  # Will be 0
+                `
+                }
+            },
+            {
+                type: "single",
+                question: "What is the null space of a matrix?",
+                options: [
+                    "The set of all zero entries in the matrix",
+                    "The set of all vectors perpendicular to the matrix",
+                    "The set of all vectors that cannot be transformed",
+                    "The set of all vectors that transform to the zero vector",
+                ],
+                correct: 3,
+                explanation: {
+                    text: "The null space (or kernel) of a matrix A is the set of all vectors x that satisfy Ax = 0. Geometrically, these are all the vectors that get mapped to the origin by the transformation. For a full-rank matrix, only the zero vector is in the null space. For non-full-rank matrices, the null space contains non-zero vectors.",
+                    code: `
+import numpy as np
+from scipy.linalg import null_space
+
+# Create a matrix with non-trivial null space
+A = np.array([[1, 2, 2],
+              [2, 4, 4]])  # Dependent rows
+
+# Find null space
+null_vectors = null_space(A)
+print("Basis for null space:")
+print(null_vectors)
+
+# Verify these vectors map to zero
+for v in null_vectors.T:
+    result = A @ v
+    print(f"A @ {v} = {result}")  # Should be close to zero
+                `
+                }
+            },
+            {
+                type: "fill",
+                question: "For a 3×3 matrix that transforms all of 3D space onto a line, what is its rank? Enter the numerical value.",
+                answer: "1",
+                explanation: {
+                    text: "When a 3×3 matrix transforms all of 3D space onto a line, its rank is 1 because the output space is one-dimensional. This represents a significant collapse of dimensions, from 3D to 1D. The null space in this case would be a plane (2D), containing all vectors that get mapped to zero.",
+                    code: `
+import numpy as np
+
+# Create a rank 1 matrix in 3D
+A = np.array([[1, 1, 1],
+              [2, 2, 2],
+              [3, 3, 3]])  # All columns parallel
+
+# Verify rank
+rank = np.linalg.matrix_rank(A)
+print(f"Rank: {rank}")
+
+# Find dimension of null space
+null_dim = A.shape[1] - rank
+print(f"Null space dimension: {null_dim}")  # Should be 2
+                `
+                }
+            },
+            {
+                type: "single",
+                question: "What is meant by a 'full rank' matrix?",
+                options: [
+                    "The rank equals the number of columns in the matrix",
+                    "The rank is greater than zero",
+                    "The rank equals the number of rows in the matrix",
+                    "The rank is maximum possible for any matrix"
+                ],
+                correct: 0,
+                explanation: {
+                    text: "A matrix is 'full rank' when its rank equals the number of columns (which for a square matrix is also the number of rows). This means the transformation doesn't collapse space into a lower dimension - it keeps the full dimensionality of the input space. For a square matrix, full rank is equivalent to having a non-zero determinant and being invertible.",
+                    code: `
+import numpy as np
+
+# Create two matrices
+A1 = np.array([[2, 0],
+               [0, 3]])  # Full rank
+A2 = np.array([[1, 2],
+               [2, 4]])  # Not full rank
+
+# Check ranks
+print(f"A1 rank: {np.linalg.matrix_rank(A1)}")
+print(f"A2 rank: {np.linalg.matrix_rank(A2)}")
+
+# Check if full rank
+print(f"A1 is full rank: {np.linalg.matrix_rank(A1) == A1.shape[1]}")
+print(f"A2 is full rank: {np.linalg.matrix_rank(A2) == A2.shape[1]}")
+                `
+                }
+            }
+            ,
+            {
+                type: "single",
+                question: "Why can't a transformation that collapses space onto a line have an inverse transformation?",
+                options: [
+                    "Because it would require mapping a single point back to multiple points, which a function cannot do",
+                    "Because the line is too short to contain all possible vectors",
+                    "Because the transformation is too complex to reverse",
+                    "Because the line isn't connected to the original space"
+                ],
+                correct: 0,
+                explanation: {
+                    text: "When a transformation collapses space onto a line, multiple input vectors map to the same output point on the line. To 'undo' this, each point on the line would need to map back to multiple points in the original space. However, this violates the definition of a function, which must map each input to exactly one output. This is why transformations that collapse dimensions cannot be reversed with a function.",
+                    code: `
+import numpy as np
+
+# Create a matrix that collapses 2D onto a line
+A = np.array([[1, 2],
+              [2, 4]])  # Second row is multiple of first
+
+# Different inputs mapping to same output
+v1 = np.array([1, 0])
+v2 = np.array([0, 0.5])
+v3 = np.array([-1, 1])
+
+# Show they map to collinear points
+print("Different vectors mapping to same line:")
+print(f"A @ {v1} = {A @ v1}")
+print(f"A @ {v2} = {A @ v2}")
+print(f"A @ {v3} = {A @ v3}")
+                `
+                }
+            },
+            {
+                type: "single",
+                question: "What is the relationship between determinant, rank, and inverse of a matrix?",
+                options: [
+                    "A matrix is invertible if and only if its determinant is non-zero, which occurs only when it is full rank",
+                    "A matrix is invertible whenever its rank is greater than zero, regardless of determinant",
+                    "A matrix has non-zero determinant whenever its rank is at least 1",
+                    "A matrix's rank must be zero if its determinant is zero"
+                ],
+                correct: 0,
+                explanation: {
+                    text: "These three concepts are deeply connected. A square matrix is invertible (has an inverse) if and only if its determinant is non-zero. This happens precisely when the matrix is full rank, meaning its rank equals its dimension. When the determinant is zero, the matrix is not full rank, indicating the transformation collapses space into a lower dimension.",
+                    code: `
+import numpy as np
+
+# Example matrices
+A1 = np.array([[2, 1],
+               [1, 3]])  # Invertible
+A2 = np.array([[1, 2],
+               [2, 4]])  # Not invertible
+
+# Check properties
+for i, A in enumerate([A1, A2], 1):
+    print(f"\nMatrix A{i}:")
+    print(f"Determinant: {np.linalg.det(A)}")
+    print(f"Rank: {np.linalg.matrix_rank(A)}")
+    print(f"Is full rank: {np.linalg.matrix_rank(A) == A.shape[0]}")
+    try:
+        np.linalg.inv(A)
+        print("Is invertible: Yes")
+    except np.linalg.LinAlgError:
+        print("Is invertible: No")
+                `
+                }
+            }
+
+        ]
+    };
+
+    function formatCodeExample(code) {
+        return code.split('\n').map(line => {
+            if (line.includes('//')) {
+                const [code, comment] = line.split('//');
+                return `${code}<span class="code-comment">// ${comment}</span>`;
+            }
+            return line;
+        }).join('\n');
+    }
+
+    function createMultipleChoice(question, container) {
+        // Create radio buttons container
+        const optionsDiv = document.createElement('div');
+        optionsDiv.className = 'options';
+
+        // Create each option as a radio button
+        question.options.forEach((option, index) => {
+            // Create option wrapper
+            const optionWrapper = document.createElement('label');
+            optionWrapper.className = 'option';
+
+            // Create radio input
+            const radio = document.createElement('input');
+            radio.type = 'radio';
+            radio.name = `question-${question.id}`;
+            radio.value = index;
+            radio.className = 'option-input';
+
+            // Create option text
+            const optionText = document.createElement('span');
+            optionText.className = 'option-text';
+            optionText.innerHTML = option;
+
+            // Add click handler
+            optionWrapper.onclick = () => {
+                checkAnswer(
+                    index,
+                    question.correct,
+                    optionWrapper,
+                    container,
+                    question.explanation
+                );
+            };
+
+            // Assemble option
+            optionWrapper.appendChild(radio);
+            optionWrapper.appendChild(optionText);
+            optionsDiv.appendChild(optionWrapper);
+        });
+
+        container.appendChild(optionsDiv);
+
+    }
+
+    function createFillInBlank(question, container) {
+        // Create input container
+        const inputContainer = document.createElement('div');
+        inputContainer.className = 'input-container';
+
+        // Create text input
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'input-answer';
+        input.placeholder = 'Enter your answer';
+
+        // Create submit button
+        const submitBtn = document.createElement('button');
+        submitBtn.className = 'submit-btn';
+        submitBtn.textContent = 'Submit Answer';
+        submitBtn.onclick = () => {
+            checkFillAnswer(
+                input.value,
+                question.answer,
+                container,
+                question.explanation
+            );
+        };
+
+        // Add enter key support
+        input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                submitBtn.click();
+            }
+        });
+
+        // Assemble input container
+        inputContainer.appendChild(input);
+        inputContainer.appendChild(submitBtn);
+        container.appendChild(inputContainer);
+    }
+
+    function createQuiz() {
+        const questionsContainer = document.getElementById('questions');
+
+        quizData.questions.forEach((q, index) => {
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'question';
+
+            // Modify this part to handle the question display inline
+            let questionText = q.question;
+            if (typeof q.question === 'object') {
+                // If question has multiple parts, join them with spaces
+                questionText = [
+                    `Given two vectors`,
+                    q.question.vector1,
+                    'and',
+                    q.question.vector2,
+                    q.question.ending
+                ].join(' ');
+            }
+
+            const questionContent = document.createElement('div');
+            questionContent.className = 'question-inline';
+            questionContent.innerHTML = `<strong>Question ${index + 1}:</strong> ${questionText}`;
+
+            questionDiv.appendChild(questionContent);
+
+            if (q.type === 'single') {
+                createMultipleChoice(q, questionDiv);
+            } else if (q.type === 'fill') {
+                createFillInBlank(q, questionDiv);
+            }
+
+            const feedbackDiv = document.createElement('div');
+            feedbackDiv.className = 'feedback';
+            questionDiv.appendChild(feedbackDiv);
+
+            questionsContainer.appendChild(questionDiv);
+        });
+        MathJax.typeset(); // Re-render equations
+    }
+
+    function checkFillAnswer(input, answer, questionDiv, explanation) {
+        if (questionDiv.querySelector('.feedback').style.display === 'block') {
+            return;
+        }
+
+        const inputElement = questionDiv.querySelector('.input-answer');
+        if (inputElement) {
+            inputElement.disabled = true;
+        }
+
+        if (input.toLowerCase().trim() === answer.toLowerCase().trim()) {
+            score++;
+            showFeedback(questionDiv, explanation, true);
+        } else {
+            showFeedback(questionDiv, {
+                text: `The correct answer is: ${answer}. ${explanation.text}`,
+                code: explanation.code
+            }, false);
+        }
+
+        answeredQuestions++;
+        updateScore();
+    }
+
+    function showFeedback(questionDiv, explanation, isCorrect) {
+        const feedbackDiv = questionDiv.querySelector('.feedback');
+        feedbackDiv.style.display = 'block';
+
+        const codeId = 'code-' + Math.random().toString(36).substr(2, 9);
+        const sanitizedCode = explanation.code.replace(/`/g, '\\`'); // Escape backticks
+        feedbackDiv.innerHTML = `
+                <div class="explanation-text">
+                    ${isCorrect ? '✅' : '❌'} ${explanation.text}
+                </div>
+                ${explanation.code.trim() ? `
+                    <div class="code-block" id="${codeId}">
+                        ${formatCodeExample(sanitizedCode)}
+                    </div>
+                ` : ''}
+            `;
+
+        feedbackDiv.style.backgroundColor = isCorrect ? '#e8f5e9' : '#ffebee';
+        MathJax.typeset(); // Re-render equations
+    }
+
+    function checkAnswer(selected, correct, optionDiv, questionDiv, explanation) {
+        if (questionDiv.querySelector('.correct') || questionDiv.querySelector('.incorrect')) {
+            return;
+        }
+
+        const options = questionDiv.getElementsByClassName('option');
+        options[correct].classList.add('correct');
+        debugger;
+        if (selected === correct) {
+            score++;
+            optionDiv.classList.add('correct');
+            showFeedback(questionDiv, explanation, true);
+        } else {
+            optionDiv.classList.add('incorrect');
+            showFeedback(questionDiv, explanation, false);
+        }
+
+        answeredQuestions++;
+        updateScore();
+    }
+
+    function updateScore() {
+        const scoreDiv = document.getElementById('score');
+        const percentage = (score / quizData.questions.length) * 100;
+        scoreDiv.innerHTML = `
+                <h3>Your Score: ${score}/${quizData.questions.length}</h3>
+                <p>Percentage: ${percentage.toFixed(1)}%</p>
+                ${answeredQuestions === quizData.questions.length ?
+            `<p>${percentage >= 70 ? '🎉 Great job! You have a solid understanding of vector mathematics!' :
+                'Keep practicing! Review the explanations to strengthen your understanding of vectors.'}</p>` : ''}
+            `;
+    }
+
+    let score = 0;
+    let answeredQuestions = 0;
+    createQuiz();
+</script>
+</body>
+</html>
