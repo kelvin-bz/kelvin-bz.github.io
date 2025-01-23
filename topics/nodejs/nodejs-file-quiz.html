@@ -652,38 +652,6 @@ writeStream.end();`
             },
             {
                 type: "fill",
-                question: "To append content to a file without overwriting, use fs.______().",
-                answer: "appendFile",
-                explanation: {
-                    text: "fs.appendFile() adds content to the end of a file without overwriting existing content.",
-                    code: `
-const fs = require('fs');
-
-// Append content to file
-fs.appendFile('log.txt',
-    '\\n' + new Date().toISOString() + ': Log entry',
-    'utf8',
-    (err) => {
-        if (err) throw err;
-        console.log('Content appended');
-});
-
-// Using promises
-async function appendToLog(message) {
-    try {
-        await fs.promises.appendFile(
-            'log.txt',
-            \`\\n\${new Date().toISOString()}: \${message}\`
-        );
-        console.log('Log updated');
-    } catch (err) {
-        console.error('Error updating log:', err);
-    }
-}`
-                }
-            },
-            {
-                type: "fill",
                 question: {
                     text:  "Complete all three events in this code",
                     code: `const fs = require('fs');
