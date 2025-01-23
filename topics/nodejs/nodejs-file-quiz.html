@@ -334,6 +334,29 @@ readStream.pipe(writeStream);`
             },
             {
                 type: "single",
+                question: "How can you change file permissions in Node.js?",
+                options: [
+                    "fs.chmod()",
+                    "fs.permissions()",
+                    "fs.access()",
+                    "fs.mode()"
+                ],
+                correct: 0,
+                explanation: {
+                    text: "fs.chmod() changes the permissions of a file specified using octal notation or symbolic modes.",
+                    code: `
+const fs = require('fs');
+
+// Change permissions using octal notation
+fs.chmod('script.sh', 0o755, (err) => {
+    if (err) throw err;
+    console.log('Permissions updated');
+});
+`
+                }
+            },
+            {
+                type: "single",
                 question: "What's the purpose of the 'flags' option when opening files?",
                 options: [
                     "To set file permissions",
@@ -364,6 +387,170 @@ fs.writeFile('output.txt', 'Hello', {
     if (err) throw err;
     console.log('Content appended');
 });`
+                }
+            },
+            {
+                type: "single",
+                question: "What's the difference between 'w' and 'a' flags when using fs.writeFile()?",
+                options: [
+                    "No difference, they both write to files",
+                    "'w' overwrites existing content while 'a' appends to it",
+                    "'w' is for Windows, 'a' is for Unix systems",
+                    "'w' is write-only, 'a' allows reading and writing"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "The 'w' flag opens a file for writing and truncates existing content, while 'a' opens the file for appending, preserving existing content.",
+                    code: `
+const fs = require('fs');
+
+// Using 'w' flag - overwrites content
+fs.writeFile('log.txt', 'New content', { flag: 'w' }, (err) => {
+   if (err) throw err;
+   console.log('File written (overwritten)');
+});
+
+// Using 'a' flag - appends content
+fs.writeFile('log.txt', '\\nAdditional content', { flag: 'a' }, (err) => {
+   if (err) throw err;
+   console.log('Content appended');
+});`
+                }
+            },
+            {
+                type: "single",
+                question: "What's the purpose of readline.createInterface?",
+                options: [
+                    "To create new files",
+                    "To read files line by line",
+                    "To create file streams",
+                    "To modify file permissions"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "`readline.createInterface` is used to process input streams line by line, commonly in combination with `fs.createReadStream` for reading large text files efficiently.",
+                    code: `
+
+// processing a log file to find and count the number of error messages
+const fs = require('fs');
+const readline = require('readline');
+
+// Path to the log file
+const logFilePath = 'server.log';
+
+const rl = readline.createInterface({
+  input: fs.createReadStream(logFilePath),
+  crlfDelay: Infinity, // Recognize all instances of CR LF (\\r\\n) as a single line break
+});
+
+let errorCount = 0;
+
+// Process each line of the file
+rl.on('line', (line) => {
+  // Check if the line contains the word "ERROR"
+  if (line.includes('ERROR')) {
+    errorCount++;
+    console.log(\`Error found: \${line}\`);
+  }
+});
+
+rl.on('close', () => {
+  console.log(\`Finished processing the file. Total errors found: \${errorCount}\`);
+});
+        `
+                }
+            },
+            {
+                type: "single",
+                question: "How can you use glob patterns to find files in Node.js?",
+                options: [
+                    "Using fs.glob()",
+                    "Using the glob package",
+                    "Using fs.find()",
+                    "Using fs.search()"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "The glob package is commonly used for file pattern matching in Node.js.",
+                    code: `
+const glob = require('glob');
+
+// Find all JavaScript files recursively
+glob('**/*.js', (err, files) => {
+   if (err) throw err;
+   console.log('JavaScript files:', files);
+});
+
+// Using promises and options
+const util = require('util');
+const globPromise = util.promisify(glob);
+
+async function findFiles() {
+   try {
+       const files = await globPromise('src/**/*.{js,ts}', {
+           ignore: ['node_modules/**'],
+           dot: true
+       });
+       console.log('Found files:', files);
+   } catch (err) {
+       console.error('Error finding files:', err);
+   }
+}`
+                }
+            },
+            {
+                type: "fill",
+                question: "To maintain a file open and perform multiple operations, use fs.______().",
+                answer: "open",
+                explanation: {
+                    text: "fs.open() provides a file descriptor that can be used for multiple operations on the same file.",
+                    code: `
+const fs = require('fs').promises;
+
+async function processLargeFile(filePath) {
+    let fileHandle = null;
+    try {
+        // Open file once with read and write permissions
+        fileHandle = await fs.open(filePath, 'r+');
+
+        // Create a buffer for reading chunks
+        const buffer = Buffer.alloc(16);
+        let position = 0;
+        let bytesRead;
+
+        // Read and process the file in chunks
+        do {
+            // Read chunk
+            const readResult = await fileHandle.read(buffer, 0, buffer.length, position);
+            bytesRead = readResult.bytesRead;
+
+            if (bytesRead > 0) {
+                // Convert buffer to string
+                const chunk = buffer.toString('utf8', 0, bytesRead);
+
+                // Example processing: Convert text to uppercase
+                const processedChunk = chunk.toUpperCase();
+
+                console.log('Processed chunk:', processedChunk);
+                // Write back to the same position
+                await fileHandle.write(processedChunk, 0, processedChunk.length, position);
+
+                // Update position for next read
+                position += bytesRead;
+            }
+        } while (bytesRead === buffer.length);
+
+        console.log('File processing completed');
+    } catch (error) {
+        console.error('Error processing file:', error);
+        throw error;
+    } finally {
+        // Always close the file handle
+        if (fileHandle) {
+            await fileHandle.close();
+        }
+    }
+}`
                 }
             },
             {
@@ -536,7 +723,8 @@ stream.on('error', (err) => {
                 type: "fill",
                 question: {
                     text: "Complete the code to handle both permission denied and file not found errors when reading a file asynchronously",
-                    code: `const fs = require('fs/promises');
+                    code: `
+const fs = require('fs/promises');
 
 async function readSecureFile(filepath) {
     try {
@@ -585,6 +773,134 @@ async function example() {
 
     // Try reading a non-existent file
     await readSecureFile('nonexistent.txt');  // Will trigger ENOENT
+}`
+                }
+            },
+            {
+                type: "fill",
+                question: "To read a directory's contents with detailed file information, use fs.______().",
+                answer: "readdir",
+                explanation: {
+                    text: "fs.readdir() reads the contents of a directory, and with the withFileTypes option, provides detailed information about each entry.",
+                    code: `
+const fs = require('fs');
+
+// Read directory with file types
+fs.readdir('.', { withFileTypes: true }, (err, files) => {
+    if (err) throw err;
+
+    files.forEach(file => {
+        console.log(
+            file.name,
+            file.isDirectory() ? 'Directory' : 'File'
+        );
+    });
+});
+
+// Using promises and filtering
+async function listJavaScriptFiles(dir) {
+    try {
+        const files = await fs.promises.readdir(dir);
+        return files.filter(file => file.endsWith('.js'));
+    } catch (err) {
+        console.error('Error reading directory:', err);
+        return [];
+    }
+}`
+                }
+            },
+            {
+                type: "fill",
+                question: "The ______ global variable in Node.js contains the directory name of the currently executing script.",
+                answer: "__dirname",
+                explanation: {
+                    text: "__dirname is a global variable that contains the absolute path of the current module's directory.",
+                    code: `
+const path = require('path');
+
+// Using __dirname
+console.log('Current directory:', __dirname);
+
+// Constructing file paths
+const configPath = path.join(__dirname, 'config.json');
+const logsDir = path.join(__dirname, '../logs');
+
+// In ESM modules, __dirname alternative:
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);`
+                }
+            },
+            {
+                type: "fill",
+                question: "To append data to a file without opening it in append mode, use fs.______().",
+                answer: "appendFile",
+                explanation: {
+                    text: "fs.appendFile() is a dedicated method for appending content to files.",
+                    code: `
+const fs = require('fs');
+
+// Append single line
+fs.appendFile('log.txt', '\\nNew log entry', (err) => {
+   if (err) throw err;
+   console.log('Data appended');
+});
+
+// Append with options
+fs.appendFile('log.txt',
+   new Date().toISOString() + ': Event occurred\\n',
+   { encoding: 'utf8' },
+   (err) => {
+       if (err) throw err;
+       console.log('Log updated');
+   }
+);
+
+// Using promises
+async function appendLog(message) {
+   try {
+       await fs.promises.appendFile(
+           'app.log',
+           \`\${new Date().toISOString()}: \${message}\\n\`
+       );
+   } catch (err) {
+       console.error('Failed to append:', err);
+   }
+}`
+                }
+            },
+            {
+                type: "fill",
+                question: "When reading files line by line, the ______ module is used with createInterface.",
+                answer: "readline",
+                explanation: {
+                    text: "The readline module provides an interface for reading data line by line.",
+                    code: `
+const fs = require('fs');
+const readline = require('readline');
+
+// Create interface for line-by-line reading
+const rl = readline.createInterface({
+   input: fs.createReadStream('data.txt'),
+   crlfDelay: Infinity
+});
+
+// Process each line
+rl.on('line', (line) => {
+   console.log('Line contents:', line);
+});
+
+// Handle end of file
+rl.on('close', () => {
+   console.log('Finished reading file');
+});
+
+// Using async iteration
+async function processLines() {
+   for await (const line of rl) {
+       console.log('Processing line:', line);
+   }
 }`
                 }
             }
@@ -702,7 +1018,6 @@ async function example() {
                 ${explanation.code ? `
                     <div class="code-block" id="${codeId}">
                         ${formatCodeExample(explanation.code)}
-                        <button class="copy-button" onclick="copyToClipboard(\`${explanation.code}\`, this)">Copy</button>
                     </div>
                 ` : ''}
             `;
