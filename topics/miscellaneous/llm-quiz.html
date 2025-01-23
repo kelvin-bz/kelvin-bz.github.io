@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            font-family: system-ui, -apple-system, sans-serif;
+            line-height: 1.6;
+        }
+        .question {
+            background-color: #fff;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .option {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .option:hover {
+            background-color: #f5f5f5;
+            transform: translateX(5px);
+        }
+        .selected {
+            background-color: #e3f2fd;
+        }
+        .correct {
+            background-color: #e8f5e9;
+            border-color: #81c784;
+        }
+        .incorrect {
+            background-color: #ffebee;
+            border-color: #e57373;
+        }
+        .input-answer {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            margin-top: 10px;
+            padding: 8px 16px;
+            background-color: #2196f3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #1976d2;
+        }
+        #score {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.2em;
+        }
+        .feedback {
+            margin-top: 10px;
+            padding: 15px;
+            border-radius: 4px;
+            display: none;
+            line-height: 1.6;
+        }
+        .code-block {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre;
+            overflow-x: auto;
+            line-height: 1.5;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            position: relative;
+        }
+        .copy-button {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .explanation-text {
+            margin-bottom: 10px;
+        }
+        .code-comment {
+            color: #6a737d;
+        }
+        .code-output {
+            color: #0a3069;
+            border-left: 3px solid #2196f3;
+            margin-left: 10px;
+            padding-left: 10px;
+        }
+        .source {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1em;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="source">
+        Source: <a href="https://www.3blue1brown.com/lessons/gpt" target="_blank">3Blue1Brown - Inside an LLM</a>
+    </div>
+    <iframe width="952" height="536" src="https://www.youtube.com/embed/wjZofJX0v4M" title="Transformers (how LLMs work) explained visually | DL5" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+    <div id="questions"></div>
+    <div id="score"></div>
+</div>
+
+
+<script>
+    const quizData = {
+        questions: [
+            {
+                type: "single",
+                question: "What does LLM stand for in the context of AI?",
+                options: [
+                    "Long Language Model",
+                    "Large Language Model",
+                    "Linear Learning Machine",
+                    "Logical Language Mechanism"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "LLM stands for Large Language Model. These are AI models trained on a massive amount of text data.",
+                    code: null // No code example needed here
+                }
+            },
+            {
+                type: "single",
+                question: "What is the core neural network architecture used in LLMs?",
+                options: [
+                    "Recurrent Neural Network (RNN)",
+                    "Convolutional Neural Network (CNN)",
+                    "Transformer",
+                    "Generative Adversarial Network (GAN)"
+                ],
+                correct: 2,
+                explanation: {
+                    text: "LLMs primarily use a Transformer architecture. This architecture is particularly good at processing sequential data like text.",
+                    code: null
+                }
+            },
+            {
+                type: "single",
+                question: "What is the purpose of 'tokenization' in LLMs?",
+                options: [
+                    "To convert text into speech",
+                    "To break down text into smaller units for processing",
+                    "To generate images from text",
+                    "To translate languages"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "Tokenization is the process of breaking down text into smaller units, like words or subwords, which the LLM can then process.",
+                    code: `
+// Example of tokenization
+let text = "This is a sentence.";
+let tokens = text.split(" ");
+console.log(tokens); // Output: ["This", "is", "a", "sentence."]
+`
+                }
+            },
+            {
+                type: "single",
+                question: "What is the 'attention mechanism' in a Transformer?",
+                options: [
+                    "A method for storing data",
+                    "A way to connect to the internet",
+                    "A technique that allows the model to focus on different parts of the input",
+                    "A method for generating random numbers"
+                ],
+                correct: 2,
+                explanation: {
+                    text: "The attention mechanism allows the model to weigh the importance of different parts of the input when processing it. This helps the model understand relationships between words and capture context.",
+                    code: null
+                }
+            },
+            {
+                type: "fill",
+                question: "____ are dense vector representations of words that capture semantic relationships.",
+                answer: "Word embeddings",
+                explanation: {
+                    text: "Word embeddings are numerical representations of words. Words with similar meanings have similar embeddings.",
+                    code: null
+                }
+            },
+            {
+                type: "fill",
+                question: "The process of repeatedly predicting and sampling the next token to generate text is called _____.",
+                answer: "Autoregressive generation",
+                explanation: {
+                    text: "Autoregressive generation is how LLMs generate text by predicting the next token based on the previous ones, and then sampling from that prediction.",
+                    code: null
+                }
+            },
+            {
+                type: "fill",
+                question: "A parameter that controls the randomness of the output in LLMs is called _____.",
+                answer: "Temperature",
+                explanation: {
+                    text: "Temperature influences the randomness of the LLM's output. Higher temperature leads to more diverse and creative text.",
+                    code: null
+                }
+            },
+            {
+                type: "single",
+                question: "What is the name of the technique used in LLMs to improve their performance on tasks like question answering and summarization?",
+                options: [
+                    "Fine-tuning",
+                    "Reinforcement learning",
+                    "Supervised learning",
+                    "Unsupervised learning"
+                ],
+                correct: 0,
+                explanation: {
+                    text: "**Fine-tuning** is the process of taking a pre-trained LLM and adapting it to perform better on a specific task. This is done by training the model on a dataset relevant to the task.",
+                    code: null
+                }
+            },
+            {
+                type: "single",
+                question: "What does the term 'generative pre-trained Transformer' emphasize about LLMs?",
+                options: [
+                    "They can only generate code.",
+                    "They are pre-trained on a massive dataset and can be fine-tuned.",
+                    "They require constant internet access.",
+                    "They can only understand one language."
+                ],
+                correct: 1,
+                explanation: {
+                    text: "'Generative pre-trained Transformer' highlights that these models generate new text, are pre-trained on a large dataset, and can be fine-tuned for specific tasks.",
+                    code: null
+                }
+            },
+
+            {
+                type: "fill",
+                question: "In a Transformer, after the attention mechanism, the vectors pass through a(n) _____.",
+                answer: "Multi-layer Perceptron (MLP)",
+                explanation: {
+                    text: "A Multi-layer Perceptron (MLP) is a type of neural network that further processes the information after the attention mechanism.",
+                    code: null
+                }
+            },
+            {
+                type: "single",
+                question: "In a transformer model with vocabulary size V and embedding dimension D, what is the shape of the embedding matrix?",
+                options: [
+                    "V × V",
+                    "D × V",
+                    "V × D",
+                    "D × D"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "The embedding matrix has shape D × V, where each column represents a word's embedding vector. For example, if V=50,000 and D=768, the matrix shape would be 768 × 50,000.",
+                    code: `import numpy as np
+
+V = 50000  # vocabulary size
+D = 768    # embedding dimension
+embedding_matrix = np.random.randn(D, V)
+print(f"Embedding matrix shape: {embedding_matrix.shape}")`
+                }
+            },
+            {
+                type: "fill",
+                question: "If GPT-3 has an embedding dimension of 12,288 and vocabulary size of 50,257, how many parameters are in the unembedding matrix?",
+                answer: "617558016",
+                explanation: {
+                    text: "The unembedding matrix has V rows and D columns. Therefore, the number of parameters is: 50,257 × 12,288 = 617,558,016.",
+                    code: `import numpy as np
+
+V = 50257  # vocabulary size
+D = 12288  # embedding dimension
+params = V * D
+print(f"Number of parameters: {params:,}")`
+                }
+            },
+            {
+                type: "single",
+                question: "What matrix operation is used to measure similarity between word embeddings?",
+                options: [
+                    "Matrix addition",
+                    "Dot product",
+                    "Cross product",
+                    "Element-wise multiplication"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "The dot product is used to measure similarity between word embeddings. A higher dot product indicates vectors pointing in similar directions, suggesting similar meanings.",
+                    code: `import numpy as np
+
+# Example with two word embeddings
+v1 = np.array([0.2, 0.5, -0.1])
+v2 = np.array([0.3, 0.4, -0.2])
+
+similarity = np.dot(v1, v2)
+print(f"Similarity score: {similarity}")`
+                }
+            },
+            {
+                type: "single",
+                question: "What operation is applied after the unembedding matrix multiplication to get token probabilities?",
+                options: [
+                    "ReLU",
+                    "Sigmoid",
+                    "Softmax",
+                    "Tanh"
+                ],
+                correct: 2,
+                explanation: {
+                    text: "The softmax function is applied to convert raw logits into probabilities that sum to 1.",
+                    code: `import numpy as np
+
+def softmax(x):
+    exp_x = np.exp(x)
+    return exp_x / exp_x.sum()
+
+# Example logits
+logits = np.array([2.0, 1.0, 0.1])
+probs = softmax(logits)
+print(f"Probabilities: {probs}")
+print(f"Sum of probabilities: {probs.sum()}")`
+                }
+            },
+            {
+                type: "single",
+                question: "What happens if you apply softmax to a vector of all equal values?",
+                options: [
+                    "The output is undefined",
+                    "The output is all zeros",
+                    "The output is all equal values summing to 1",
+                    "The output is random probabilities"
+                ],
+                correct: 2,
+                explanation: {
+                    text: "When softmax is applied to equal values, it produces equal probabilities that sum to 1. For n values, each output will be 1/n.",
+                    code: `import numpy as np
+
+def softmax(x):
+    exp_x = np.exp(x)
+    return exp_x / exp_x.sum()
+
+# Vector of equal values
+x = np.array([2.0, 2.0, 2.0, 2.0])
+probs = softmax(x)
+print(f"Equal probabilities: {probs}")
+print(f"Sum: {probs.sum()}")`
+                }
+            },
+            {
+                type: "single",
+                question: "What is the primary purpose of the temperature parameter in the softmax function?",
+                options: [
+                    "To speed up computation",
+                    "To control the randomness of the output distribution",
+                    "To normalize the input values",
+                    "To prevent overflow errors"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "The temperature parameter controls how 'peaked' the probability distribution is. Higher temperature makes the distribution more uniform, while lower temperature makes it more concentrated on the highest values.",
+                    code: `import numpy as np
+
+def softmax_with_temp(x, temperature):
+    exp_x = np.exp(x / temperature)
+    return exp_x / exp_x.sum()
+
+logits = np.array([2.0, 1.0, 0.1])
+print("Low temperature (0.1):", softmax_with_temp(logits, 0.1))
+print("High temperature (10):", softmax_with_temp(logits, 10))`
+                }
+            }
+        ]
+    };
+
+
+
+
+    window.copyToClipboard = function(text, button) {
+        navigator.clipboard.writeText(text).then(() => {
+            const originalText = button.textContent;
+            button.textContent = 'Copied!';
+            setTimeout(() => {
+                button.textContent = originalText;
+            }, 2000);
+        });
+    }
+
+    function formatCodeExample(code) {
+        return code.split('\n').map(line => {
+            if (line.includes('//')) {
+                const [code, comment] = line.split('//');
+                return `${code}<span class="code-comment">// ${comment}</span>`;
+            }
+            return line;
+        }).join('\n');
+    }
+
+    function createQuiz() {
+        const questionsContainer = document.getElementById('questions');
+
+        quizData.questions.forEach((q, index) => {
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'question';
+            questionDiv.innerHTML = `<div><strong>Question ${index + 1}:</strong> ${q.question}</div>`;
+
+            if (q.type === 'single') {
+                const optionsDiv = document.createElement('div');
+                optionsDiv.className = 'options';
+
+                q.options.forEach((option, optIndex) => {
+                    const optionDiv = document.createElement('div');
+                    optionDiv.className = 'option';
+                    optionDiv.textContent = option;
+                    optionDiv.onclick = () => checkAnswer(optIndex, q.correct, optionDiv, questionDiv, q.explanation);
+                    optionsDiv.appendChild(optionDiv);
+                });
+
+                questionDiv.appendChild(optionsDiv);
+            } else {
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.className = 'input-answer';
+                input.placeholder = 'Type your answer here';
+
+                const submitBtn = document.createElement('button');
+                submitBtn.textContent = 'Submit';
+                submitBtn.onclick = () => checkFillAnswer(input.value, q.answer, questionDiv, q.explanation);
+
+                questionDiv.appendChild(input);
+                questionDiv.appendChild(submitBtn);
+            }
+
+            const feedbackDiv = document.createElement('div');
+            feedbackDiv.className = 'feedback';
+            questionDiv.appendChild(feedbackDiv);
+
+            questionsContainer.appendChild(questionDiv);
+        });
+
+        updateScore();
+    }
+
+    function checkFillAnswer(input, answer, questionDiv, explanation) {
+        // Check if question has already been answered
+        if (questionDiv.querySelector('.feedback').style.display === 'block') {
+            return; // Already answered
+        }
+
+        // Get or create input element
+        const inputElement = questionDiv.querySelector('.input-answer');
+        if (inputElement) {
+            inputElement.disabled = true; // Disable input after submission
+        }
+
+        // Compare answer (case-insensitive)
+        if (input.toLowerCase().trim() === answer.toLowerCase().trim()) {
+            score++;
+            showFeedback(questionDiv, explanation, true);
+        } else {
+            showFeedback(questionDiv, {
+                text: `The correct answer is: ${answer}. ${explanation.text}`,
+                code: explanation.code
+            }, false);
+        }
+
+        answeredQuestions++;
+        updateScore();
+    }
+    function showFeedback(questionDiv, explanation, isCorrect) {
+        const feedbackDiv = questionDiv.querySelector('.feedback');
+        feedbackDiv.style.display = 'block';
+
+        const codeId = 'code-' + Math.random().toString(36).substr(2, 9);
+
+        feedbackDiv.innerHTML = `
+                <div class="explanation-text">
+                    ${isCorrect ? '✅' : '❌'} ${explanation.text}
+                </div>
+                ${explanation.code ? `
+                    <div class="code-block" id="${codeId}">
+                        ${formatCodeExample(explanation.code)}
+                        <button class="copy-button" onclick="copyToClipboard(\`${explanation.code}\`, this)">Copy</button>
+                    </div>
+                ` : ''}
+            `;
+
+        feedbackDiv.style.backgroundColor = isCorrect ? '#e8f5e9' : '#ffebee';
+    }
+
+    function checkAnswer(selected, correct, optionDiv, questionDiv, explanation) {
+        if (questionDiv.querySelector('.correct') || questionDiv.querySelector('.incorrect')) {
+            return;
+        }
+
+        const options = questionDiv.getElementsByClassName('option');
+        options[correct].classList.add('correct');
+
+        if (selected === correct) {
+            score++;
+            optionDiv.classList.add('correct');
+            showFeedback(questionDiv, explanation, true);
+        } else {
+            optionDiv.classList.add('incorrect');
+            showFeedback(questionDiv, explanation, false);
+        }
+
+        answeredQuestions++;
+        updateScore();
+    }
+
+    function updateScore() {
+        const scoreDiv = document.getElementById('score');
+        const percentage = (score / quizData.questions.length) * 100;
+        scoreDiv.innerHTML = `
+                <h3>Your Score: ${score}/${quizData.questions.length}</h3>
+                <p>Percentage: ${percentage.toFixed(1)}%</p>
+                ${answeredQuestions === quizData.questions.length ?
+            `<p>${percentage >= 70 ? '🎉 Great job! You have a solid understanding of Node.js core modules!' :
+                'Keep learning! Review the explanations to strengthen your knowledge of Node.js core modules.'}</p>` : ''}
+            `;
+    }
+
+    let score = 0;
+    let answeredQuestions = 0;
+    createQuiz();
+</script>
+</body>
+</html>
