@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Azure Services Learning Path</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.6.1/mermaid.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #0078d4;
+            text-align: center;
+        }
+        #mermaid-diagram {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Azure Servicesh</h1>
+        <h2>Overview</h2>
+        <div id="overview" class="mermaid">
+            graph LR
+            A[fa:fa-cloud Azure Fundamentals] --> B[fa:fa-key Identity & Access]
+            A --> C[fa:fa-server Compute Services]
+            A --> D[fa:fa-database Storage Services]
+            A --> E[fa:fa-network-wired Networking]
+            A --> F[fa:fa-exchange-alt Event Services]
+
+            B --> B1[fa:fa-users Azure Active Directory]
+            B --> B2[fa:fa-user-lock Role-Based Access Control]
+
+            C --> C1[fa:fa-desktop Virtual Machines]
+            C --> C2[fa:fa-window-restore App Services]
+            C --> C3[fa:fa-bolt Azure Functions]
+
+            D --> D1[fa:fa-file Blob Storage]
+            D --> D2[fa:fa-folder Azure Files]
+            D --> D3[fa:fa-table Azure SQL Database]
+
+            E --> E1[fa:fa-project-diagram Virtual Networks]
+            E --> E2[fa:fa-shield-alt Network Security Groups]
+            E --> E3[fa:fa-balance-scale Load Balancers]
+
+            F --> F1[fa:fa-th Event Grid]
+            F --> F2[fa:fa-bus Service Bus]
+
+            style A fill:#4a90e2,stroke:#2e5c8a,stroke-width:2px
+            style B fill:#82b366,stroke:#618e4c,stroke-width:2px
+            style C fill:#d79b00,stroke:#a17300,stroke-width:2px
+            style D fill:#9673a6,stroke:#714c7d,stroke-width:2px
+            style E fill:#e85642,stroke:#b43421,stroke-width:2px
+            style F fill:#ff9900,stroke:#cc7a00,stroke-width:2px
+        </div>
+
+        <h2>Compute Services</h2>
+
+        <div id="compute-service" class="mermaid">
+            graph LR
+            A[fa:fa-server Azure Compute] --> B[fa:fa-desktop Infrastructure as a Service]
+            A --> C[fa:fa-window-restore Platform as a Service]
+            A --> D[fa:fa-bolt Serverless]
+            A --> E[fa:fa-box Containers]
+
+            B --> B1[fa:fa-laptop Virtual Machines]
+            B --> B2[fa:fa-server VM Scale Sets]
+            B --> B3[fa:fa-hdd Azure Dedicated Hosts]
+
+            C --> C1[fa:fa-window-maximize App Service]
+            C --> C2[fa:fa-mobile App Service Mobile]
+            C --> C3[fa:fa-globe App Service Web Apps]
+            C --> C4[fa:fa-cogs Spring Apps]
+
+            D --> D1[fa:fa-bolt Azure Functions]
+            D --> D2[fa:fa-th Logic Apps]
+            D --> D3[fa:fa-code Azure Container Apps]
+
+            E --> E1[fa:fa-docker Azure Container Instances]
+            E --> E2[fa:fa-ship Azure Kubernetes Service]
+            E --> E3[fa:fa-boxes Container Registry]
+
+            style A fill:#4a90e2,stroke:#2e5c8a,stroke-width:2px
+            style B fill:#82b366,stroke:#618e4c,stroke-width:2px
+            style C fill:#d79b00,stroke:#a17300,stroke-width:2px
+            style D fill:#9673a6,stroke:#714c7d,stroke-width:2px
+            style E fill:#e85642,stroke:#b43421,stroke-width:2px
+    </div>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            fontFamily: 'Arial',
+            htmlLabels: true
+        });
+    </script>
+</body>
+</html>

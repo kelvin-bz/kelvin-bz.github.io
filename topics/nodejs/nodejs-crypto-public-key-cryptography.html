@@ -120,8 +120,8 @@
 </head>
 <body>
 <div class="container">
-    <h1>📐 Natural Logarithm (Ln) Mathematics Quiz</h1>
-    <p>Test your knowledge of natural logarithms, their properties, and applications!</p>
+    <h1>🔌 Node.js File Handling Quiz</h1>
+    <p>Test your knowledge of Node.js Websocket!</p>
     <div id="questions"></div>
     <div id="score"></div>
 </div>
@@ -133,209 +133,244 @@
         questions: [
             {
                 type: "single",
-                question: "What does 'ln' stand for?",
+                question: "Which key is used to encrypt data in public key cryptography when ensuring confidentiality?",
                 options: [
-                    "Long Number",
-                    "Natural Logarithm",
-                    "Linear Number",
-                    "Last Number"
-                ],
-                correct: 1,
-                explanation: {
-                    text: "ln stands for 'natural logarithm'. It's called 'natural' because it uses the mathematical constant e (approximately 2.71828) as its base.",
-                    code: `
-// In JavaScript, e is represented as Math.E
-console.log("Value of e:", Math.E);  // ≈ 2.71828...
-
-// Natural logarithm is written as ln in math
-// but as Math.log() in JavaScript
-console.log("ln of e:", Math.log(Math.E));  // = 1`
-                }
-            },
-            {
-                type: "single",
-                question: "If ln(x) = y, what does this mean in terms of e?",
-                options: [
-                    "x + e = y",
-                    "x × e = y",
-                    "e^y = x",
-                    "e^x = y"
-                ],
-                correct: 2,
-                explanation: {
-                    text: "When ln(x) = y, it means e^y = x. In other words, ln(x) asks: 'To what power must e be raised to get x?'",
-                    code: `
-// Example: if ln(x) = 2, then x = e^2
-let y = 2;
-let x = Math.exp(y);  // e^2
-console.log("e^2 =", x);
-console.log("ln of e^2 =", Math.log(x));  // = 2`
-                }
-            },
-            {
-                type: "single",
-                question: "Which of these can you take the ln of?",
-                options: [
-                    "-1",
-                    "0",
-                    "1",
-                    "-5"
-                ],
-                correct: 2,
-                explanation: {
-                    text: "You can only take the natural logarithm of positive numbers. ln(1) = 0 because e^0 = 1.",
-                    code: `
-// Trying different numbers
-console.log("ln(1) =", Math.log(1));     // = 0
-console.log("ln(0) =", Math.log(0));     // = -Infinity
-console.log("ln(-1) =", Math.log(-1));   // = NaN (Not a Number)
-
-// Function to check if we can take ln
-function canTakeLn(x) {
-    return x > 0;
-}`
-                }
-            },
-            {
-                type: "single",
-                question: "Which of these is the derivative of ln(x)?",
-                options: [
-                    "1/x",
-                    "x",
-                    "e^x",
-                    "1"
+                    "Recipient's public key",
+                    "Sender's private key",
+                    "Sender's public key",
+                    "Recipient's private key"
                 ],
                 correct: 0,
                 explanation: {
-                    text: "The derivative of ln(x) is 1/x. This is a fundamental calculus rule used in many applications.",
+                    text: "In public key cryptography, when ensuring confidentiality, data is encrypted using the recipient's public key. This ensures that only the recipient, who holds the corresponding private key, can decrypt the message.",
                     code: `
-// Numerical demonstration in JavaScript
-function derivativeLn(x, h = 0.0001) {
-    // Approximate derivative using small h
-    return (Math.log(x + h) - Math.log(x)) / h;
-}
+import * as crypto from 'crypto';
 
-console.log(derivativeLn(2));  // Approximately 0.5 = 1/2`
+// Example private text to encrypt
+const privateText: string = "This is a confidential message";
+
+// Generate public/private key pair (For demonstration purposes only)
+// In real-world scenarios, the recipient would already have a key pair.
+const { publicKey: recipientPublicKey, privateKey: recipientPrivateKey } = crypto.generateKeyPairSync('rsa', {
+    modulusLength: 2048, // Key size
+});
+
+// Encryption: Using the recipient's public key to encrypt the private text
+const buffer: Buffer = Buffer.from(privateText, 'utf-8');
+const encryptedData: Buffer = crypto.publicEncrypt(recipientPublicKey, buffer);
+
+console.log("Encrypted Message (Base64):", encryptedData.toString('base64'));
+
+// Decryption: Using the recipient's private key to decrypt the data
+const decryptedBuffer: Buffer = crypto.privateDecrypt(recipientPrivateKey, encryptedData);
+const decryptedText: string = decryptedBuffer.toString('utf-8');
+
+console.log("Decrypted Message:", decryptedText);`
                 }
             },
             {
                 type: "single",
-                question: "What would ln(e) equal?",
+                question: "What is the minimum recommended RSA key size for modern applications?",
                 options: [
-                    "0",
-                    "1",
-                    "e",
-                    "2"
+                    "1024 bits",
+                    "2048 bits",
+                    "512 bits",
+                    "4096 bits"
                 ],
                 correct: 1,
                 explanation: {
-                    text: "ln(e) = 1 because e^1 = e. Remember, ln asks 'to what power must e be raised?' For ln(e), the answer is 1.",
+                    text: "2048 bits is considered the minimum recommended key size for RSA in modern applications. While 1024 bits is considered insecure, and 4096 bits provides very high security but at a performance cost.",
                     code: `
-// Demonstrating ln(e) = 1
-const e = Math.E;
-console.log("ln(e) =", Math.log(e));  // = 1
-
-// This means:
-console.log("e^1 =", Math.exp(1));    // = e`
+    const { publicKey, privateKey } = generateKeyPairSync('rsa', {
+        modulusLength: 2048,
+        publicKeyEncoding: {
+            type: 'spki',
+            format: 'pem'
+        },
+        privateKeyEncoding: {
+            type: 'pkcs8',
+            format: 'pem'
+        }
+    });`
                 }
             },
             {
                 type: "single",
-                question: "What is ln(xy) equal to?",
+                question: "Which Node.js module is primarily used for cryptographic operations?",
                 options: [
-                    "ln(x)ln(y)",
-                    "ln(x) + ln(y)",
-                    "ln(x)y",
-                    "ln(x)/ln(y)"
+                    "crypto",
+                    "cipher",
+                    "security",
+                    "encrypt"
                 ],
-                correct: 1,
+                correct: 0,
                 explanation: {
-                    text: "ln(xy) = ln(x) + ln(y). This is the logarithm product rule, a key property for simplifying logarithmic expressions.",
+                    text: "The 'crypto' module in Node.js provides cryptographic functionality that includes a set of wrappers for OpenSSL's hash, HMAC, cipher, decipher, sign, and verify functions.",
                     code: `
-// JavaScript verification
-function verifyLogProduct(x, y) {
-    const direct = Math.log(x * y);
-    const sum = Math.log(x) + Math.log(y);
-    console.log('Direct:', direct);
-    console.log('Sum:', sum);
-}
+import * as crypto from 'crypto';
 
-verifyLogProduct(2, 3);`
+// Example: Hashing with SHA-256
+const hash = crypto.createHash('sha256');
+hash.update('Hello, World!');
+console.log('Hash:', hash.digest('hex'));
+
+// Example: Encrypting with AES-256-GCM
+const key = crypto.randomBytes(32); // AES-256 requires a 32-byte key
+const iv = crypto.randomBytes(16);  // Initialization vector
+const cipher = crypto.createCipheriv('aes-256-gcm', key, iv);
+
+let encrypted = cipher.update('This is a secret message', 'utf8', 'hex');
+encrypted += cipher.final('hex');
+const authTag = cipher.getAuthTag();
+
+console.log('Encrypted Message:', encrypted);
+console.log('Auth Tag:', authTag.toString('hex'));
+
+// Example: Signing data with RSA
+const { privateKey } = crypto.generateKeyPairSync('rsa', {
+    modulusLength: 2048,
+});
+const sign = crypto.createSign('RSA-SHA256');
+sign.update('Data to sign');
+sign.end();
+
+const signature = sign.sign(privateKey, 'hex');
+console.log('Signature:', signature);
+        `
+                }
+            },
+            {
+                type: "single",
+                question: "Which algorithm is used with RSA for creating digital signatures in the provided example?",
+                options: [
+                    "RSA-SHA256",
+                    "RSA-MD5",
+                    "RSA-SHA512",
+                    "RSA-SHA1"
+                ],
+                correct: 0,
+                explanation: {
+                    text: "RSA-SHA256 is used for creating digital signatures in the example. This combines RSA for the signature algorithm with SHA-256 for hashing.",
+                    code: `
+    const sign = crypto.createSign('RSA-SHA256');
+
+    // Update with the data to be signed
+    sign.update(data);
+
+    // Generate the signature
+    const signature = sign.sign(privateKey, 'base64');`
+                }
+            },
+            {
+                type: "single",
+                question: "What format is commonly used for encoding cryptographic keys and certificates?",
+                options: [
+                    "PEM",
+                    "DER",
+                    "JSON",
+                    "XML"
+                ],
+                correct: 0,
+                explanation: {
+                    text: "PEM (Privacy-Enhanced Mail) format is widely used for encoding cryptographic keys and certificates. It uses Base64 encoding with header and footer lines.",
+                    code: `
+    -----BEGIN RSA PRIVATE KEY-----
+    MIIEowIBAAKCAQEA7XwH4q2+1T...
+    ... (base64 encoded content) ...
+    -----END RSA PRIVATE KEY-----`
                 }
             },
             {
                 type: "fill",
-                question: "ln(1) equals _____.",
-                answer: "0",
+                question: "The Node.js method used to create a digital signature is crypto.create_____('RSA-SHA256')",
+                answer: "Sign",
                 explanation: {
-                    text: "ln(1) = 0 because e^0 = 1. This is a fundamental value to remember when working with natural logarithms.",
+                    text: "The crypto.createSign() method is used to create a Sign object for generating digital signatures.",
                     code: `
-// Verifying ln(1) = 0
-console.log("ln(1) =", Math.log(1));   // = 0
-console.log("e^0 =", Math.exp(0));     // = 1
+    const sign = crypto.createSign('RSA-SHA256');
 
-// This means:
-// e^0 = 1
-// Therefore, ln(1) = 0`
+    // Sign the data
+    sign.update(data);
+
+    // Generate signature
+    const signature = sign.sign(privateKey, 'base64');`
                 }
             },
             {
                 type: "fill",
-                question: "The value of e raised to the power 0 equals _____.",
-                answer: "1",
+                question: "To verify a digital signature in Node.js, we use the crypto.create_____ method",
+                answer: "Verify",
                 explanation: {
-                    text: "Like any number raised to the power of 0, e^0 = 1. This is why ln(1) = 0, as they are inverse operations.",
+                    text: "The crypto.createVerify() method creates a Verify object for validating digital signatures.",
                     code: `
-// Demonstrating e^0 = 1
-console.log("e^0 =", Math.exp(0));     // = 1
+    const verify = crypto.createVerify('RSA-SHA256');
 
-// Compare with other numbers raised to 0
-console.log("2^0 =", Math.pow(2, 0));  // = 1
-console.log("5^0 =", Math.pow(5, 0));  // = 1
-console.log("10^0 =", Math.pow(10, 0)); // = 1`
+    // Update with the original data
+    verify.update(data);
+
+    // Verify the signature
+    const isValid = verify.verify(publicKey, signature, 'base64');`
                 }
             },
             {
                 type: "fill",
-                question: "ln(e^3) equals _____.",
-                answer: "3",
+                question: "In blockchain, the random value used in block mining is called a _____",
+                answer: "nonce",
                 explanation: {
-                    text: "ln(e^n) = n because ln and e^ are inverse functions. When you take ln of e raised to a power, you get that power back.",
+                    text: "A nonce is a random value that miners change repeatedly while attempting to find a valid block hash that meets the network's difficulty requirements.",
                     code: `
-// Demonstrating ln(e^3) = 3
-const e = Math.E;
-console.log("e^3 =", Math.pow(e, 3));
-console.log("ln(e^3) =", Math.log(Math.pow(e, 3)));  // = 3
+    // Simplified block header structure
+    const blockHeader = {
+        previousHash: "0000000000000...",
+        timestamp: 1638360000,
+        nonce: 42384,  // This value is adjusted during mining
+        merkleRoot: "8d23578..."
+    };
 
-// This works for any number
-let n = 5;
-console.log("ln(e^5) =", Math.log(Math.pow(e, n)));  // = 5`
+    // Mining process pseudocode
+    while (!isValidHash(calculateBlockHash(blockHeader))) {
+        blockHeader.nonce++;
+    }`
                 }
             },
             {
                 type: "fill",
-                question: "e raised to the power of ln(2) equals _____.",
-                answer: "2",
+                question: "The encoding format used in the encryption/decryption functions for the output is _____",
+                answer: "base64",
                 explanation: {
-                    text: "e^ln(x) = x because e^ and ln are inverse functions. When you raise e to the ln of a number, you get that number back.",
+                    text: "Base64 encoding is used to convert binary data (like encrypted content) into a string format that can be safely transmitted.",
                     code: `
-// Demonstrating e^ln(2) = 2
-let num = 2;
-console.log("ln(2) =", Math.log(2));
-console.log("e^ln(2) =", Math.exp(Math.log(2)));  // = 2
+    // Encryption
+    const encrypted = crypto.publicEncrypt(publicKey, buffer);
+    const ciphertext = encrypted.toString('base64');
 
-// This works for any positive number
-let x = 7;
-console.log("e^ln(7) =", Math.exp(Math.log(x)));  // = 7`
+    // Decryption
+    const encryptedBuffer = Buffer.from(ciphertext, 'base64');
+    const decrypted = crypto.privateDecrypt(privateKey, encryptedBuffer);`
                 }
             },
+            {
+                type: "fill",
+                question: "The crypto module method to decrypt data with a private key is privateD_____",
+                answer: "ecrypt",
+                explanation: {
+                    text: "The crypto.privateDecrypt() method is used to decrypt data using a private key in asymmetric encryption.",
+                    code: `
+    // Decryption process
+    function decryptAsymmetric(privateKey, ciphertext) {
+        const buffer = Buffer.from(ciphertext, 'base64');
+        const decrypted = crypto.privateDecrypt(privateKey, buffer);
+        return decrypted.toString('utf8');
+    }`
+                }
+            }
         ]
     };
 
 
 
 
-    function copyToClipboard(text, button) {
+    window.copyToClipboard = function(text, button) {
         navigator.clipboard.writeText(text).then(() => {
             const originalText = button.textContent;
             button.textContent = 'Copied!';

@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            font-family: system-ui, -apple-system, sans-serif;
+            line-height: 1.6;
+        }
+        .question {
+            background-color: #fff;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .option {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .option:hover {
+            background-color: #f5f5f5;
+            transform: translateX(5px);
+        }
+        .selected {
+            background-color: #e3f2fd;
+        }
+        .correct {
+            background-color: #e8f5e9;
+            border-color: #81c784;
+        }
+        .incorrect {
+            background-color: #ffebee;
+            border-color: #e57373;
+        }
+        .input-answer {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            margin-top: 10px;
+            padding: 8px 16px;
+            background-color: #2196f3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #1976d2;
+        }
+        #score {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.2em;
+        }
+        .feedback {
+            margin-top: 10px;
+            padding: 15px;
+            border-radius: 4px;
+            display: none;
+            line-height: 1.6;
+        }
+        .code-block {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre;
+            overflow-x: auto;
+            line-height: 1.5;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            position: relative;
+        }
+        .copy-button {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .explanation-text {
+            margin-bottom: 10px;
+        }
+        .code-comment {
+            color: #6a737d;
+        }
+        .code-output {
+            color: #0a3069;
+            border-left: 3px solid #2196f3;
+            margin-left: 10px;
+            padding-left: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🔌 Node.js File Handling Quiz</h1>
+    <p>Test your knowledge of Node.js Websocket!</p>
+    <div id="questions"></div>
+    <div id="score"></div>
+</div>
+
+
+<script>
+
+const quizData = {
+    questions: [
+        {
+            type: "single",
+            question: "Which method should you use to generate a secure random password in Node.js?",
+            options: [
+                "Math.random()",
+                "crypto.randomBytes()",
+                "crypto.random()",
+                "Math.generateRandom()"
+            ],
+            correct: 1,
+            explanation: {
+                text: "crypto.randomBytes() is the recommended way to generate cryptographically secure random values.",
+                code: `
+    const crypto = require('crypto');
+
+    // Generate secure random bytes
+    function generateSecurePassword(length = 16) {
+        return new Promise((resolve, reject) => {
+            crypto.randomBytes(length, (err, buf) => {
+                if (err) reject(err);
+                resolve(buf.toString('base64'));
+            });
+        });
+    }
+
+    // Generate secure token
+    function generateToken(length = 32) {
+        return crypto.randomBytes(length)
+            .toString('hex');
+    }
+
+    // Example usage
+    async function example() {
+        try {
+            const password = await generateSecurePassword();
+            console.log('Secure password:', password);
+
+            const token = generateToken();
+            console.log('Secure token:', token);
+        } catch (err) {
+            console.error('Error:', err);
+        }
+    }`
+            }
+        },
+        {
+            type: "single",
+            question: "What's the most secure way to hash passwords in Node.js?",
+            options: [
+                "MD5",
+                "SHA-256",
+                "bcrypt",
+                "Simple base64 encoding"
+            ],
+            correct: 2,
+            explanation: {
+                text: "bcrypt is recommended for password hashing as it includes salt and is designed to be slow, making brute-force attacks harder.",
+                code: `
+    const bcrypt = require('bcrypt');
+
+    async function hashPassword(password) {
+        const saltRounds = 10; // Higher number = more secure but slower
+        try {
+            const salt = await bcrypt.genSalt(saltRounds);
+            const hash = await bcrypt.hash(password, salt);
+            return hash;
+        } catch (err) {
+            throw new Error('Error hashing password');
+        }
+    }
+
+    async function verifyPassword(password, hash) {
+        try {
+            const match = await bcrypt.compare(password, hash);
+            return match;
+        } catch (err) {
+            throw new Error('Error comparing passwords');
+        }
+    }
+
+    // Example usage
+    async function example() {
+        try {
+            const password = 'user_password';
+            const hashedPassword = await hashPassword(password);
+            console.log('Hashed:', hashedPassword);
+
+            // Verify password
+            const isMatch = await verifyPassword(password, hashedPassword);
+            console.log('Password matches:', isMatch);
+        } catch (err) {
+            console.error('Error:', err);
+        }
+    }`
+            }
+        },
+        {
+            type: "single",
+            question: "How do you properly encrypt sensitive data in Node.js?",
+            options: [
+                "Base64 encoding",
+                "Using crypto.createCipher()",
+                "Using crypto.createCipheriv() with a secure key and IV",
+                "Simple XOR operation"
+            ],
+            correct: 2,
+            explanation: {
+                text: "crypto.createCipheriv() with a secure key and initialization vector (IV) is the recommended way for encryption.",
+                code: `
+    const crypto = require('crypto');
+
+    class Encryptor {
+        constructor(encryptionKey) {
+            this.algorithm = 'aes-256-gcm';
+            this.key = crypto.scryptSync(encryptionKey, 'salt', 32);
+        }
+
+        encrypt(text) {
+            const iv = crypto.randomBytes(16);
+            const cipher = crypto.createCipheriv(this.algorithm, this.key, iv);
+
+            let encrypted = cipher.update(text, 'utf8', 'hex');
+            encrypted += cipher.final('hex');
+
+            const authTag = cipher.getAuthTag();
+
+            return {
+                iv: iv.toString('hex'),
+                encrypted: encrypted,
+                authTag: authTag.toString('hex')
+            };
+        }
+
+        decrypt(encrypted) {
+            const decipher = crypto.createDecipheriv(
+                this.algorithm,
+                this.key,
+                Buffer.from(encrypted.iv, 'hex')
+            );
+
+            decipher.setAuthTag(Buffer.from(encrypted.authTag, 'hex'));
+
+            let decrypted = decipher.update(encrypted.encrypted, 'hex', 'utf8');
+            decrypted += decipher.final('utf8');
+
+            return decrypted;
+        }
+    }
+
+    // Example usage
+    const encryptor = new Encryptor('your-secure-key');
+
+    const data = "sensitive data";
+    const encrypted = encryptor.encrypt(data);
+    console.log('Encrypted:', encrypted);
+
+    const decrypted = encryptor.decrypt(encrypted);
+    console.log('Decrypted:', decrypted);`
+            }
+        },
+        {
+            type: "single",
+            question: "Which is the recommended way to generate a secure hash of a file in Node.js?",
+            options: [
+                "Use simple checksum",
+                "Calculate MD5",
+                "Use crypto.createHash with SHA-256",
+                "Use Math.random"
+            ],
+            correct: 2,
+            explanation: {
+                text: "crypto.createHash with SHA-256 or stronger algorithms is recommended for file hashing.",
+                code: `
+    const crypto = require('crypto');
+    const fs = require('fs');
+
+    function calculateFileHash(filePath) {
+        return new Promise((resolve, reject) => {
+            const hash = crypto.createHash('sha256');
+            const stream = fs.createReadStream(filePath);
+
+            stream.on('error', err => reject(err));
+            stream.on('data', chunk => hash.update(chunk));
+            stream.on('end', () => resolve(hash.digest('hex')));
+        });
+    }
+
+    // For large files, use streams
+    function calculateLargeFileHash(filePath) {
+        return new Promise((resolve, reject) => {
+            const hash = crypto.createHash('sha256');
+            const stream = fs.createReadStream(filePath);
+
+            stream.pipe(hash)
+                .on('error', reject)
+                .on('finish', () => resolve(hash.digest('hex')));
+        });
+    }
+
+    // Example usage
+    async function verifyFileIntegrity(filePath, expectedHash) {
+        try {
+            const actualHash = await calculateFileHash(filePath);
+            const isMatch = actualHash === expectedHash;
+            console.log('File integrity:', isMatch ? 'Valid' : 'Invalid');
+            return isMatch;
+        } catch (err) {
+            console.error('Error verifying file:', err);
+            throw err;
+        }
+    }`
+            }
+        },
+        {
+            type: "single",
+            question: "What's the purpose of using HMAC in Node.js?",
+            options: [
+                "To encrypt data",
+                "To compress data",
+                "To verify data integrity and authenticity",
+                "To generate random numbers"
+            ],
+            correct: 2,
+            explanation: {
+                text: "HMAC (Hash-based Message Authentication Code) is used to verify both data integrity and authenticity.",
+                code: `
+    const crypto = require('crypto');
+
+    class HMACValidator {
+        constructor(secret) {
+            this.secret = secret;
+        }
+
+        createHMAC(data) {
+            const hmac = crypto.createHmac('sha256', this.secret);
+            hmac.update(data);
+            return hmac.digest('hex');
+        }
+
+        verifyHMAC(data, hmac) {
+            const calculatedHmac = this.createHMAC(data);
+            return crypto.timingSafeEqual(
+                Buffer.from(calculatedHmac),
+                Buffer.from(hmac)
+            );
+        }
+    }
+
+    // Example: API request validation
+    class APIValidator {
+        constructor(secretKey) {
+            this.hmacValidator = new HMACValidator(secretKey);
+        }
+
+        createSignedRequest(payload) {
+            const timestamp = Date.now().toString();
+            const dataToSign = timestamp + JSON.stringify(payload);
+            const signature = this.hmacValidator.createHMAC(dataToSign);
+
+            return {
+                payload,
+                timestamp,
+                signature
+            };
+        }
+
+        validateRequest(request) {
+            const { payload, timestamp, signature } = request;
+
+            // Check timestamp freshness
+            const isTimestampValid = Date.now() - parseInt(timestamp) < 5 * 60 * 1000; // 5 minutes
+            if (!isTimestampValid) return false;
+
+            // Verify HMAC
+            const dataToVerify = timestamp + JSON.stringify(payload);
+            return this.hmacValidator.verifyHMAC(dataToVerify, signature);
+        }
+    }`
+            }
+        },
+        {
+            type: "fill",
+            question: "The crypto._____ method is used to derive a key from a password.",
+            answer: "scryptSync",
+            explanation: {
+                text: "scryptSync is a secure way to derive encryption keys from passwords.",
+                code: `
+    const crypto = require('crypto');
+
+    function deriveKey(password, salt = crypto.randomBytes(16)) {
+        // Parameters: password, salt, keyLength, options
+        const key = crypto.scryptSync(password, salt, 32, {
+            // Cost parameters
+            N: 16384,  // CPU/memory cost
+            r: 8,      // Block size
+            p: 1       // Parallelization
+        });
+
+        return {
+            key: key,
+            salt: salt
+        };
+    }
+
+    // Example: Key derivation for encryption
+    function createEncryptionKey(password) {
+        const { key, salt } = deriveKey(password);
+
+        return {
+            key: key.toString('hex'),
+            salt: salt.toString('hex')
+        };
+    }
+
+    // Example usage
+    const keyData = createEncryptionKey('user_password');
+    console.log('Derived key:', keyData.key);
+    console.log('Salt:', keyData.salt);`
+            }
+        },
+        {
+            type: "fill",
+            question: "Use crypto._____() to generate a unique identifier with high entropy.",
+            answer: "randomUUID",
+            explanation: {
+                text: "randomUUID() generates a version 4 UUID with strong randomness.",
+                code: `
+    const crypto = require('crypto');
+
+    function generateSecureId() {
+        return crypto.randomUUID();
+    }
+
+    // Enhanced ID generator with custom format
+    function generateCustomId(prefix = '', length = 32) {
+        if (length < 16) {
+            throw new Error('Length must be at least 16 for security');
+        }
+
+        const uuid = crypto.randomUUID();
+        const random = crypto.randomBytes(length - 16)
+            .toString('hex');
+
+        return \`\${prefix}\${uuid}\${random}\`;
+}
+
+// Example: Generate session IDs
+class SessionManager {
+    generateSessionId() {
+        return generateCustomId('sess_');
+    }
+
+    generateTempToken() {
+        return generateCustomId('tmp_', 48);
+    }
+}
+
+const sessions = new SessionManager();
+console.log('Session ID:', sessions.generateSessionId());
+console.log('Temp Token:', sessions.generateTempToken());`
+    }
+    },
+    {
+        type: "fill",
+            question: "The _____ cipher mode is recommended for secure encryption in Node.js.",
+        answer: "GCM",
+        explanation: {
+        text: "GCM (Galois/Counter Mode) provides both encryption and authentication, making it highly secure.",
+            code: `
+const crypto = require('crypto');
+
+class SecureEncryption {
+    constructor(masterKey) {
+        this.algorithm = 'aes-256-gcm';
+        this.key = crypto.scryptSync(masterKey, 'salt', 32);
+    }
+
+    encrypt(data) {
+        const iv = crypto.randomBytes(16);
+        const cipher = crypto.createCipheriv(this.algorithm, this.key, iv);
+
+        const encrypted = Buffer.concat([
+            cipher.update(data, 'utf8'),
+            cipher.final()
+        ]);
+
+        const authTag = cipher.getAuthTag();
+
+        return {
+            iv: iv.toString('hex'),
+            encrypted: encrypted.toString('hex'),
+            authTag: authTag.toString('hex')
+        };
+    }
+
+    decrypt(encryptedData) {
+        const decipher = crypto.createDecipheriv(
+            this.algorithm,
+            this.key,
+            Buffer.from(encryptedData.iv, 'hex')
+        );
+
+        decipher.setAuthTag(Buffer.from(encryptedData.authTag, 'hex'));
+
+        const decrypted = Buffer.concat([
+            decipher.update(Buffer.from(encryptedData.encrypted, 'hex')),
+            decipher.final()
+        ]);
+
+        return decrypted.toString('utf8');
+    }
+}`
+    }
+    },
+    {
+        type: "fill",
+            question: "The crypto._____ class is used to verify digital signatures.",
+        answer: "verify",
+        explanation: {
+        text: "crypto.verify is used to verify digital signatures created with private keys.",
+            code: `
+const crypto = require('crypto');
+
+class DigitalSignature {
+    constructor() {
+        const { publicKey, privateKey } = crypto.generateKeyPairSync('rsa', {
+            modulusLength: 2048,
+            publicKeyEncoding: {
+                type: 'spki',
+                format: 'pem'
+            },
+            privateKeyEncoding: {
+                type: 'pkcs8',
+                format: 'pem'
+            }
+        });
+
+        this.publicKey = publicKey;
+        this.privateKey = privateKey;
+    }
+
+    sign(data) {
+        const sign = crypto.createSign('SHA256');
+        sign.update(data);
+        sign.end();
+        return sign.sign(this.privateKey, 'hex');
+    }
+
+    verify(data, signature) {
+        const verify = crypto.createVerify('SHA256');
+        verify.update(data);
+        verify.end();
+        return verify.verify(this.publicKey, signature, 'hex');
+    }
+}
+
+// Example usage
+const signer = new DigitalSignature();
+const document = 'Important contract content';
+
+const signature = signer.sign(document);
+console.log('Signature:', signature);
+
+const isValid = signer.verify(document, signature);
+console.log('Signature valid:', isValid);`
+    }
+    },
+    {
+        type: "fill",
+            question: "Use crypto.createDiffieHellman() for secure _____ exchange.",
+        answer: "key",
+        explanation: {
+        text: "Diffie-Hellman is used for secure key exchange between parties.",
+            code: `
+const crypto = require('crypto');
+
+class KeyExchange {
+    static createParty() {
+        // Create Diffie-Hellman instance
+        const dh = crypto.createDiffieHellman(2048);
+        const keys = {
+            publicKey: dh.generateKeys('hex'),
+            prime: dh.getPrime('hex'),
+            generator: dh.getGenerator('hex')
+        };
+        return { dh, keys };
+    }
+
+    static computeSecret(dh, otherPublicKey) {
+        return dh.computeSecret(otherPublicKey, 'hex', 'hex');
+    }
+}
+
+// Example: Secure key exchange between two parties
+async function demonstrateKeyExchange() {
+    // Alice creates her keys
+    const alice = KeyExchange.createParty();
+    // Bob creates his keys
+    const bob = KeyExchange.createParty();
+
+    // Exchange public keys
+    const aliceSecret = KeyExchange.computeSecret(alice.dh, bob.keys.publicKey);
+    const bobSecret = KeyExchange.computeSecret(bob.dh, alice.keys.publicKey);
+
+    console.log('Alice Secret:', aliceSecret);
+    console.log('Bob Secret:', bobSecret);
+    console.log('Keys match:', aliceSecret === bobSecret);
+}
+
+demonstrateKeyExchange();`
+    }
+    }
+    ]
+    };
+
+
+
+
+    window.copyToClipboard = function(text, button) {
+        navigator.clipboard.writeText(text).then(() => {
+            const originalText = button.textContent;
+            button.textContent = 'Copied!';
+            setTimeout(() => {
+                button.textContent = originalText;
+            }, 2000);
+        });
+    }
+
+    function formatCodeExample(code) {
+        return code.split('\n').map(line => {
+            if (line.includes('//')) {
+                const [code, comment] = line.split('//');
+                return `${code}<span class="code-comment">// ${comment}</span>`;
+            }
+            return line;
+        }).join('\n');
+    }
+
+    function createQuiz() {
+        const questionsContainer = document.getElementById('questions');
+
+        quizData.questions.forEach((q, index) => {
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'question';
+            questionDiv.innerHTML = `<div><strong>Question ${index + 1}:</strong> ${q.question}</div>`;
+
+            if (q.type === 'single') {
+                const optionsDiv = document.createElement('div');
+                optionsDiv.className = 'options';
+
+                q.options.forEach((option, optIndex) => {
+                    const optionDiv = document.createElement('div');
+                    optionDiv.className = 'option';
+                    optionDiv.textContent = option;
+                    optionDiv.onclick = () => checkAnswer(optIndex, q.correct, optionDiv, questionDiv, q.explanation);
+                    optionsDiv.appendChild(optionDiv);
+                });
+
+                questionDiv.appendChild(optionsDiv);
+            } else {
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.className = 'input-answer';
+                input.placeholder = 'Type your answer here';
+
+                const submitBtn = document.createElement('button');
+                submitBtn.textContent = 'Submit';
+                submitBtn.onclick = () => checkFillAnswer(input.value, q.answer, questionDiv, q.explanation);
+
+                questionDiv.appendChild(input);
+                questionDiv.appendChild(submitBtn);
+            }
+
+            const feedbackDiv = document.createElement('div');
+            feedbackDiv.className = 'feedback';
+            questionDiv.appendChild(feedbackDiv);
+
+            questionsContainer.appendChild(questionDiv);
+        });
+
+        updateScore();
+    }
+
+    function checkFillAnswer(input, answer, questionDiv, explanation) {
+        // Check if question has already been answered
+        if (questionDiv.querySelector('.feedback').style.display === 'block') {
+            return; // Already answered
+        }
+
+        // Get or create input element
+        const inputElement = questionDiv.querySelector('.input-answer');
+        if (inputElement) {
+            inputElement.disabled = true; // Disable input after submission
+        }
+
+        // Compare answer (case-insensitive)
+        if (input.toLowerCase().trim() === answer.toLowerCase().trim()) {
+            score++;
+            showFeedback(questionDiv, explanation, true);
+        } else {
+            showFeedback(questionDiv, {
+                text: `The correct answer is: ${answer}. ${explanation.text}`,
+                code: explanation.code
+            }, false);
+        }
+
+        answeredQuestions++;
+        updateScore();
+    }
+    function showFeedback(questionDiv, explanation, isCorrect) {
+        const feedbackDiv = questionDiv.querySelector('.feedback');
+        feedbackDiv.style.display = 'block';
+
+        const codeId = 'code-' + Math.random().toString(36).substr(2, 9);
+
+        feedbackDiv.innerHTML = `
+                <div class="explanation-text">
+                    ${isCorrect ? '✅' : '❌'} ${explanation.text}
+                </div>
+                ${explanation.code ? `
+                    <div class="code-block" id="${codeId}">
+                        ${formatCodeExample(explanation.code)}
+                        <button class="copy-button" onclick="copyToClipboard(\`${explanation.code}\`, this)">Copy</button>
+                    </div>
+                ` : ''}
+            `;
+
+        feedbackDiv.style.backgroundColor = isCorrect ? '#e8f5e9' : '#ffebee';
+    }
+
+    function checkAnswer(selected, correct, optionDiv, questionDiv, explanation) {
+        if (questionDiv.querySelector('.correct') || questionDiv.querySelector('.incorrect')) {
+            return;
+        }
+
+        const options = questionDiv.getElementsByClassName('option');
+        options[correct].classList.add('correct');
+
+        if (selected === correct) {
+            score++;
+            optionDiv.classList.add('correct');
+            showFeedback(questionDiv, explanation, true);
+        } else {
+            optionDiv.classList.add('incorrect');
+            showFeedback(questionDiv, explanation, false);
+        }
+
+        answeredQuestions++;
+        updateScore();
+    }
+
+    function updateScore() {
+        const scoreDiv = document.getElementById('score');
+        const percentage = (score / quizData.questions.length) * 100;
+        scoreDiv.innerHTML = `
+                <h3>Your Score: ${score}/${quizData.questions.length}</h3>
+                <p>Percentage: ${percentage.toFixed(1)}%</p>
+                ${answeredQuestions === quizData.questions.length ?
+            `<p>${percentage >= 70 ? '🎉 Great job! You have a solid understanding of Node.js core modules!' :
+                'Keep learning! Review the explanations to strengthen your knowledge of Node.js core modules.'}</p>` : ''}
+            `;
+    }
+
+    let score = 0;
+    let answeredQuestions = 0;
+    createQuiz();
+</script>
+</body>
+</html>

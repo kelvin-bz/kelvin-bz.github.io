@@ -145,9 +145,15 @@
                     code: `
 // Create a Buffer from a string
 const buf = Buffer.from('Hello, World!');
-console.log(buf); // <Buffer 48 65 6c 6c 6f 2c 20 57 6f 72 6c 64 21>
 
-// Buffers can contain arbitrary binary data, not just text.
+// Converts each character in the string into its ASCII/UTF-8
+// H   e   l   l   o   ,       W   o   r   l   d   !
+// 72  101 108 108 111 44  32  87  111 114 108 100 33
+
+console.log(buf); // [ 72, 101, 108, 108, 111, 44, 32, 87, 111, 114, 108, 100, 33 ]
+console.log(buf.toString('hex')); // 48656c6c6f2c20576f726c6421
+console.log(buf.toString('utf-8')); // Hello, World!
+console.log(buf.toString('base64')); // SGVsbG8sIFdvcmxkIQ==
 `
                 }
             },
@@ -164,9 +170,9 @@ console.log(buf); // <Buffer 48 65 6c 6c 6f 2c 20 57 6f 72 6c 64 21>
                 explanation: {
                     text: "Buffer.from() creates a new Buffer containing a copy of the provided string, array, or arrayBuffer.",
                     code: `
-// Create a Buffer from a string
+//  Create a Buffer from a string
 const buf = Buffer.from('Node.js');
-console.log(buf); // <Buffer 4e 6f 64 65 2e 6a 73>
+console.log(buf); // [78, 111, 100, 101, 46, 106, 115]
 `
                 }
             },
@@ -183,9 +189,11 @@ console.log(buf); // <Buffer 4e 6f 64 65 2e 6a 73>
                 explanation: {
                     text: "Buffer.alloc(size) creates a new Buffer of the specified size and initializes it with zeros for security and reliability.",
                     code: `
+
 // Allocate a 10-byte buffer filled with zeros
 const buf = Buffer.alloc(10);
-console.log(buf); // <Buffer 00 00 00 00 00 00 00 00 00 00>
+console.log(buf); // [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
 `
                 }
             },
@@ -205,23 +213,29 @@ console.log(buf); // <Buffer 00 00 00 00 00 00 00 00 00 00>
 // Create a buffer and write to it
 const buf = Buffer.alloc(10);
 buf.write('Hi');
-console.log(buf); // <Buffer 48 69 00 00 00 00 00 00 00 00>
-
-// 'H' is 0x48 and 'i' is 0x69 in ASCII.
+console.log(buf); // [72, 105, 0, 0, 0, 0, 0, 0, 0, 0]
 `
                 }
             },
             {
-                type: "fill",
-                question: "To convert a buffer back to a string, use buffer.______().",
-                answer: "toString",
+                type: "single",
+                question: "What happens when you write beyond a Buffer's length?",
+                options: [
+                    "Buffer automatically expands",
+                    "Data is truncated",
+                    "Throws an error",
+                    "Creates a new Buffer"
+                ],
+                correct: 2,
                 explanation: {
-                    text: "buffer.toString() decodes the Buffer's raw bytes using a specified character encoding and returns a string.",
+                    text: "Writing beyond a Buffer's length throws an error because Buffers are fixed-length. They cannot be resized after creation.",
                     code: `
-// Convert buffer to string
-const buf = Buffer.from('Buffer Example');
-const str = buf.toString('utf8');
-console.log(str); // 'Buffer Example'
+const buffer = Buffer.alloc(5); // Create a buffer of size 5
+
+// Attempt to write more data than the buffer size
+const bytesWritten = buffer.write('Hello World');
+console.log('Bytes written:', bytesWritten); // Outputs 5 (only first 5 bytes are written)
+console.log('Buffer content:', buffer.toString()); // Outputs 'Hello'
 `
                 }
             },
@@ -268,6 +282,20 @@ console.log(buf.toString()); // 'Hi'
             },
             {
                 type: "fill",
+                question: "To convert a buffer back to a string, use buffer.______().",
+                answer: "toString",
+                explanation: {
+                    text: "buffer.toString() decodes the Buffer's raw bytes using a specified character encoding and returns a string.",
+                    code: `
+// Convert buffer to string
+const buf = Buffer.from('Buffer Example');
+const str = buf.toString('utf8');
+console.log(str); // 'Buffer Example'
+`
+                }
+            },
+            {
+                type: "fill",
                 question: "Use buffer.______() to create a sub-buffer without copying data.",
                 answer: "slice",
                 explanation: {
@@ -278,26 +306,6 @@ const buf = Buffer.from('Hello, World!');
 const sub = buf.slice(7, 12);
 console.log(sub.toString()); // 'World'
 // Changes in 'buf' or 'sub' affect the same underlying data.
-`
-                }
-            },
-            {
-                type: "single",
-                question: "How do you safely check if an object is a Buffer in Node.js?",
-                options: [
-                    "Buffer.isBuffer(obj)",
-                    "obj instanceof Buffer",
-                    "obj.constructor.name === 'Buffer'",
-                    "typeof obj === 'buffer'"
-                ],
-                correct: 0,
-                explanation: {
-                    text: "Buffer.isBuffer(obj) safely checks if an object is a Buffer.",
-                    code: `
-// Check if an object is a Buffer
-const buf = Buffer.from('Check');
-console.log(Buffer.isBuffer(buf)); // true
-console.log(Buffer.isBuffer({})); // false
 `
                 }
             },
@@ -313,6 +321,75 @@ const buf = Buffer.alloc(5);
 buf.fill('A');
 console.log(buf.toString()); // 'AAAAA'
 `
+                }
+            },
+            {
+                type: "fill",
+                question: "When implementing encryption, the _____ method is used to get random bytes for generating encryption keys.",
+                answer: "randomBytes",
+                explanation: {
+                    text: "crypto.randomBytes() is essential for generating secure encryption keys and initialization vectors in cryptographic operations.",
+                    code: `
+// Example: Implementing encrypted file storage
+const crypto = require('crypto');
+const fs = require('fs');
+
+class SecureStorage {
+    constructor(keyLength = 32) {
+        this.algorithm = 'aes-256-gcm';
+        // Generate random key
+        this.key = crypto.randomBytes(keyLength);
+    }
+
+    async encryptFile(inputPath, outputPath) {
+        // Generate random IV
+        const iv = crypto.randomBytes(16);
+        const cipher = crypto.createCipheriv(this.algorithm, this.key, iv);
+
+        const input = fs.createReadStream(inputPath);
+        const output = fs.createWriteStream(outputPath);
+
+        // Write IV at start of file
+        output.write(iv);
+
+        return new Promise((resolve, reject) => {
+            input.pipe(cipher)
+                .pipe(output)
+                .on('finish', () => {
+                    const authTag = cipher.getAuthTag();
+                    // Write auth tag at end
+                    output.write(authTag, resolve);
+                })
+                .on('error', reject);
+        });
+    }
+
+    async decryptFile(inputPath, outputPath) {
+        const input = fs.createReadStream(inputPath);
+        const output = fs.createWriteStream(outputPath);
+
+        // Read IV from start of file
+        const iv = Buffer.alloc(16);
+        await new Promise((resolve, reject) => {
+            input.read(16);
+            input.on('readable', function() {
+                const chunk = input.read(16);
+                if (chunk === null) return;
+                chunk.copy(iv);
+                resolve();
+            });
+        });
+
+        const decipher = crypto.createDecipheriv(this.algorithm, this.key, iv);
+
+        return new Promise((resolve, reject) => {
+            input.pipe(decipher)
+                .pipe(output)
+                .on('finish', resolve)
+                .on('error', reject);
+        });
+    }
+}`
                 }
             }
         ]
