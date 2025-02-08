@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lambda</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.6.1/mermaid.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.2/marked.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+    <link rel="stylesheet" href="../../css/all.min.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        .mermaid-section, .markdown-section {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .mermaid-section {
+            background: #f5f5f5;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .node foreignObject {
+            overflow: visible;
+            white-space: normal;
+        }
+
+        .node foreignObject p {
+            /*margin: 0;*/
+            padding: 0px;
+            text-align: center;
+            width: auto !important;
+            min-width: 200px;
+        }
+
+
+        .markdown-section {
+            background: white;
+            padding: 30px;
+            line-height: 1.6;
+        }
+
+        .zoom-controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: white;
+            padding: 5px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .zoom-controls button {
+            margin: 0 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+            background: #f0f0f0;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+
+        .zoom-controls button:hover {
+            background: #e0e0e0;
+        }
+
+        #mermaid-container {
+            transform-origin: top left;
+            transition: transform 0.3s ease;
+        }
+
+        /* Code block styling */
+        pre[class*="language-"] {
+            border-radius: 6px;
+            margin: 1.5em 0;
+            padding: 1em;
+            overflow: auto;
+            background: #2d2d2d;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        code[class*="language-"] {
+            font-family: 'Fira Code', 'Consolas', Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+            font-size: 0.9em;
+            line-height: 1.4;
+            text-shadow: none;
+        }
+
+        /* Markdown content styling */
+        .markdown-section h1 {
+            font-size: 2em;
+            margin-bottom: 1em;
+            border-bottom: 2px solid #eaecef;
+            padding-bottom: 0.3em;
+        }
+
+        .markdown-section h2 {
+            font-size: 1.5em;
+            margin: 1.5em 0 1em;
+        }
+
+        .markdown-section ul, .markdown-section ol {
+            padding-left: 2em;
+        }
+
+        .markdown-section li {
+            margin: 0.5em 0;
+        }
+
+        .markdown-section strong {
+            font-weight: 600;
+            color: #24292e;
+        }
+
+        /* Language-specific syntax highlighting adjustments */
+        .language-javascript {
+            color: #f8f8f2;
+        }
+
+        .language-yaml {
+            color: #f8f8f2;
+        }
+
+        .language-bash {
+            color: #f8f8f2;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="mermaid-section">
+        <div class="zoom-controls">
+            <button onclick="zoomIn()">+</button>
+            <button onclick="zoomOut()">-</button>
+            <button onclick="resetZoom()">Reset</button>
+        </div>
+        <div id="mermaid-container">
+                <pre class="mermaid">
+graph LR
+
+
+   Features["fa:fa-star Features"]
+    Features -->|"Serverless"| Serverless["fa:fa-cloud No Server Management"]
+    Features -->|"Scales"| AutoScale["fa:fa-arrows-alt Auto Scaling"]
+    Features -->|"Pay Per Use"| Pricing["fa:fa-dollar-sign Pay-as-you-go"]
+
+   Runtime["fa:fa-code Runtimes"]
+    Runtime -->|"JavaScript"| Node["fab:fa-node-js Node.js"]
+    Runtime -->|"Python"| Python["fab:fa-python Python"]
+    Runtime -->|"Java"| Java["fab:fa-java Java"]
+    Runtime -->|"Others"| Others["fa:fa-ellipsis-h .NET, Go, Ruby"]
+
+   Triggers["fa:fa-play Triggers"]
+    Triggers -->|"Storage"| S3["fa:fa-database S3 Events"]
+    Triggers -->|"HTTP"| API["fa:fa-globe API Gateway"]
+    Triggers -->|"Queue"| SQS["fa:fa-tasks SQS"]
+    Triggers -->|"Schedule"| EventBridge["fa:fa-clock EventBridge"]
+
+    Config["fa:fa-cogs Configuration"]
+    Config -->|"Resources"| Memory["fa:fa-memory Memory & CPU"]
+    Config -->|"Time"| Timeout["fa:fa-hourglass-half Timeout"]
+    Config -->|"Network"| VPC["fa:fa-network-wired VPC Settings"]
+
+    IAM["fa:fa-shield-alt IAM"]
+    IAM -->|"Role"| ExecRole["fa:fa-user-shield Execution Role"]
+    IAM -->|"Policy"| Policies["fa:fa-lock Resource Policies"]
+    IAM -->|"Access"| ResAccess["fa:fa-key Resource Access"]
+
+    Lambda -->|"Monitoring"| Monitor["fa:fa-chart-line Monitoring"]
+    Monitor -->|"Metrics"| CloudWatch["fa:fa-chart-bar CloudWatch"]
+    Monitor -->|"Logs"| Logs["fa:fa-file-alt CloudWatch Logs"]
+    Monitor -->|"Tracing"| XRay["fa:fa-project-diagram X-Ray"]
+
+    Dev["fa:fa-laptop-code Development"]
+    Dev -->|"Local"| LocalDev["fa:fa-terminal SAM Local"]
+    Dev -->|"CI/CD"| Pipeline["fa:fa-code-branch CodePipeline"]
+    Dev -->|"Testing"| Testing["fa:fa-vial Test Events"]
+
+   Practices["fa:fa-check-circle Best Practices"]
+    Practices -->|"Cold Start"| ColdStart["fa:fa-temperature-low Minimize Cold Starts"]
+    Practices -->|"Error"| ErrorHandle["fa:fa-exclamation-triangle Error Handling"]
+    Practices -->|"Security"| SecBest["fa:fa-user-shield Security Best Practices"]
+                </pre>
+        </div>
+    </div>
+    <div class="markdown-section" id="markdown-content">
+    </div>
+</div>
+
+<script>
+    // Initialize Mermaid
+    mermaid.initialize({ startOnLoad: true });
+
+    // Zoom functionality
+    let currentZoom = 1;
+    const zoomStep = 0.1;
+    const container = document.getElementById('mermaid-container');
+
+    function zoomIn() {
+        currentZoom += zoomStep;
+        applyZoom();
+    }
+
+    function zoomOut() {
+        if (currentZoom > zoomStep) {
+            currentZoom -= zoomStep;
+            applyZoom();
+        }
+    }
+
+    function resetZoom() {
+        currentZoom = 1;
+        applyZoom();
+    }
+
+    function applyZoom() {
+        container.style.transform = `scale(${currentZoom})`;
+    }
+
+    // Configure marked to use Prism for syntax highlighting
+    marked.setOptions({
+        highlight: function(code, lang) {
+            if (Prism.languages[lang]) {
+                return Prism.highlight(code, Prism.languages[lang], lang);
+            }
+            return code;
+        }
+    });
+
+    // Markdown content
+    const markdownContent = `
+1. **Basic Lambda Function** (Node.js):
+Handle parameters when invoked via API Gateway:
+\`\`\`javascript
+exports.handler = async (event, context) => {
+    try {
+        // Log the full event object
+        console.log('Event:', JSON.stringify(event, null, 2));
+
+        // Extract query parameters (for HTTP GET requests)
+        const queryParams = event.queryStringParameters || {};
+
+        // Extract path parameters (if defined in API Gateway)
+        const pathParams = event.pathParameters || {};
+
+        // Extract request body (for HTTP POST/PUT requests)
+        let body = {};
+        if (event.body) {
+            body = JSON.parse(event.body);
+        }
+
+        // Response with received parameters
+        const response = {
+            statusCode: 200,
+            body: JSON.stringify({
+                message: 'Hello from Lambda!',
+                queryParams,
+                pathParams,
+                body
+            })
+        };
+
+        return response;
+    } catch (error) {
+        console.error('Error:', error);
+        return {
+            statusCode: 500,
+            body: JSON.stringify({ message: 'Internal Server Error' })
+        };
+    }
+};
+\`\`\`
+2. **Common Triggers**:
+   - API Gateway (HTTP/REST API):
+   \`\`\`yaml
+   Events:
+     ApiEvent:
+       Type: Api
+       Properties:
+         Path: /hello
+         Method: GET
+   \`\`\`
+   - S3 Event:
+   \`\`\`yaml
+   Events:
+     S3Event:
+       Type: S3
+       Properties:
+         Bucket: !Ref MyBucket
+         Events: s3:ObjectCreated:*
+   \`\`\`
+3. **Environment Variables**:
+\`\`\`javascript
+// Access environment variables
+const tableName = process.env.TABLE_NAME;
+const region = process.env.AWS_REGION;
+\`\`\`
+4. **AWS SDK Integration**:
+\`\`\`javascript
+const AWS = require('aws-sdk');
+const s3 = new AWS.S3();
+const dynamodb = new AWS.DynamoDB.DocumentClient();
+exports.handler = async (event) => {
+    // Example: Write to DynamoDB
+    const params = {
+        TableName: process.env.TABLE_NAME,
+        Item: {
+            id: 'unique-id',
+            timestamp: Date.now()
+        }
+    };
+
+    await dynamodb.put(params).promise();
+};
+\`\`\`
+5. **Error Handling**:
+\`\`\`javascript
+exports.handler = async (event) => {
+    try {
+        // Your logic here
+    } catch (error) {
+        console.error('Error:', error);
+        return {
+            statusCode: 500,
+            body: JSON.stringify({
+                error: 'Internal Server Error'
+            })
+        };
+    }
+};
+\`\`\`
+6. **Best Practices**:
+   - Keep dependencies minimal to reduce cold start time
+   - Reuse AWS SDK clients outside the handler
+   - Use environment variables for configuration
+   - Implement proper error handling and logging
+   - Use IAM roles with minimum required permissions
+7. **Cold Start Optimization**:
+\`\`\`javascript
+// Initialize clients outside handler
+const dynamodb = new AWS.DynamoDB.DocumentClient();
+const s3 = new AWS.S3();
+// Reuse connections
+exports.handler = async (event) => {
+    // Handler code using initialized clients
+};
+\`\`\`
+8. **Local Testing** (using AWS SAM):
+\`\`\`bash
+# Initialize SAM project
+sam init
+# Local testing
+sam local invoke -e events/event.json
+# Start local API
+sam local start-api
+\`\`\``;
+
+    // Render markdown content
+    document.getElementById('markdown-content').innerHTML = marked.parse(markdownContent);
+
+    // Trigger Prism highlighting
+    Prism.highlightAll();
+</script>
+</body>
+</html>
