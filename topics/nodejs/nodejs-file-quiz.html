@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.4.0/mermaid.min.js"></script>
     <style>
         .container {
             max-width: 900px;
@@ -122,6 +123,36 @@
 <div class="container">
     <h1>📂 Node.js File Handling Quiz</h1>
     <p>Test your knowledge of Node.js file system operations and best practices!</p>
+    <div class="mermaid">
+        graph LR
+
+        M["fa:fa-cube fs Module"]
+        MP["fa:fa-cube fs/promises"]
+
+        M -->|"Sync operations"| S["fa:fa-sync Synchronous"]
+        M -->|"Async with callbacks"| A["fa:fa-clock Asynchronous"]
+        MP -->|"Modern async/await"| P["fa:fa-tasks Promises"]
+
+        S --> SO["fa:fa-folder-open Operations"]
+        A --> AO["fa:fa-folder-open Operations"]
+        P --> PO["fa:fa-folder-open Operations"]
+
+        SO -->|"Blocking"| S1["fa:fa-file readFileSync()"]
+        SO -->|"Blocking"| S2["fa:fa-file-medical writeFileSync()"]
+        SO -->|"Blocking"| S3["fa:fa-folder mkdirSync()"]
+
+        AO -->|"Non-blocking"| A1["fa:fa-file readFile()"]
+        AO -->|"Non-blocking"| A2["fa:fa-file-medical writeFile()"]
+        AO -->|"Non-blocking"| A3["fa:fa-folder mkdir()"]
+
+        PO -->|"Async/await"| P1["fa:fa-file readFile()"]
+        PO -->|"Async/await"| P2["fa:fa-file-medical writeFile()"]
+        PO -->|"Async/await"| P3["fa:fa-folder mkdir()"]
+
+        ST["fa:fa-stream Streams"]
+        ST -->|"Reading"| ST1["fa:fa-file-download createReadStream()"]
+        ST -->|"Writing"| ST2["fa:fa-file-upload createWriteStream()"]
+    </div>
     <div id="questions"></div>
     <div id="score"></div>
 </div>
