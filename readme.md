@@ -1,6 +1,6 @@
 Programming Quiz Hub 🎯
 
-Visit the website [https://kelvin-bz.github.io/quiz/](https://kelvin-bz.github.io/quiz/)
+Visit the website [https://kelvin-bz.github.io/](https://kelvin-bz.github.io/quiz/)
 
 ![home.png](img/home.png)
 
