@@ -4,17 +4,17 @@
     <meta charset="UTF-8">
     <style>
         .container {
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
             padding: 20px;
             font-family: system-ui, -apple-system, sans-serif;
+            line-height: 1.6;
         }
         .question {
-            margin-bottom: 20px;
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
             background-color: #fff;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         .options {
@@ -38,11 +38,11 @@
             background-color: #e3f2fd;
         }
         .correct {
-            background-color: #c8e6c9;
+            background-color: #e8f5e9;
             border-color: #81c784;
         }
         .incorrect {
-            background-color: #ffcdd2;
+            background-color: #ffebee;
             border-color: #e57373;
         }
         .input-answer {
@@ -76,22 +76,101 @@
         }
         .feedback {
             margin-top: 10px;
-            padding: 10px;
+            padding: 15px;
             border-radius: 4px;
             display: none;
+            line-height: 1.6;
         }
-        code {
+        .code-block {
             background-color: #f5f5f5;
-            padding: 2px 4px;
+            padding: 15px;
             border-radius: 4px;
-            font-family: monospace;
+            margin: 10px 0;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre;
+            overflow-x: auto;
+            line-height: 1.5;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            position: relative;
+        }
+        .copy-button {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .explanation-text {
+            margin-bottom: 10px;
+        }
+        .code-comment {
+            color: #6a737d;
+        }
+        .code-output {
+            color: #0a3069;
+            border-left: 3px solid #2196f3;
+            margin-left: 10px;
+            padding-left: 10px;
+        }
+
+        .node foreignObject {
+            overflow: visible;
+            white-space: normal;
+        }
+
+        .node foreignObject p {
+            /*margin: 0;*/
+            padding: 0px;
+            text-align: center;
+            width: auto !important;
+            min-width: 200px;
         }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.4.0/mermaid.min.js"></script>
+    <link rel="stylesheet" href="../../css/all.min.css">
+    <link rel="stylesheet" href="/kelvin-bz.github.io/css/all.min.css">
 </head>
 <body>
     <div class="container">
         <h1>🚀 JavaScript Array Methods Quiz</h1>
         <p>Test your knowledge of JavaScript array methods with this interactive quiz!</p>
+       <div class="mermaid">
+        graph LR
+
+        Methods["fa:fa-code Array Methods"]
+
+        %% Array Modification Methods
+        Modify["fa:fa-pencil-alt Modification Methods"]
+        Methods -->|"Changes array content"| Modify
+        Modify -->|"Add to end"| Push["fa:fa-arrow-right push()"]
+        Modify -->|"Remove from end"| Pop["fa:fa-arrow-left pop()"]
+        Modify -->|"Add to start"| Unshift["fa:fa-arrow-left unshift()"]
+        Modify -->|"Remove from start"| Shift["fa:fa-arrow-right shift()"]
+
+        %% Array Transformation Methods
+        Transform["fa:fa-random Transformation Methods"]
+        Methods -->|"Creates new array/value"| Transform
+        Transform -->|"Transform elements"| Map["fa:fa-map map()"]
+        Transform -->|"Filter elements"| Filter["fa:fa-filter filter()"]
+        Transform -->|"Single value"| Reduce["fa:fa-compress reduce()"]
+        Transform -->|"Flatten arrays"| Flat["fa:fa-layer-group flat()"]
+
+        %% Array Utility Methods
+        Utility["fa:fa-tools Utility Methods"]
+        Methods -->|"Helper operations"| Utility
+        Utility -->|"Combine to string"| Join["fa:fa-link join()"]
+        Utility -->|"Test all elements"| Every["fa:fa-check-double every()"]
+
+        %% Style nodes
+        style Methods fill:#f9f,stroke:#333,stroke-width:2px
+        style Modify fill:#bbf,stroke:#333,stroke-width:2px
+        style Transform fill:#fbf,stroke:#333,stroke-width:2px
+        style Utility fill:#bfb,stroke:#333,stroke-width:2px
+       </div>
         <div id="questions"></div>
         <div id="score"></div>
     </div>
@@ -197,7 +276,7 @@
 
         function createQuiz() {
             const questionsContainer = document.getElementById('questions');
-            
+
             quizData.questions.forEach((q, index) => {
                 const questionDiv = document.createElement('div');
                 questionDiv.className = 'question';
@@ -206,7 +285,7 @@
                 if (q.type === 'single') {
                     const optionsDiv = document.createElement('div');
                     optionsDiv.className = 'options';
-                    
+
                     q.options.forEach((option, optIndex) => {
                         const optionDiv = document.createElement('div');
                         optionDiv.className = 'option';
@@ -221,11 +300,11 @@
                     input.type = 'text';
                     input.className = 'input-answer';
                     input.placeholder = 'Type your answer here';
-                    
+
                     const submitBtn = document.createElement('button');
                     submitBtn.textContent = 'Submit';
                     submitBtn.onclick = () => checkFillAnswer(input.value, q.answer, questionDiv, q.explanation);
-                    
+
                     questionDiv.appendChild(input);
                     questionDiv.appendChild(submitBtn);
                 }
@@ -233,7 +312,7 @@
                 const feedbackDiv = document.createElement('div');
                 feedbackDiv.className = 'feedback';
                 questionDiv.appendChild(feedbackDiv);
-                
+
                 questionsContainer.appendChild(questionDiv);
             });
 
@@ -247,7 +326,7 @@
 
             const options = questionDiv.getElementsByClassName('option');
             options[correct].classList.add('correct');
-            
+
             if (selected === correct) {
                 score++;
                 optionDiv.classList.add('correct');
@@ -290,8 +369,8 @@
             scoreDiv.innerHTML = `
                 <h3>Your Score: ${score}/${quizData.questions.length}</h3>
                 <p>Percentage: ${percentage.toFixed(1)}%</p>
-                ${answeredQuestions === quizData.questions.length ? 
-                    `<p>${percentage >= 70 ? '🎉 Great job! You have a solid understanding of JavaScript array methods!' : 
+                ${answeredQuestions === quizData.questions.length ?
+                    `<p>${percentage >= 70 ? '🎉 Great job! You have a solid understanding of JavaScript array methods!' :
                     'Keep practicing! Review the explanations to strengthen your knowledge of array methods.'}</p>` : ''}
             `;
         }

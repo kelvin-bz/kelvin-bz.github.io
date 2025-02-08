@@ -116,10 +116,71 @@
             margin-left: 10px;
             padding-left: 10px;
         }
+
+        .node foreignObject {
+            overflow: visible;
+            white-space: normal;
+        }
+
+        .node foreignObject p {
+            /*margin: 0;*/
+            padding: 0px;
+            text-align: center;
+            width: auto !important;
+            min-width: 200px;
+        }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.4.0/mermaid.min.js"></script>
+    <link rel="stylesheet" href="../../css/all.min.css">
+    <link rel="stylesheet" href="/kelvin-bz.github.io/css/all.min.css">
 </head>
 <body>
 <div class="container">
+    <div class="mermaid">
+        graph LR
+
+
+        LexicalScope["fa:fa-project-diagram Lexical Scope"]
+        VariableScope["fa:fa-layer-group Variable Scope"]
+        ThisBinding["fa:fa-link this Binding"]
+        Closure["fa:fa-box-open Closures"]
+        Hoisting["fa:fa-arrow-up Hoisting"]
+
+        %% Lexical Scope Branch
+        LexicalScope -->|"determined at write time"| LS1["fa:fa-sitemap Nested Function Access"]
+        LexicalScope -->|"based on physical location"| LS2["fa:fa-folder-tree Source Code Structure"]
+
+        LS1 -->|"inner can access outer"| LS1A["fa:fa-level-up-alt Outer Variable Access"]
+        LS2 -->|"maintains scope chain"| LS2A["fa:fa-chain Scope Chain"]
+
+        %% Variable Scope Branch
+        VariableScope -->|"block-scoped"| VS1["fa:fa-cube let & const"]
+        VariableScope -->|"function/global-scoped"| VS2["fa:fa-globe var"]
+
+        VS1 -->|"has temporal dead zone"| VS1A["fa:fa-skull TDZ"]
+        VS2 -->|"hoisted with undefined"| VS2A["fa:fa-arrow-up Variable Hoisting"]
+
+        %% This Binding Branch
+        ThisBinding -->|"dynamic in regular functions"| TB1["fa:fa-random Regular Functions"]
+        ThisBinding -->|"lexical in arrow functions"| TB2["fa:fa-arrow-right Arrow Functions"]
+
+        TB1 -->|"depends on call site"| TB1A["fa:fa-phone-square Call Context"]
+        TB2 -->|"inherits from parent"| TB2A["fa:fa-level-up Parent Scope"]
+
+        %% Closure Branch
+        Closure -->|"preserves scope access"| C1["fa:fa-lock Private Variables"]
+        Closure -->|"maintains state"| C2["fa:fa-database Data Encapsulation"]
+
+        C1 -->|"creates private scope"| C1A["fa:fa-user-shield Encapsulated State"]
+        C2 -->|"remembers creation scope"| C2A["fa:fa-memory Scope Memory"]
+
+        %% Hoisting Branch
+        Hoisting -->|"fully hoisted"| H1["fa:fa-angle-double-up Function Declarations"]
+        Hoisting -->|"partially hoisted"| H2["fa:fa-angle-up Variable Declarations"]
+
+        H1 -->|"available immediately"| H1A["fa:fa-check-circle Complete Access"]
+        H2 -->|"undefined until declaration"| H2A["fa:fa-times-circle Limited Access"]
+    </div>
     <div id="questions"></div>
     <div id="score"></div>
 </div>

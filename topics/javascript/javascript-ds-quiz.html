@@ -1,98 +1,202 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
     <style>
         .container {
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
             padding: 20px;
             font-family: system-ui, -apple-system, sans-serif;
-        }
-        .code-block {
-            background: #f5f5f5;
-            padding: 15px;
-            border-radius: 8px;
-            font-family: monospace;
-            white-space: pre-wrap;
-            margin: 10px 0;
-            border: 1px solid #ddd;
+            line-height: 1.6;
         }
         .question {
-            margin: 20px 0;
-            padding: 15px;
-            border: 1px solid #ddd;
+            background-color: #fff;
+            padding: 20px;
+            margin-bottom: 25px;
             border-radius: 8px;
-            background: #fff;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
         .option {
-            margin: 10px 0;
-            padding: 10px;
+            padding: 12px;
             border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .option:hover {
+            background-color: #f5f5f5;
+            transform: translateX(5px);
+        }
+        .selected {
+            background-color: #e3f2fd;
+        }
+        .correct {
+            background-color: #e8f5e9;
+            border-color: #81c784;
+        }
+        .incorrect {
+            background-color: #ffebee;
+            border-color: #e57373;
+        }
+        .input-answer {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            margin-top: 10px;
+            padding: 8px 16px;
+            background-color: #2196f3;
+            color: white;
+            border: none;
             border-radius: 4px;
             cursor: pointer;
             transition: background-color 0.3s;
         }
-        .option:hover {
-            background: #f0f0f0;
-        }
-        .correct {
-            background: #d4edda;
-            border-color: #c3e6cb;
-        }
-        .incorrect {
-            background: #f8d7da;
-            border-color: #f5c6cb;
+        button:hover {
+            background-color: #1976d2;
         }
         #score {
-            font-size: 1.2em;
-            margin: 20px 0;
-            padding: 15px;
-            background: #e9ecef;
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f5f5f5;
             border-radius: 8px;
             text-align: center;
-            font-weight: bold;
-        }
-        .fill-blank {
-            margin: 10px 0;
-        }
-        .fill-blank input {
-            width: 300px;
-            padding: 8px;
-            border: 2px solid #ddd;
-            border-radius: 4px;
-            margin: 5px 0;
-            font-family: monospace;
-        }
-        .check-answer {
-            background: #007bff;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-        .check-answer:hover {
-            background: #0056b3;
+            font-size: 1.2em;
         }
         .feedback {
             margin-top: 10px;
-            padding: 10px;
+            padding: 15px;
             border-radius: 4px;
             display: none;
+            line-height: 1.6;
         }
-        .hint {
-            color: #666;
-            font-style: italic;
-            margin: 5px 0;
+        .code-block {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre;
+            overflow-x: auto;
+            line-height: 1.5;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            position: relative;
+        }
+        .copy-button {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .explanation-text {
+            margin-bottom: 10px;
+        }
+        .code-comment {
+            color: #6a737d;
+        }
+        .code-output {
+            color: #0a3069;
+            border-left: 3px solid #2196f3;
+            margin-left: 10px;
+            padding-left: 10px;
+        }
+
+        .node foreignObject {
+            overflow: visible;
+            white-space: normal;
+        }
+
+        .node foreignObject p {
+            /*margin: 0;*/
+            padding: 0px;
+            text-align: center;
+            width: auto !important;
+            min-width: 200px;
         }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.4.0/mermaid.min.js"></script>
+    <link rel="stylesheet" href="../../css/all.min.css">
+    <link rel="stylesheet" href="/kelvin-bz.github.io/css/all.min.css">
 </head>
 <body>
 <div class="container">
     <h1>🌟 JavaScript Data Structures Quiz</h1>
     <p>Test your knowledge of JavaScript data structures, methods, and modern features!</p>
+    <div class="mermaid">
+        graph LR
+        DS["fa:fa-database JavaScript Data Structures"]
+
+        %% Arrays Section
+        Arrays["fa:fa-list Arrays"]
+        DS -->|"Ordered collection"| Arrays
+        Arrays -->|"Add/Remove"| ArrMod["fa:fa-pencil-alt Modification"]
+        Arrays -->|"Query"| ArrQuery["fa:fa-search Query"]
+        Arrays -->|"Extract"| ArrExtract["fa:fa-cut Extraction"]
+
+        ArrMod -->|"Add to end"| Push["fa:fa-arrow-right push()"]
+        ArrMod -->|"Add to start"| Unshift["fa:fa-arrow-left unshift()"]
+        ArrMod -->|"Remove from end"| Pop["fa:fa-times-circle pop()"]
+
+        ArrQuery -->|"Check existence"| Includes["fa:fa-check includes()"]
+        ArrQuery -->|"Get length"| Length["fa:fa-ruler length"]
+
+        ArrExtract -->|"Get remaining"| Rest["fa:fa-ellipsis-h ...rest"]
+        ArrExtract -->|"First element"| First["fa:fa-step-forward first"]
+
+        %% Objects Section
+        Objects["fa:fa-cube Objects"]
+        DS -->|"Key-value pairs"| Objects
+        Objects -->|"Properties"| ObjProp["fa:fa-key Properties"]
+        Objects -->|"Operations"| ObjOp["fa:fa-cogs Operations"]
+
+        ObjProp -->|"Get all keys"| Keys["fa:fa-key Object.keys()"]
+        ObjProp -->|"Destructure"| Destruct["fa:fa-puzzle-piece { a, c = 3 }"]
+
+        ObjOp -->|"Spread"| Spread["fa:fa-copy {...obj}"]
+
+        %% Map Section
+        Maps["fa:fa-map Maps"]
+        DS -->|"Unique keys"| Maps
+        Maps -->|"Modifications"| MapMod["fa:fa-wrench Methods"]
+        Maps -->|"Properties"| MapProp["fa:fa-info Properties"]
+
+        MapMod -->|"Add/Update"| Set["fa:fa-plus-circle set()"]
+        MapMod -->|"Get pairs"| Entries["fa:fa-th entries()"]
+
+        MapProp -->|"Count elements"| Size["fa:fa-calculator size"]
+
+        %% Set Section
+        Sets["fa:fa-layer-group Sets"]
+        DS -->|"Unique values"| Sets
+        Sets -->|"Properties"| SetProp["fa:fa-info-circle Properties"]
+        Sets -->|"Features"| SetFeat["fa:fa-star Features"]
+
+        SetProp -->|"Count unique"| SetSize["fa:fa-hashtag size"]
+        SetFeat -->|"No duplicates"| Unique["fa:fa-fingerprint Unique values"]
+
+        %% Styles
+        style DS fill:#f9f,stroke:#333,stroke-width:2px
+        style Arrays fill:#bbf,stroke:#333,stroke-width:2px
+        style Objects fill:#fbf,stroke:#333,stroke-width:2px
+        style Maps fill:#bfb,stroke:#333,stroke-width:2px
+        style Sets fill:#ffb,stroke:#333,stroke-width:2px
+    </div>
     <div id="questions"></div>
     <div id="score"></div>
 </div>

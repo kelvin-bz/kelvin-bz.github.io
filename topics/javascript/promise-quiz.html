@@ -116,12 +116,73 @@
             margin-left: 10px;
             padding-left: 10px;
         }
+
+        .node foreignObject {
+            overflow: visible;
+            white-space: normal;
+        }
+
+        .node foreignObject p {
+            /*margin: 0;*/
+            padding: 0px;
+            text-align: center;
+            width: auto !important;
+            min-width: 200px;
+        }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.4.0/mermaid.min.js"></script>
+    <link rel="stylesheet" href="../../css/all.min.css">
+    <link rel="stylesheet" href="/kelvin-bz.github.io/css/all.min.css">
 </head>
 <body>
 <div class="container">
     <h1>🤝 JavaScript Promises Master Quiz</h1>
     <p>Test your knowledge of JavaScript Promises with this interactive quiz!</p>
+    <div class="mermaid">
+        graph LR
+
+
+        States["fa:fa-circle-notch Promise States"]
+        Methods["fa:fa-tools Promise Methods"]
+        Handling["fa:fa-hand-holding Error Handling"]
+        Static["fa:fa-cubes Static Methods"]
+
+        %% Promise States Branch
+        States -->|"initial state"| S1["fa:fa-hourglass-start Pending"]
+        States -->|"operation completed"| S2["fa:fa-check-circle Fulfilled"]
+        States -->|"operation failed"| S3["fa:fa-times-circle Rejected"]
+
+        S1 -->|"transforms to"| S1A["fa:fa-arrow-right Settled State"]
+        S2 -->|"handled by"| S2A["fa:fa-then .then()"]
+        S3 -->|"handled by"| S3A["fa:fa-bug .catch()"]
+
+        %% Promise Methods Branch
+        Methods -->|"success handler"| M1["fa:fa-check .then()"]
+        Methods -->|"error handler"| M2["fa:fa-exclamation .catch()"]
+        Methods -->|"cleanup"| M3["fa:fa-broom .finally()"]
+
+        M1 -->|"chainable"| M1A["fa:fa-chain Promise Chaining"]
+        M2 -->|"catches any error"| M2A["fa:fa-shield-alt Error Recovery"]
+        M3 -->|"always executes"| M3A["fa:fa-clock Cleanup Tasks"]
+
+        %% Error Handling Branch
+        Handling -->|"unhandled rejection"| H1["fa:fa-exclamation-triangle UnhandledPromiseRejection"]
+        Handling -->|"error propagation"| H2["fa:fa-arrow-down Chain Propagation"]
+
+        H1 -->|"requires"| H1A["fa:fa-life-ring Error Handler"]
+        H2 -->|"catches at"| H2A["fa:fa-arrow-right Nearest .catch()"]
+
+        %% Static Methods Branch
+        Static -->|"wait for all"| ST1["fa:fa-layer-group Promise.all()"]
+        Static -->|"first to settle"| ST2["fa:fa-flag-checkered Promise.race()"]
+        Static -->|"first to fulfill"| ST3["fa:fa-trophy Promise.any()"]
+        Static -->|"all settled"| ST4["fa:fa-tasks Promise.allSettled()"]
+
+        ST1 -->|"fails if any fails"| ST1A["fa:fa-list Array of Results"]
+        ST2 -->|"returns first"| ST2A["fa:fa-fast-forward First Response"]
+        ST3 -->|"needs one success"| ST3A["fa:fa-check-double First Success"]
+        ST4 -->|"complete status"| ST4A["fa:fa-clipboard-list All Results"]
+    </div>
     <div id="questions"></div>
     <div id="score"></div>
 </div>

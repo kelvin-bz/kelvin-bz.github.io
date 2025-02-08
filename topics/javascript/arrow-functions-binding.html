@@ -116,12 +116,70 @@
             margin-left: 10px;
             padding-left: 10px;
         }
+
+        .node foreignObject {
+            overflow: visible;
+            white-space: normal;
+        }
+
+        .node foreignObject p {
+            /*margin: 0;*/
+            padding: 0px;
+            text-align: center;
+            width: auto !important;
+            min-width: 200px;
+        }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.4.0/mermaid.min.js"></script>
+    <link rel="stylesheet" href="../../css/all.min.css">
+    <link rel="stylesheet" href="/kelvin-bz.github.io/css/all.min.css">
 </head>
 <body>
 <div class="container">
+    <div class="mermaid">
+        graph LR
+        %% Main Concept
+        ArrowFn["fa:fa-arrow-right Arrow Function"]
+
+        %% Main Categories
+        Binding["fa:fa-link Binding"]
+        Syntax["fa:fa-code Syntax"]
+        Usage["fa:fa-check Best For"]
+        Limits["fa:fa-ban Limitations"]
+
+        %% Connections
+        ArrowFn -->|"Has lexical"| Binding
+        ArrowFn -->|"Provides"| Syntax
+        ArrowFn -->|"Ideal for"| Usage
+        ArrowFn -->|"Cannot be used for"| Limits
+
+        %% Detailed Characteristics
+        Binding --> B1["fa:fa-info Inherits this from parent"]
+        Binding --> B2["fa:fa-info Cannot be rebound"]
+        Binding --> B3["fa:fa-info Captures parent scope"]
+
+        Syntax --> S1["fa:fa-code () => {}"]
+        Syntax --> S2["fa:fa-code param => expression"]
+        Syntax --> S3["fa:fa-code (a, b) => { return a + b }"]
+
+        Usage --> U1["fa:fa-bolt Callbacks"]
+        Usage --> U2["fa:fa-clock Async operations"]
+        Usage --> U3["fa:fa-exchange-alt Array methods"]
+
+        Limits --> L1["fa:fa-times Constructor functions"]
+        Limits --> L2["fa:fa-times Object methods"]
+        Limits --> L3["fa:fa-times Dynamic this binding"]
+
+        %% Styling
+        style ArrowFn fill:#82b366,stroke:#618e4c,stroke-width:2px
+        style Binding fill:#9673a6,stroke:#714c7d,stroke-width:2px
+        style Syntax fill:#4a90e2,stroke:#2e5c8a,stroke-width:2px
+        style Usage fill:#ff9900,stroke:#cc7a00,stroke-width:2px
+        style Limits fill:#e85642,stroke:#b43421,stroke-width:2px
+    </div>
     <div id="questions"></div>
     <div id="score"></div>
+
 </div>
 
 
