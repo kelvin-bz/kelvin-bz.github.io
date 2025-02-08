@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReactJS</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.6.1/mermaid.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.2/marked.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-jsx.min.js"></script>
+    <link rel="stylesheet" href="../../css/all.min.css">
+    <link rel="stylesheet" href="/kelvin-bz.github.io/css/all.min.css">
+
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+            flex-direction: column; /* Stack vertically by default */
+        }
+
+        .mermaid-section, .markdown-section {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .mermaid-section {
+            background: #f5f5f5;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .node foreignObject {
+            overflow: visible;
+            white-space: normal;
+        }
+
+        .node foreignObject p {
+            /*margin: 0;*/
+            padding: 0px;
+            text-align: center;
+            width: auto !important;
+            min-width: 200px;
+        }
+
+
+        .markdown-section {
+            background: white;
+            padding: 30px;
+            line-height: 1.6;
+        }
+
+        .zoom-controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: white;
+            padding: 5px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .zoom-controls button {
+            margin: 0 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+            background: #f0f0f0;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+
+        .zoom-controls button:hover {
+            background: #e0e0e0;
+        }
+
+        #mermaid-container {
+            transform-origin: top left;
+            transition: transform 0.3s ease;
+        }
+
+        /* Code block styling */
+        pre[class*="language-"] {
+            border-radius: 6px;
+            margin: 1.5em 0;
+            padding: 1em;
+            overflow: auto;
+            background: #2d2d2d;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        code[class*="language-"] {
+            font-family: 'Fira Code', 'Consolas', Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+            font-size: 0.9em;
+            line-height: 1.4;
+            text-shadow: none;
+        }
+
+        /* Markdown content styling */
+        .markdown-section h1 {
+            font-size: 2em;
+            margin-bottom: 1em;
+            border-bottom: 2px solid #eaecef;
+            padding-bottom: 0.3em;
+        }
+
+        .markdown-section h2 {
+            font-size: 1.5em;
+            margin: 1.5em 0 1em;
+        }
+
+        .markdown-section ul, .markdown-section ol {
+            padding-left: 2em;
+        }
+
+        .markdown-section li {
+            margin: 0.5em 0;
+        }
+
+        .markdown-section strong {
+            font-weight: 600;
+            color: #24292e;
+        }
+
+        /* Language-specific syntax highlighting adjustments */
+        .language-javascript {
+            color: #f8f8f2;
+        }
+
+        .language-yaml {
+            color: #f8f8f2;
+        }
+
+        .language-bash {
+            color: #f8f8f2;
+        }
+        @media (min-width: 768px) {
+            .container {
+                flex-direction: row; /* Side by side on desktop */
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="mermaid-section">
+        <div class="zoom-controls">
+            <button onclick="zoomIn()">+</button>
+            <button onclick="zoomOut()">-</button>
+            <button onclick="resetZoom()">Reset</button>
+        </div>
+        <div id="mermaid-container">
+                <pre class="mermaid">
+graph LR
+    React["fab:fa-react React"]
+
+    React -->|"Building Blocks"| Components["fa:fa-puzzle-piece Components"]
+    Components -->|"Class Based"| ClassComp["fa:fa-cube Class Components"]
+    Components -->|"Function Based"| FuncComp["fa:fa-function Function Components"]
+
+    Components -->|"Manages"| State["fa:fa-database State"]
+    State -->|"Component State"| UseState["fa:fa-box useState Hook"]
+    State -->|"Complex State"| UseReducer["fa:fa-cogs useReducer Hook"]
+    State -->|"Global State"| Context["fa:fa-sitemap Context API"]
+
+    React -->|"Side Effects"| Effects["fa:fa-sync Side Effects"]
+    Effects -->|"Lifecycle"| UseEffect["fa:fa-clock useEffect Hook"]
+    Effects -->|"DOM Access"| UseRef["fa:fa-link useRef Hook"]
+    Effects -->|"Performance"| UseMemo["fa:fa-memory useMemo/useCallback"]
+
+    React -->|"Core Concepts"| Concepts["fa:fa-lightbulb Concepts"]
+    Concepts -->|"One-way"| DataFlow["fa:fa-arrow-down Data Flow"]
+    Concepts -->|"Virtual"| VDOM["fa:fa-copy Virtual DOM"]
+    Concepts -->|"UI Updates"| Reconciliation["fa:fa-sync Reconciliation"]
+
+    Components -->|"Accepts"| Props["fa:fa-arrow-right Props"]
+    Props -->|"Read Only"| Immutable["fa:fa-lock Immutable"]
+    Props -->|"Can Be"| PropTypes["fa:fa-check-circle PropTypes"]
+
+    React -->|"Event Handling"| Events["fa:fa-bolt Events"]
+    Events -->|"Synthetic"| SyntheticEvents["fa:fa-random Synthetic Events"]
+    Events -->|"Handlers"| EventHandlers["fa:fa-code Event Handlers"]
+
+    Styling["fa:fa-paint-brush Styling"]
+    Styling -->|"CSS"| CSS["fa:fa-file-code CSS Modules"]
+    Styling -->|"Inline"| Inline["fa:fa-code Inline Styles"]
+    Styling -->|"CSS-in-JS"| StyledComp["fa:fa-palette Styled Components"]
+
+    Router["fa:fa-route Routing"]
+    Router -->|"Client-Side"| RouterDOM["fa:fa-map React Router"]
+    Router -->|"Navigation"| Navigation["fa:fa-compass useNavigate/Link"]
+    Router -->|"Parameters"| Params["fa:fa-key useParams"]
+
+    Forms["fab:fa-wpforms Forms"]
+    Forms -->|"Controlled"| Controlled["fa:fa-sliders-h Controlled Components"]
+    Forms -->|"Uncontrolled"| Uncontrolled["fa:fa-toggle-off Uncontrolled Components"]
+    Forms -->|"Validation"| Validation["fa:fa-check-circle Form Validation"]
+                </pre>
+        </div>
+    </div>
+    <div class="markdown-section" id="markdown-content">
+
+    </div>
+</div>
+
+<script>
+    // Initialize Mermaid
+    mermaid.initialize({ startOnLoad: true });
+
+    // Zoom functionality
+    let currentZoom = 1;
+    const zoomStep = 0.1;
+    const container = document.getElementById('mermaid-container');
+
+    function zoomIn() {
+        currentZoom += zoomStep;
+        applyZoom();
+    }
+
+    function zoomOut() {
+        if (currentZoom > zoomStep) {
+            currentZoom -= zoomStep;
+            applyZoom();
+        }
+    }
+
+    function resetZoom() {
+        currentZoom = 1;
+        applyZoom();
+    }
+
+    function applyZoom() {
+        container.style.transform = `scale(${currentZoom})`;
+    }
+
+    // Configure marked to use Prism for syntax highlighting
+    marked.setOptions({
+        highlight: function(code, lang) {
+            if (Prism.languages[lang]) {
+                return Prism.highlight(code, Prism.languages[lang], lang);
+            }
+            return code;
+        }
+    });
+
+    // Markdown content
+    const markdownContent = `# Components
+
+
+## Function Components
+Modern approach using hooks for simpler, more readable code.
+
+\`\`\`jsx
+const Counter = () => {
+  const [count, setCount] = useState(0);
+
+  return (
+    <button onClick={() => setCount(count + 1)}>
+      Count: {count}
+    </button>
+  );
+}
+\`\`\`
+
+# State Management
+
+## useState Hook
+Basic state management for simple values.
+
+\`\`\`jsx
+const ComponentWithState = () => {
+  const [name, setName] = useState('');
+  const [age, setAge] = useState(0);
+
+  return (
+    <div>
+      <input value={name} onChange={e => setName(e.target.value)} />
+      <input type="number" value={age} onChange={e => setAge(Number(e.target.value))} />
+    </div>
+  );
+}
+\`\`\`
+
+## useReducer Hook
+Complex state management with actions and reducers.
+
+\`\`\`jsx
+const initialState = { count: 0, isLoading: false };
+
+function reducer(state, action) {
+  switch (action.type) {
+    case 'increment':
+      return { ...state, count: state.count + 1 };
+    case 'decrement':
+      return { ...state, count: state.count - 1 };
+    case 'setLoading':
+      return { ...state, isLoading: action.payload };
+    default:
+      return state;
+  }
+}
+
+const ComponentWithReducer = () => {
+  const [state, dispatch] = useReducer(reducer, initialState);
+
+  return (
+    <div>
+      <button onClick={() => dispatch({ type: 'increment' })}>+</button>
+      <span>{state.count}</span>
+      <button onClick={() => dispatch({ type: 'decrement' })}>-</button>
+    </div>
+  );
+}
+\`\`\`
+
+## Context API
+Global state management across components.
+
+\`\`\`jsx
+const ThemeContext = createContext('light');
+
+const ThemeProvider = ({ children }) => {
+  const [theme, setTheme] = useState('light');
+
+  return (
+    <ThemeContext.Provider value={{ theme, setTheme }}>
+      {children}
+    </ThemeContext.Provider>
+  );
+}
+
+const ThemedButton = () => {
+  const { theme, setTheme } = useContext(ThemeContext);
+
+  return (
+    <button onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}>
+      Current theme: {theme}
+    </button>
+  );
+}
+\`\`\`
+
+# Effects and Performance
+
+## useEffect Hook
+Handling side effects in components.
+
+\`\`\`jsx
+const DataFetcher = () => {
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await fetch('https://api.example.com/data');
+      const json = await response.json();
+      setData(json);
+    };
+
+    fetchData();
+
+    return () => {
+      // Cleanup code here
+    };
+  }, []); // Empty dependency array = run once on mount
+
+  return <div>{JSON.stringify(data)}</div>;
+}
+\`\`\`
+
+## useRef Hook
+Direct DOM access and value persistence.
+
+\`\`\`jsx
+const FocusInput = () => {
+  const inputRef = useRef();
+
+  useEffect(() => {
+    // Focus input on mount
+    inputRef.current.focus();
+  }, []);
+
+  return <input ref={inputRef} />;
+}
+\`\`\`
+
+## useMemo/useCallback
+Performance optimization through memoization.
+
+\`\`\`jsx
+const ExpensiveComponent = ({ data, onItemClick }) => {
+  // Memoize expensive calculation
+  const processedData = useMemo(() => {
+    return data.map(item => item * 2);
+  }, [data]);
+
+  // Memoize callback
+  const handleClick = useCallback((item) => {
+    onItemClick(item);
+  }, [onItemClick]);
+
+  return (
+    <ul>
+      {processedData.map((item, index) => (
+        <li key={index} onClick={() => handleClick(item)}>
+          {item}
+        </li>
+      ))}
+    </ul>
+  );
+}
+\`\`\`
+
+# Core Concepts
+
+## Data Flow
+One-way data flow from parent to child.
+
+\`\`\`jsx
+const Parent = () => {
+  const [value, setValue] = useState('');
+
+  return (
+    <Child
+      value={value}
+      onChange={setValue}
+    />
+  );
+}
+
+const Child = ({ value, onChange }) => {
+  return (
+    <input
+      value={value}
+      onChange={e => onChange(e.target.value)}
+    />
+  );
+}
+\`\`\`
+
+## Virtual DOM & Reconciliation
+(These are internal React concepts, but here's how they affect rendering)
+
+\`\`\`jsx
+const OptimizedList = ({ items }) => {
+  return (
+    <ul>
+      {items.map(item => (
+        // Key helps React's reconciliation process
+        <li key={item.id}>{item.name}</li>
+      ))}
+    </ul>
+  );
+}
+\`\`\`
+
+# Props
+
+## Immutable Props
+Props should never be modified directly.
+
+\`\`\`jsx
+const UserCard = ({ user }) => {
+  // Good: Create new object/array when needed
+  const fullName = \`\${user.firstName} \${user.lastName}\`;
+
+  // Bad: Don't modify props directly
+  // user.fullName = \`\${user.firstName} \${user.lastName}\`;
+
+  return <div>{fullName}</div>;
+}
+\`\`\`
+
+## PropTypes
+Type checking for component props.
+
+\`\`\`jsx
+import PropTypes from 'prop-types';
+
+const UserProfile = ({ name, age, email }) => {
+  return (
+    <div>
+      <h2>{name}</h2>
+      <p>Age: {age}</p>
+      <p>Email: {email}</p>
+    </div>
+  );
+}
+
+UserProfile.propTypes = {
+  name: PropTypes.string.isRequired,
+  age: PropTypes.number,
+  email: PropTypes.string.isRequired
+};
+
+UserProfile.defaultProps = {
+  age: 0
+};
+\`\`\`
+
+# Events
+
+## Synthetic Events
+React's cross-browser wrapper for events.
+
+\`\`\`jsx
+const EventComponent = () => {
+  const handleClick = (e) => {
+    e.preventDefault(); // Cross-browser event prevention
+    e.stopPropagation(); // Stop event bubbling
+    console.log(e.nativeEvent); // Access native browser event
+  }
+
+  return <button onClick={handleClick}>Click me</button>;
+}
+\`\`\`
+
+## Event Handlers
+Functions that handle user interactions.
+
+\`\`\`jsx
+const FormWithEvents = () => {
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Handle form submission
+  }
+
+  const handleChange = (e) => {
+    // Handle input change
+    console.log(e.target.value);
+  }
+
+  const handleBlur = (e) => {
+    // Handle input blur
+    console.log('Input lost focus');
+  }
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input
+        onChange={handleChange}
+        onBlur={handleBlur}
+      />
+    </form>
+  );
+}
+\`\`\`
+
+# Styling
+
+## CSS Modules
+Scoped CSS for components.
+
+\`\`\`css
+/* Button.module.css */
+.button {
+  background: blue;
+  color: white;
+  padding: 10px 20px;
+}
+
+.button:hover {
+  background: darkblue;
+}
+\`\`\`
+
+\`\`\`jsx
+import styles from './Button.module.css';
+
+const Button = () => {
+  return <button className={styles.button}>Click me</button>;
+}
+\`\`\`
+
+## Inline Styles
+Direct styling in JSX.
+
+\`\`\`jsx
+const StyledComponent = () => {
+  const buttonStyle = {
+    backgroundColor: 'blue',
+    color: 'white',
+    padding: '10px 20px',
+    border: 'none',
+    borderRadius: '4px'
+  };
+
+  return <button style={buttonStyle}>Click me</button>;
+}
+\`\`\`
+
+## Styled Components
+CSS-in-JS solution.
+
+\`\`\`jsx
+import styled from 'styled-components';
+
+const StyledButton = styled.button\`
+  background-color: ${props => props.primary ? 'blue' : 'gray'};
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+
+  &:hover {
+    opacity: 0.8;
+  }
+\`;
+
+const Component = () => {
+  return (
+    <>
+      <StyledButton primary>Primary</StyledButton>
+      <StyledButton>Secondary</StyledButton>
+    </>
+  );
+}
+\`\`\`
+
+# Routing
+
+## React Router
+Client-side routing setup.
+
+\`\`\`jsx
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+
+const App = () => {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/users/:id" element={<UserProfile />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
+\`\`\`
+
+## Navigation
+Using useNavigate and Link components.
+
+\`\`\`jsx
+import { useNavigate, Link } from 'react-router-dom';
+
+const Navigation = () => {
+  const navigate = useNavigate();
+
+  return (
+    <nav>
+      <Link to="/about">About</Link>
+      <button onClick={() => navigate('/contact')}>
+        Contact
+      </button>
+      <button onClick={() => navigate(-1)}>
+        Go Back
+      </button>
+    </nav>
+  );
+}
+\`\`\`
+
+## URL Parameters
+Accessing route parameters.
+
+\`\`\`jsx
+import { useParams, useSearchParams } from 'react-router-dom';
+
+const UserProfile = () => {
+  const { id } = useParams();
+  const [searchParams] = useSearchParams();
+  const tab = searchParams.get('tab');
+
+  return (
+    <div>
+      <h2>User ID: {id}</h2>
+      <p>Active Tab: {tab}</p>
+    </div>
+  );
+}
+\`\`\`
+
+# Forms
+
+## Controlled Components
+Form elements controlled by React state.
+
+\`\`\`jsx
+const ControlledForm = () => {
+  const [formData, setFormData] = useState({
+    username: '',
+    email: ''
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  }
+
+  return (
+    <form>
+      <input
+        name="username"
+        value={formData.username}
+        onChange={handleChange}
+      />
+      <input
+        name="email"
+        value={formData.email}
+        onChange={handleChange}
+      />
+    </form>
+  );
+}
+\`\`\`
+
+## Uncontrolled Components
+Form elements that maintain their own state.
+
+\`\`\`jsx
+const UncontrolledForm = () => {
+  const fileInputRef = useRef();
+  const formRef = useRef();
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const formData = new FormData(formRef.current);
+    const file = fileInputRef.current.files[0];
+    console.log('Form data:', Object.fromEntries(formData));
+    console.log('File:', file);
+  }
+
+  return (
+    <form ref={formRef} onSubmit={handleSubmit}>
+      <input type="text" name="username" defaultValue="" />
+      <input type="file" ref={fileInputRef} />
+      <button type="submit">Submit</button>
+    </form>
+  );
+}
+\`\`\`
+
+## Form Validation
+Validating form inputs.
+
+\`\`\`jsx
+const ValidatedForm = () => {
+  const [email, setEmail] = useState('');
+  const [error, setError] = useState('');
+
+  const validateEmail = (email) => {
+    const regex = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;
+    return regex.test(email);
+  }
+
+  const handleChange = (e) => {
+    const value = e.target.value;
+    setEmail(value);
+
+    if (!value) {
+      setError('Email is required');
+    } else if (!validateEmail(value)) {
+      setError('Invalid email format');
+    } else {
+      setError('');
+    }
+  }
+
+  return (
+    <form>
+      <input
+        type="email"
+        value={email}
+        onChange={handleChange}
+      />
+      {error && <span style={{ color: 'red' }}>{error}</span>}
+    </form>
+  );
+}
+\`\`\`
+`
+
+    // Render markdown content
+    document.getElementById('markdown-content').innerHTML = marked.parse(markdownContent);
+
+    // Trigger Prism highlighting
+    Prism.highlightAll();
+</script>
+</body>
+</html>

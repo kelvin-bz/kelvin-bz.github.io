@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Typescript</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.6.1/mermaid.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.2/marked.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+    <link rel="stylesheet" href="../../css/all.min.css">
+    <link rel="stylesheet" href="/kelvin-bz.github.io/css/all.min.css">
+
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+            flex-direction: column; /* Stack vertically by default */
+        }
+
+        .mermaid-section, .markdown-section {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .mermaid-section {
+            background: #f5f5f5;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .node foreignObject {
+            overflow: visible;
+            white-space: normal;
+        }
+
+        .node foreignObject p {
+            /*margin: 0;*/
+            padding: 0px;
+            text-align: center;
+            width: auto !important;
+            min-width: 200px;
+        }
+
+
+        .markdown-section {
+            background: white;
+            padding: 30px;
+            line-height: 1.6;
+        }
+
+        .zoom-controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: white;
+            padding: 5px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .zoom-controls button {
+            margin: 0 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+            background: #f0f0f0;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+
+        .zoom-controls button:hover {
+            background: #e0e0e0;
+        }
+
+        #mermaid-container {
+            transform-origin: top left;
+            transition: transform 0.3s ease;
+        }
+
+        /* Code block styling */
+        pre[class*="language-"] {
+            border-radius: 6px;
+            margin: 1.5em 0;
+            padding: 1em;
+            overflow: auto;
+            background: #2d2d2d;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        code[class*="language-"] {
+            font-family: 'Fira Code', 'Consolas', Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+            font-size: 0.9em;
+            line-height: 1.4;
+            text-shadow: none;
+        }
+
+        /* Markdown content styling */
+        .markdown-section h1 {
+            font-size: 2em;
+            margin-bottom: 1em;
+            border-bottom: 2px solid #eaecef;
+            padding-bottom: 0.3em;
+        }
+
+        .markdown-section h2 {
+            font-size: 1.5em;
+            margin: 1.5em 0 1em;
+        }
+
+        .markdown-section ul, .markdown-section ol {
+            padding-left: 2em;
+        }
+
+        .markdown-section li {
+            margin: 0.5em 0;
+        }
+
+        .markdown-section strong {
+            font-weight: 600;
+            color: #24292e;
+        }
+
+        /* Language-specific syntax highlighting adjustments */
+        .language-javascript {
+            color: #f8f8f2;
+        }
+
+        .language-yaml {
+            color: #f8f8f2;
+        }
+
+        .language-bash {
+            color: #f8f8f2;
+        }
+        @media (min-width: 768px) {
+            .container {
+                flex-direction: row; /* Side by side on desktop */
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="mermaid-section">
+        <div class="zoom-controls">
+            <button onclick="zoomIn()">+</button>
+            <button onclick="zoomOut()">-</button>
+            <button onclick="resetZoom()">Reset</button>
+        </div>
+        <div id="mermaid-container">
+                <pre class="mermaid">
+graph LR
+    TS["fa:fa-code TypeScript"]
+
+    TS --> |"Adds static typing"| Types["fa:fa-list-ul Basic Types"]
+    TS --> |"Enhances code organization"| Interface["fa:fa-puzzle-piece Interfaces"]
+    TS --> |"Adds OOP features"| Classes["fa:fa-cube Classes"]
+    TS --> |"Type manipulation"| Advanced["fa:fa-cogs Advanced Types"]
+    TS --> |"Code reusability"| Generics["fa:fa-recycle Generics"]
+
+    Types --> T1["fa:fa-font string"]
+    Types --> T2["fa:fa-hashtag number"]
+    Types --> T3["fa:fa-toggle-on boolean"]
+    Types --> T4["fa:fa-layer-group array"]
+    Types --> T5["fa:fa-object-group object"]
+    Types --> T6["fa:fa-times null/undefined"]
+
+    Interface --> I1["fa:fa-file-contract Object Shape"]
+    Interface --> I2["fa:fa-arrows-alt Extended Interfaces"]
+    Interface --> I3["fa:fa-check Optional Properties"]
+    Interface --> I4["fa:fa-lock Readonly Properties"]
+
+    Classes --> C1["fa:fa-shield-alt Access Modifiers"]
+    Classes --> C2["fa:fa-arrow-up Inheritance"]
+    Classes --> C3["fa:fa-compress-arrows-alt Implementing Interfaces"]
+    Classes --> C4["fa:fa-bullseye Abstract Classes"]
+
+    Advanced --> A1["fa:fa-union Union Types"]
+    Advanced --> A2["fa:fa-intersection-alt Intersection Types"]
+    Advanced --> A3["fa:fa-type Type Aliases"]
+    Advanced --> A4["fa:fa-keyboard Keyof"]
+
+    Generics --> G1["fa:fa-box Generic Functions"]
+    Generics --> G2["fa:fa-boxes Generic Classes"]
+    Generics --> G3["fa:fa-constraint Generic Constraints"]
+                </pre>
+        </div>
+    </div>
+    <div class="markdown-section" id="markdown-content">
+    </div>
+</div>
+
+<script>
+    // Initialize Mermaid
+    mermaid.initialize({ startOnLoad: true });
+
+    // Zoom functionality
+    let currentZoom = 1;
+    const zoomStep = 0.1;
+    const container = document.getElementById('mermaid-container');
+
+    function zoomIn() {
+        currentZoom += zoomStep;
+        applyZoom();
+    }
+
+    function zoomOut() {
+        if (currentZoom > zoomStep) {
+            currentZoom -= zoomStep;
+            applyZoom();
+        }
+    }
+
+    function resetZoom() {
+        currentZoom = 1;
+        applyZoom();
+    }
+
+    function applyZoom() {
+        container.style.transform = `scale(${currentZoom})`;
+    }
+
+    // Configure marked to use Prism for syntax highlighting
+    marked.setOptions({
+        highlight: function(code, lang) {
+            if (Prism.languages[lang]) {
+                return Prism.highlight(code, Prism.languages[lang], lang);
+            }
+            return code;
+        }
+    });
+
+    // Markdown content
+    const markdownContent = `I'll explain each concept with practical code examples:
+
+1. Static Typing (Basic Types):
+\`\`\`typescript
+// Without TypeScript (JavaScript)
+let name = "John";
+name = 42; // This would work in JS, but might cause bugs
+
+// With TypeScript
+let name: string = "John";
+name = 42; // Error: Type 'number' is not assignable to type 'string'
+
+// More basic type examples
+let age: number = 25;
+let isActive: boolean = true;
+let numbers: number[] = [1, 2, 3];
+let tuple: [string, number] = ["hello", 42];
+\`\`\`
+
+2. Interfaces (Code Organization):
+\`\`\`typescript
+// Without interface
+function updateUser(user: {name: string, age: number, email: string}) {
+    // ...
+}
+
+// With interface - better organization
+interface User {
+    name: string;
+    age: number;
+    email: string;
+}
+
+function updateUser(user: User) {
+    console.log(\`Updating \${user.name}\`);
+}
+
+// Using the interface
+const john: User = {
+    name: "John",
+    age: 30,
+    email: "john@example.com"
+};
+\`\`\`
+
+3. Classes (OOP Features):
+\`\`\`typescript
+// Class with TypeScript features
+class BankAccount {
+    private balance: number;  // Private member
+    readonly accountNumber: string;  // Read-only property
+
+    constructor(initialBalance: number, accountNumber: string) {
+        this.balance = initialBalance;
+        this.accountNumber = accountNumber;
+    }
+
+    public deposit(amount: number): void {
+        this.balance += amount;
+    }
+
+    protected getBalance(): number {
+        return this.balance;
+    }
+}
+
+// Inheritance
+class SavingsAccount extends BankAccount {
+    private interestRate: number;
+
+    constructor(initialBalance: number, accountNumber: string, rate: number) {
+        super(initialBalance, accountNumber);
+        this.interestRate = rate;
+    }
+}
+\`\`\`
+
+4. Advanced Types (Type Manipulation):
+\`\`\`typescript
+// Union Types
+type StringOrNumber = string | number;
+let id: StringOrNumber = "abc123";
+id = 123; // Also valid
+
+// Intersection Types
+interface Car {
+    brand: string;
+    model: string;
+}
+
+interface Electric {
+    batteryLife: number;
+}
+
+type ElectricCar = Car & Electric;
+
+const tesla: ElectricCar = {
+    brand: "Tesla",
+    model: "Model 3",
+    batteryLife: 300
+};
+
+// Type Aliases
+type Point = {
+    x: number;
+    y: number;
+};
+
+// Literal Types
+type Direction = "north" | "south" | "east" | "west";
+\`\`\`
+
+5. Generics (Code Reusability):
+\`\`\`typescript
+// Generic function
+function wrapInArray<T>(value: T): T[] {
+    return [value];
+}
+
+const numberArray = wrapInArray(42);  // type: number[]
+const stringArray = wrapInArray("Hello");  // type: string[]
+
+// Generic class
+class Queue<T> {
+    private data: T[] = [];
+
+    push(item: T): void {
+        this.data.push(item);
+    }
+
+    pop(): T | undefined {
+        return this.data.shift();
+    }
+}
+
+// Using the generic class
+const numberQueue = new Queue<number>();
+numberQueue.push(10);  // OK
+numberQueue.push("10");  // Error: Argument of type 'string' not assignable
+
+// Generic constraints
+interface Lengthy {
+    length: number;
+}
+
+function printLength<T extends Lengthy>(item: T): void {
+    console.log(item.length);
+}
+
+printLength("Hello");  // OK - string has length
+printLength([1, 2, 3]);  // OK - array has length
+printLength(123);  // Error - number doesn't have length
+\`\`\`
+
+Each of these features adds different capabilities to JavaScript:
+- Static typing helps catch errors before runtime
+- Interfaces help define clear contracts for object shapes
+- Classes provide a cleaner way to implement OOP patterns
+- Advanced types give you more flexibility in type definitions
+- Generics allow you to write reusable, type-safe code
+
+`
+
+    // Render markdown content
+    document.getElementById('markdown-content').innerHTML = marked.parse(markdownContent);
+
+    // Trigger Prism highlighting
+    Prism.highlightAll();
+</script>
+</body>
+</html>

@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.4.0/mermaid.min.js"></script>
+    <style>
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            font-family: system-ui, -apple-system, sans-serif;
+            line-height: 1.6;
+        }
+        .question {
+            background-color: #fff;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .option {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .option:hover {
+            background-color: #f5f5f5;
+            transform: translateX(5px);
+        }
+        .selected {
+            background-color: #e3f2fd;
+        }
+        .correct {
+            background-color: #e8f5e9;
+            border-color: #81c784;
+        }
+        .incorrect {
+            background-color: #ffebee;
+            border-color: #e57373;
+        }
+        .input-answer {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            margin-top: 10px;
+            padding: 8px 16px;
+            background-color: #2196f3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #1976d2;
+        }
+        #score {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.2em;
+        }
+        .feedback {
+            margin-top: 10px;
+            padding: 15px;
+            border-radius: 4px;
+            display: none;
+            line-height: 1.6;
+        }
+        .code-block {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre;
+            overflow-x: auto;
+            line-height: 1.5;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            position: relative;
+        }
+        .copy-button {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .explanation-text {
+            margin-bottom: 10px;
+        }
+        .code-comment {
+            color: #6a737d;
+        }
+        .code-output {
+            color: #0a3069;
+            border-left: 3px solid #2196f3;
+            margin-left: 10px;
+            padding-left: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>📂 Typescript</h1>
+    <div class="mermaid">
+        graph LR
+        TS["fa:fa-code TypeScript"]
+
+        TS --> |"Adds static typing"| Types["fa:fa-list-ul Basic Types"]
+        TS --> |"Enhances code organization"| Interface["fa:fa-puzzle-piece Interfaces"]
+        TS --> |"Adds OOP features"| Classes["fa:fa-cube Classes"]
+        TS --> |"Type manipulation"| Advanced["fa:fa-cogs Advanced Types"]
+        TS --> |"Code reusability"| Generics["fa:fa-recycle Generics"]
+
+        Types --> T1["fa:fa-font string"]
+        Types --> T2["fa:fa-hashtag number"]
+        Types --> T3["fa:fa-toggle-on boolean"]
+        Types --> T4["fa:fa-layer-group array"]
+        Types --> T5["fa:fa-object-group object"]
+        Types --> T6["fa:fa-times null/undefined"]
+
+        Interface --> I1["fa:fa-file-contract Object Shape"]
+        Interface --> I2["fa:fa-arrows-alt Extended Interfaces"]
+        Interface --> I3["fa:fa-check Optional Properties"]
+        Interface --> I4["fa:fa-lock Readonly Properties"]
+
+        Classes --> C1["fa:fa-shield-alt Access Modifiers"]
+        Classes --> C2["fa:fa-arrow-up Inheritance"]
+        Classes --> C3["fa:fa-compress-arrows-alt Implementing Interfaces"]
+        Classes --> C4["fa:fa-bullseye Abstract Classes"]
+
+        Advanced --> A1["fa:fa-union Union Types"]
+        Advanced --> A2["fa:fa-intersection-alt Intersection Types"]
+        Advanced --> A3["fa:fa-type Type Aliases"]
+        Advanced --> A4["fa:fa-keyboard Keyof"]
+
+        Generics --> G1["fa:fa-box Generic Functions"]
+        Generics --> G2["fa:fa-boxes Generic Classes"]
+        Generics --> G3["fa:fa-constraint Generic Constraints"]
+    </div>
+    <div id="questions"></div>
+    <div id="score"></div>
+</div>
+
+
+<script>
+    const quizData = {
+        questions: [
+            {
+                type: "single",
+                question: "Which of the following is NOT a basic type in TypeScript?",
+                options: [
+                    "string",
+                    "float",
+                    "boolean",
+                    "undefined"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "TypeScript doesn't have a 'float' type. For decimal numbers, TypeScript uses the 'number' type which covers both integers and floating-point numbers.",
+                    code: `
+// Basic TypeScript types
+let stringVar: string = "hello";
+let numberVar: number = 42.5;  // handles both integers and decimals
+let boolVar: boolean = true;
+let undefinedVar: undefined = undefined;`
+                }
+            },
+            {
+                type: "single",
+                question: "What is the correct way to define an array of numbers in TypeScript?",
+                options: [
+                    "number[]",
+                    "Array<number>",
+                    "Both A and B",
+                    "array<number>"
+                ],
+                correct: 2,
+                explanation: {
+                    text: "TypeScript provides two ways to define array types: using square brackets notation (number[]) or using the generic Array type (Array<number>).",
+                    code: `
+// Both are valid and equivalent
+let numbers1: number[] = [1, 2, 3];
+let numbers2: Array<number> = [1, 2, 3];
+
+// This works with any type
+let strings: string[] = ["a", "b", "c"];
+let booleans: Array\<boolean\> = [true, false, true];`
+                }
+            },
+            {
+                type: "single",
+                question: "What is the purpose of the 'interface' keyword in TypeScript?",
+                options: [
+                    "To create a new class",
+                    "To define a contract for object structure",
+                    "To import external modules",
+                    "To declare variables"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "Interfaces in TypeScript define contracts for object structures, specifying what properties and methods an object must have.",
+                    code: `
+interface Person {
+    name: string;
+    age: number;
+    greet(): void;
+}
+
+// Object implementing the interface
+const person: Person = {
+    name: "John",
+    age: 30,
+    greet() {
+        console.log("Hello!");
+    }
+};`
+                }
+            },
+            {
+                type: "single",
+                question: "How do you make a property optional in a TypeScript interface?",
+                options: [
+                    "Using the 'optional' keyword",
+                    "Using a question mark (?)",
+                    "Using undefined as a type",
+                    "Using the 'maybe' keyword"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "Optional properties in TypeScript interfaces are denoted by adding a question mark (?) after the property name.",
+                    code: `
+interface UserProfile {
+    name: string;        // Required property
+    age?: number;        // Optional property
+    email: string;       // Required property
+    phone?: string;      // Optional property
+}
+
+// Both are valid
+const user1: UserProfile = {
+    name: "Alice",
+    email: "alice@example.com"
+};
+
+const user2: UserProfile = {
+    name: "Bob",
+    age: 25,
+    email: "bob@example.com",
+    phone: "123-456-7890"
+};`
+                }
+            },
+            {
+                type: "single",
+                question: "What is the difference between 'type' and 'interface' in TypeScript?",
+                options: [
+                    "They are exactly the same",
+                    "Types can't be extended, interfaces can",
+                    "Interfaces can't use union types, types can",
+                    "Type aliases can use unions/intersections directly, interfaces are more object-focused"
+                ],
+                correct: 3,
+                explanation: {
+                    text: "While interfaces and type aliases are similar, type aliases are more flexible with union and intersection types, while interfaces are better suited for defining object shapes and can be extended.",
+                    code: `
+// Type alias with union
+type StringOrNumber = string | number;
+
+// Interface (object-focused)
+interface User {
+    name: string;
+    id: number;
+}
+
+// Type alias with intersection
+type AdminUser = User & {
+    accessLevel: number;
+};
+
+// Extended interface
+interface Employee extends User {
+    department: string;
+}`
+                }
+            },
+            {
+                type: "fill",
+                question: "To specify that a variable can be either string or number, use the ______ operator between types.",
+                answer: "|",
+                explanation: {
+                    text: "The vertical bar (|) is used to create union types in TypeScript, allowing a variable to accept multiple types.",
+                    code: `
+// Union type example
+let id: string | number;
+
+id = "abc123";  // Valid
+id = 123;       // Valid
+id = true;      // Error: Type 'boolean' is not assignable
+
+// Function with union type parameter
+function processId(id: string | number) {
+    console.log(id);
+}`
+                }
+            },
+            {
+                type: "fill",
+                question: "To make all properties in an interface readonly, use the ______ modifier.",
+                answer: "readonly",
+                explanation: {
+                    text: "The 'readonly' modifier prevents properties from being modified after initialization.",
+                    code: `
+interface Point {
+    readonly x: number;
+    readonly y: number;
+}
+
+const point: Point = { x: 10, y: 20 };
+// point.x = 30;  // Error: Cannot assign to 'x' because it is a read-only property`
+                }
+            },
+            {
+                type: "fill",
+                question: "To create a type that includes all properties of multiple interfaces, use the ______ operator.",
+                answer: "&",
+                explanation: {
+                    text: "The ampersand (&) creates intersection types, combining multiple types into one.",
+                    code: `
+interface HasName {
+    name: string;
+}
+
+interface HasAge {
+    age: number;
+}
+
+type Person = HasName & HasAge;
+
+const person: Person = {
+    name: "John",
+    age: 30
+    // Must have both properties
+};`
+                }
+            },
+            {
+                type: "fill",
+                question: "To make a property in an interface non-nullable, use the ______ operator after the type.",
+                answer: "!",
+                explanation: {
+                    text: "The non-null assertion operator (!) tells TypeScript that a value cannot be null or undefined.",
+                    code: `
+interface User {
+    name!: string;  // Must be defined
+    age?: number;   // Optional
+}
+
+// In class properties
+class Component {
+    element!: HTMLElement;  // Will be initialized after constructor
+
+    initialize() {
+        this.element = document.createElement('div');
+    }
+}`
+                }
+            },
+            {
+                type: "single",
+                question: "What is the purpose of the 'protected' access modifier in TypeScript classes?",
+                options: [
+                    "Makes members accessible only within the declaring class",
+                    "Makes members accessible within the declaring class and its subclasses",
+                    "Makes members accessible from anywhere",
+                    "Makes members accessible only within the same module"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "The 'protected' modifier allows access to class members within the declaring class and any classes that inherit from it.",
+                    code: `
+class Animal {
+    protected name: string;
+
+    constructor(name: string) {
+        this.name = name;
+    }
+}
+
+class Dog extends Animal {
+    bark() {
+        // Can access protected member from parent
+        console.log(\`\${this.name} barks!\`);
+    }
+}
+
+const dog = new Dog("Rex");
+// dog.name; // Error: 'name' is protected`
+                }
+            },
+            {
+                type: "single",
+                question: "What is the correct way to implement a generic class in TypeScript?",
+                options: [
+                    "class Container[T] { }",
+                    "class Container<T> { }",
+                    "class Container(T) { }",
+                    "class Container{T} { }"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "Generic classes in TypeScript use angle brackets (<>) to declare type parameters.",
+                    code: `
+class Container<T> {
+    private value: T;
+
+    constructor(value: T) {
+        this.value = value;
+    }
+
+    getValue(): T {
+        return this.value;
+    }
+}
+
+// Usage
+const numberContainer = new Container<number>(42);
+const stringContainer = new Container<string>("Hello");`
+                }
+            },
+            {
+                type: "single",
+                question: "Which statement correctly defines an abstract class in TypeScript?",
+                options: [
+                    "virtual class Shape { }",
+                    "abstract class Shape { }",
+                    "interface Shape { }",
+                    "base class Shape { }"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "Abstract classes are defined using the 'abstract' keyword and can contain both implemented methods and abstract methods that must be implemented by derived classes.",
+                    code: `
+abstract class Shape {
+    // Abstract method - must be implemented by derived classes
+    abstract calculateArea(): number;
+
+    // Concrete method - implementation provided
+    display(): void {
+        console.log(\`Area: \${this.calculateArea()}\`);
+    }
+}
+
+class Circle extends Shape {
+    constructor(private radius: number) {
+        super();
+    }
+
+    calculateArea(): number {
+        return Math.PI * this.radius * this.radius;
+    }
+}`
+                }
+            },
+            {
+                type: "single",
+                question: "What is the purpose of the 'keyof' operator in TypeScript?",
+                options: [
+                    "To create a new object type",
+                    "To create a union type of an object's keys",
+                    "To check if a key exists in an object",
+                    "To merge two objects"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "The 'keyof' operator creates a union type of all property names (keys) of an object type.",
+                    code: `
+interface Person {
+    name: string;
+    age: number;
+    location: string;
+}
+
+type PersonKeys = keyof Person; // "name" | "age" | "location"
+
+function getProperty<T, K extends keyof T>(obj: T, key: K): T[K] {
+    return obj[key];
+}
+
+const person = {
+    name: "John",
+    age: 30,
+    location: "New York"
+};
+
+const name = getProperty(person, "name"); // type: string
+const age = getProperty(person, "age");   // type: number`
+                }
+            },
+            {
+                type: "fill",
+                question: "To define a function that works with generic types, use the syntax: function example<____>() {}",
+                answer: "T",
+                explanation: {
+                    text: "Generic type parameters are typically denoted with 'T', though any valid identifier can be used.",
+                    code: `
+// Generic function
+function identity<T>(arg: T): T {
+    return arg;
+}
+
+// Multiple type parameters
+function pair<T, U>(first: T, second: U): [T, U] {
+    return [first, second];
+}
+
+// Usage
+const numberResult = identity<number>(42);
+const stringResult = identity("hello");  // Type inference
+const pairResult = pair<string, number>("age", 25);`
+                }
+            },
+            {
+                type: "fill",
+                question: "To make a class property private in TypeScript, use the ______ access modifier.",
+                answer: "private",
+                explanation: {
+                    text: "The 'private' modifier makes class members only accessible within the class where they are declared.",
+                    code: `
+class BankAccount {
+    private balance: number;
+
+    constructor(initialBalance: number) {
+        this.balance = initialBalance;
+    }
+
+    deposit(amount: number): void {
+        this.balance += amount;
+    }
+
+    getBalance(): number {
+        return this.balance;
+    }
+}
+
+const account = new BankAccount(1000);
+// account.balance; // Error: 'balance' is private`
+                }
+            },
+            {
+                type: "fill",
+                question: "To specify that a generic type must extend a specific interface, use the syntax: <T ______ Interface>",
+                answer: "extends",
+                explanation: {
+                    text: "Generic constraints are specified using the 'extends' keyword to ensure type parameters meet certain requirements.",
+                    code: `
+interface Lengthy {
+    length: number;
+}
+
+function logLength<T extends Lengthy>(arg: T): void {
+    console.log(arg.length);
+}
+
+// Valid
+logLength("hello");          // string has length
+logLength([1, 2, 3]);       // array has length
+logLength({ length: 10 });  // object has length property
+
+// Invalid
+// logLength(123);  // Error: number doesn't have length property`
+                }
+            },
+            {
+                type: "fill",
+                question: "To create a type that includes all property types of an existing type, use: type PropTypes = ______ typeof obj",
+                answer: "keyof",
+                explanation: {
+                    text: "Combining 'keyof' with 'typeof' allows you to get a union type of all property names in an object.",
+                    code: `
+const user = {
+    id: 1,
+    name: "John",
+    age: 30
+};
+
+type UserKeys = keyof typeof user;  // "id" | "name" | "age"
+
+function getProperty(obj: typeof user, key: UserKeys) {
+    return obj[key];
+}
+
+// Valid
+getProperty(user, "name");
+// Invalid
+// getProperty(user, "email");  // Error: "email" is not in UserKeys`
+                }
+            },
+            {
+                type: "fill",
+                question: "To specify that a class implements multiple interfaces, separate them with a ______ .",
+                answer: ",",
+                explanation: {
+                    text: "Multiple interfaces can be implemented by a class by separating them with commas in the implements clause.",
+                    code: `
+interface Printable {
+    print(): void;
+}
+
+interface Loggable {
+    log(): void;
+}
+
+class Document implements Printable, Loggable {
+    print() {
+        console.log("Printing...");
+    }
+
+    log() {
+        console.log("Logging...");
+    }
+}
+
+// Must implement all methods from both interfaces
+const doc = new Document();
+doc.print();
+doc.log();`
+                }
+            }
+        ]
+    };
+
+    window.copyToClipboard = function(text, button) {
+        navigator.clipboard.writeText(text).then(() => {
+            const originalText = button.textContent;
+            button.textContent = 'Copied!';
+            setTimeout(() => {
+                button.textContent = originalText;
+            }, 2000);
+        });
+    }
+
+    function escapeHTML(str) {
+        return str
+            .replace(/</g, "˂") // Unicode alternative for `<`
+            .replace(/(?<!-)>/g, "˃"); // Replace ">" except when preceded by "-"
+
+    }
+
+    function formatCodeExample(code) {
+        return code.split('\n').map(line => {
+            if (line.includes('//')) {
+                const [code, comment] = line.split('//');
+                return `${code}<span class="code-comment">// ${comment}</span>`;
+            }
+            return line;
+        }).join('\n');
+    }
+
+    function createQuiz() {
+        const questionsContainer = document.getElementById('questions');
+
+        quizData.questions.forEach((q, index) => {
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'question';
+            const text = typeof q.question === 'string' ? q.question : q.question.text;
+            const code = typeof q.question === 'string' ? '' : q.question.code;
+
+            questionDiv.innerHTML = `<div>
+                <strong>Question ${index + 1}:</strong>
+                ${text}
+                ${code ? `<pre class="code-block">${formatCodeExample(code)}</pre>` : ''}
+            </div>`;
+
+            if (q.type === 'single') {
+                const optionsDiv = document.createElement('div');
+                optionsDiv.className = 'options';
+
+                q.options.forEach((option, optIndex) => {
+                    const optionDiv = document.createElement('div');
+                    optionDiv.className = 'option';
+                    optionDiv.textContent = option;
+                    optionDiv.onclick = () => checkAnswer(optIndex, q.correct, optionDiv, questionDiv, q.explanation);
+                    optionsDiv.appendChild(optionDiv);
+                });
+
+                questionDiv.appendChild(optionsDiv);
+            } else {
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.className = 'input-answer';
+                input.placeholder = 'Type your answer here';
+
+                const submitBtn = document.createElement('button');
+                submitBtn.textContent = 'Submit';
+                submitBtn.onclick = () => checkFillAnswer(input.value, q.answer, questionDiv, q.explanation);
+
+                questionDiv.appendChild(input);
+                questionDiv.appendChild(submitBtn);
+            }
+
+            const feedbackDiv = document.createElement('div');
+            feedbackDiv.className = 'feedback';
+            questionDiv.appendChild(feedbackDiv);
+
+            questionsContainer.appendChild(questionDiv);
+        });
+
+        updateScore();
+    }
+
+    function checkFillAnswer(input, answer, questionDiv, explanation) {
+        // Check if question has already been answered
+        if (questionDiv.querySelector('.feedback').style.display === 'block') {
+            return; // Already answered
+        }
+
+        // Get or create input element
+        const inputElement = questionDiv.querySelector('.input-answer');
+        if (inputElement) {
+            inputElement.disabled = true; // Disable input after submission
+        }
+
+        // Compare answer (case-insensitive)
+        if (input.toLowerCase().trim() === answer.toLowerCase().trim()) {
+            score++;
+            showFeedback(questionDiv, explanation, true);
+        } else {
+            showFeedback(questionDiv, {
+                text: `The correct answer is: ${answer}. ${explanation.text}`,
+                code: explanation.code
+            }, false);
+        }
+
+        answeredQuestions++;
+        updateScore();
+    }
+    function showFeedback(questionDiv, explanation, isCorrect) {
+        const feedbackDiv = questionDiv.querySelector('.feedback');
+        feedbackDiv.style.display = 'block';
+
+        const codeId = 'code-' + Math.random().toString(36).substr(2, 9);
+
+        feedbackDiv.innerHTML = `
+                <div class="explanation-text">
+                    ${isCorrect ? '✅' : '❌'} ${explanation.text}
+                </div>
+                ${explanation.code ? `
+                    <div class="code-block" id="${codeId}">
+                        ${formatCodeExample(escapeHTML(explanation.code))}
+                    </div>
+                ` : ''}
+            `;
+
+        feedbackDiv.style.backgroundColor = isCorrect ? '#e8f5e9' : '#ffebee';
+    }
+
+    function checkAnswer(selected, correct, optionDiv, questionDiv, explanation) {
+        if (questionDiv.querySelector('.correct') || questionDiv.querySelector('.incorrect')) {
+            return;
+        }
+
+        const options = questionDiv.getElementsByClassName('option');
+        options[correct].classList.add('correct');
+
+        if (selected === correct) {
+            score++;
+            optionDiv.classList.add('correct');
+            showFeedback(questionDiv, explanation, true);
+        } else {
+            optionDiv.classList.add('incorrect');
+            showFeedback(questionDiv, explanation, false);
+        }
+
+        answeredQuestions++;
+        updateScore();
+    }
+
+    function updateScore() {
+        const scoreDiv = document.getElementById('score');
+        const percentage = (score / quizData.questions.length) * 100;
+        scoreDiv.innerHTML = `
+                <h3>Your Score: ${score}/${quizData.questions.length}</h3>
+                <p>Percentage: ${percentage.toFixed(1)}%</p>
+                ${answeredQuestions === quizData.questions.length ?
+            `<p>${percentage >= 70 ? '🎉 Great job! You have a solid understanding of Node.js core modules!' :
+                'Keep learning! Review the explanations to strengthen your knowledge of Node.js core modules.'}</p>` : ''}
+            `;
+    }
+
+    let score = 0;
+    let answeredQuestions = 0;
+    createQuiz();
+</script>
+</body>
+</html>
