@@ -259,7 +259,7 @@ fetchUserData(userId)
             },
             {
                 type: "single",
-                question: "Which method executes after all promises in an array have completed?",
+                question: "Which method executes after all promises in an array have successfully resolved without any rejections?",
                 options: [
                     "Promise.all()",
                     "Promise.race()",
@@ -268,7 +268,7 @@ fetchUserData(userId)
                 ],
                 correct: 0,
                 explanation: {
-                    text: "Promise.all() waits for all promises to resolve and returns an array of their results. If any promise fails, it immediately rejects.",
+                    text: "Promise.all() waits for all promises to resolve successfully and returns an array of their results. If any promise fails, it immediately rejects. While Promise.allSettled() also waits for all promises to complete, it includes both successes and failures in its result.",
                     code: `
 // Example using Promise.all()
 const userPromise = fetchUser(userId);

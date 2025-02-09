@@ -116,12 +116,96 @@
             margin-left: 10px;
             padding-left: 10px;
         }
+
+        .node foreignObject {
+            overflow: visible;
+            white-space: normal;
+        }
+
+        .node foreignObject p {
+            /*margin: 0;*/
+            padding: 0px;
+            text-align: center;
+            width: auto !important;
+            min-width: 200px;
+        }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.4.0/mermaid.min.js"></script>
+    <link rel="stylesheet" href="/css/all.min.css">
+    <link rel="stylesheet" href="../../css/all.min.css">
 </head>
 <body>
 <div class="container">
     <h1>📗 Node.js Events Master Quiz</h1>
     <p>Test your knowledge of Node.js Events module and event-driven programming!</p>
+    <div class="mermaid">
+        graph LR
+        EE["fa:fa-broadcast-tower EventEmitter"]
+
+        %% Main Categories
+        REG["fa:fa-plus-circle Registration Methods"]
+        REM["fa:fa-minus-circle Removal Methods"]
+        EMIT["fa:fa-paper-plane Emission Methods"]
+        UTIL["fa:fa-tools Utility Methods"]
+        SPEC["fa:fa-star Special Events"]
+        CONFIG["fa:fa-cogs Configuration"]
+
+        EE --> |"Add listeners"| REG
+        EE --> |"Remove listeners"| REM
+        EE --> |"Trigger events"| EMIT
+        EE --> |"Helper methods"| UTIL
+        EE --> |"Built-in events"| SPEC
+        EE --> |"Settings"| CONFIG
+
+        %% Registration Methods
+        REG --> |"Regular listener"| R1["fa:fa-plug on()/addListener()"]
+        REG --> |"One-time listener"| R2["fa:fa-bolt once()"]
+        REG --> |"Prepend listener"| R3["fa:fa-arrow-up prependListener()"]
+        REG --> |"Prepend once"| R4["fa:fa-arrow-up prependOnceListener()"]
+
+        %% Removal Methods
+        REM --> |"Single listener"| RM1["fa:fa-user-minus removeListener()"]
+        REM --> |"All event listeners"| RM2["fa:fa-users-slash removeAllListeners()"]
+        REM --> |"Off method"| RM3["fa:fa-power-off off()"]
+
+        %% Emission Methods
+        EMIT --> |"Trigger event"| E1["fa:fa-play emit()"]
+        E1 --> |"Multiple args"| E2["fa:fa-list-ol Pass Arguments"]
+        E1 --> |"No listeners"| E3["fa:fa-times No Effect"]
+
+        %% Utility Methods
+        UTIL --> |"Get listeners"| U1["fa:fa-list listeners()"]
+        UTIL --> |"Count listeners"| U2["fa:fa-calculator listenerCount()"]
+        UTIL --> |"Get event names"| U3["fa:fa-tags eventNames()"]
+
+        %% Special Events
+        SPEC --> |"Error handling"| S1["fa:fa-exclamation-triangle error"]
+        SPEC --> |"New listener"| S2["fa:fa-user-plus newListener"]
+        SPEC --> |"Remove listener"| S3["fa:fa-user-minus removeListener"]
+
+        S1 --> |"No handler crashes"| S1A["fa:fa-bomb Program Crash"]
+        S1 --> |"With handler"| S1B["fa:fa-shield-alt Error Caught"]
+
+        %% Configuration
+        CONFIG --> |"Max listeners"| C1["fa:fa-sliders-h setMaxListeners()"]
+        CONFIG --> |"Default max"| C2["fa:fa-info-circle 10 listeners"]
+        CONFIG --> |"Global setting"| C3["fa:fa-globe defaultMaxListeners"]
+
+        %% Implementation Example
+        REG --> |"Usage example"| IMP["fa:fa-code Implementation"]
+        IMP --> |"Create emitter"| IMP1["fa:fa-plus new EventEmitter()"]
+        IMP --> |"Add handlers"| IMP2["fa:fa-headphones Event Handlers"]
+        IMP --> |"Emit events"| IMP3["fa:fa-broadcast-tower Trigger Events"]
+
+        %% Style
+        style EE fill:#f9f,stroke:#333,stroke-width:4px
+        style REG fill:#bbf,stroke:#333,stroke-width:2px
+        style REM fill:#fbb,stroke:#333,stroke-width:2px
+        style EMIT fill:#bfb,stroke:#333,stroke-width:2px
+        style UTIL fill:#fbf,stroke:#333,stroke-width:2px
+        style SPEC fill:#ffb,stroke:#333,stroke-width:2px
+        style CONFIG fill:#bff,stroke:#333,stroke-width:2px
+    </div>
     <div id="questions"></div>
     <div id="score"></div>
 </div>

@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.4.0/mermaid.min.js"></script>
     <style>
         .container {
             max-width: 900px;
@@ -117,7 +116,23 @@
             margin-left: 10px;
             padding-left: 10px;
         }
+
+        .node foreignObject {
+            overflow: visible;
+            white-space: normal;
+        }
+
+        .node foreignObject p {
+            /*margin: 0;*/
+            padding: 0px;
+            text-align: center;
+            width: auto !important;
+            min-width: 200px;
+        }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.4.0/mermaid.min.js"></script>
+    <link rel="stylesheet" href="/css/all.min.css">
+    <link rel="stylesheet" href="../../css/all.min.css">
 </head>
 <body>
 <div class="container">
@@ -125,33 +140,72 @@
     <p>Test your knowledge of Node.js file system operations and best practices!</p>
     <div class="mermaid">
         graph LR
+        FS["fa:fa-file-code Node.js FS Module"]
 
-        M["fa:fa-cube fs Module"]
-        MP["fa:fa-cube fs/promises"]
+        %% Main Categories
+        BASIC["fa:fa-cogs Basic Operations"]
+        STREAM["fa:fa-stream Stream Operations"]
+        MONITOR["fa:fa-eye Monitoring"]
+        PERM["fa:fa-lock Permissions"]
+        DIR["fa:fa-folder Directory Operations"]
+        ERROR["fa:fa-exclamation-triangle Error Handling"]
 
-        M -->|"Sync operations"| S["fa:fa-sync Synchronous"]
-        M -->|"Async with callbacks"| A["fa:fa-clock Asynchronous"]
-        MP -->|"Modern async/await"| P["fa:fa-tasks Promises"]
+        FS --> |"Core module"| BASIC
+        FS --> |"Efficient handling"| STREAM
+        FS --> |"File changes"| MONITOR
+        FS --> |"Access control"| PERM
+        FS --> |"Folder management"| DIR
+        FS --> |"Handle exceptions"| ERROR
 
-        S --> SO["fa:fa-folder-open Operations"]
-        A --> AO["fa:fa-folder-open Operations"]
-        P --> PO["fa:fa-folder-open Operations"]
+        %% Basic Operations Detail
+        BASIC --> |"Read file content"| B1["fa:fa-file-alt readFile()"]
+        BASIC --> |"Write to file"| B2["fa:fa-file-export writeFile()"]
+        BASIC --> |"Check existence"| B3["fa:fa-question-circle existsSync()"]
+        BASIC --> |"File info"| B4["fa:fa-info-circle stat()"]
+        BASIC --> |"Add content"| B5["fa:fa-plus-circle appendFile()"]
 
-        SO -->|"Blocking"| S1["fa:fa-file readFileSync()"]
-        SO -->|"Blocking"| S2["fa:fa-file-medical writeFileSync()"]
-        SO -->|"Blocking"| S3["fa:fa-folder mkdirSync()"]
+        %% Stream Operations Detail
+        STREAM --> |"Read chunks"| S1["fa:fa-file-import createReadStream()"]
+        STREAM --> |"Write chunks"| S2["fa:fa-file-export createWriteStream()"]
+        STREAM --> |"Process lines"| S3["fa:fa-bars readline Interface"]
 
-        AO -->|"Non-blocking"| A1["fa:fa-file readFile()"]
-        AO -->|"Non-blocking"| A2["fa:fa-file-medical writeFile()"]
-        AO -->|"Non-blocking"| A3["fa:fa-folder mkdir()"]
+        S1 --> |"Chunk data"| S1A["fa:fa-cube data event"]
+        S1 --> |"Complete"| S1B["fa:fa-check-circle end event"]
+        S1 --> |"Handle errors"| S1C["fa:fa-times-circle error event"]
 
-        PO -->|"Async/await"| P1["fa:fa-file readFile()"]
-        PO -->|"Async/await"| P2["fa:fa-file-medical writeFile()"]
-        PO -->|"Async/await"| P3["fa:fa-folder mkdir()"]
+        %% Monitoring Detail
+        MONITOR --> |"Watch changes"| M1["fa:fa-eye watch()"]
+        M1 --> |"File modified"| M2["fa:fa-edit change event"]
+        M1 --> |"File renamed"| M3["fa:fa-font rename event"]
 
-        ST["fa:fa-stream Streams"]
-        ST -->|"Reading"| ST1["fa:fa-file-download createReadStream()"]
-        ST -->|"Writing"| ST2["fa:fa-file-upload createWriteStream()"]
+        %% Permissions Detail
+        PERM --> |"Change mode"| P1["fa:fa-shield-alt chmod()"]
+        PERM --> |"Access check"| P2["fa:fa-key access()"]
+        PERM --> |"Open modes"| P3["fa:fa-lock-open File Flags"]
+
+        P3 --> |"Write mode"| P3A["fa:fa-pencil-alt 'w' flag"]
+        P3 --> |"Append mode"| P3B["fa:fa-plus 'a' flag"]
+        P3 --> |"Read mode"| P3C["fa:fa-book-reader 'r' flag"]
+
+        %% Directory Operations Detail
+        DIR --> |"List contents"| D1["fa:fa-list readdir()"]
+        DIR --> |"Make directory"| D2["fa:fa-folder-plus mkdir()"]
+        DIR --> |"Remove directory"| D3["fa:fa-folder-minus rmdir()"]
+        DIR --> |"Remove file"| D4["fa:fa-trash unlink()"]
+
+        %% Error Handling Detail
+        ERROR --> |"Permission denied"| E1["fa:fa-ban EACCES"]
+        ERROR --> |"Not found"| E2["fa:fa-search-minus ENOENT"]
+        ERROR --> |"Path exists"| E3["fa:fa-exclamation-circle EEXIST"]
+
+        %% Style
+        style FS fill:#f9f,stroke:#333,stroke-width:4px
+        style BASIC fill:#bbf,stroke:#333,stroke-width:2px
+        style STREAM fill:#bfb,stroke:#333,stroke-width:2px
+        style MONITOR fill:#fbf,stroke:#333,stroke-width:2px
+        style PERM fill:#ffb,stroke:#333,stroke-width:2px
+        style DIR fill:#bff,stroke:#333,stroke-width:2px
+        style ERROR fill:#fbb,stroke:#333,stroke-width:2px
     </div>
     <div id="questions"></div>
     <div id="score"></div>

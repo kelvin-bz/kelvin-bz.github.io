@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Typescript</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.6.1/mermaid.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.2/marked.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+    <link rel="stylesheet" href="/css/all.min.css">
+    <link rel="stylesheet" href="../../css/all.min.css">
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+            flex-direction: column; /* Stack vertically by default */
+        }
+
+        .mermaid-section, .markdown-section {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .mermaid-section {
+            background: #f5f5f5;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .node foreignObject {
+            overflow: visible;
+            white-space: normal;
+        }
+
+        .node foreignObject p {
+            /*margin: 0;*/
+            padding: 0px;
+            text-align: center;
+            width: auto !important;
+            min-width: 200px;
+        }
+
+
+        .markdown-section {
+            background: white;
+            padding: 30px;
+            line-height: 1.6;
+        }
+
+        .zoom-controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: white;
+            padding: 5px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .zoom-controls button {
+            margin: 0 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+            background: #f0f0f0;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+
+        .zoom-controls button:hover {
+            background: #e0e0e0;
+        }
+
+        #mermaid-container {
+            transform-origin: top left;
+            transition: transform 0.3s ease;
+        }
+
+        /* Code block styling */
+        pre[class*="language-"] {
+            border-radius: 6px;
+            margin: 1.5em 0;
+            padding: 1em;
+            overflow: auto;
+            background: #2d2d2d;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        code[class*="language-"] {
+            font-family: 'Fira Code', 'Consolas', Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+            font-size: 0.9em;
+            line-height: 1.4;
+            text-shadow: none;
+        }
+
+        /* Markdown content styling */
+        .markdown-section h1 {
+            font-size: 2em;
+            margin-bottom: 1em;
+            border-bottom: 2px solid #eaecef;
+            padding-bottom: 0.3em;
+        }
+
+        .markdown-section h2 {
+            font-size: 1.5em;
+            margin: 1.5em 0 1em;
+        }
+
+        .markdown-section ul, .markdown-section ol {
+            padding-left: 2em;
+        }
+
+        .markdown-section li {
+            margin: 0.5em 0;
+        }
+
+        .markdown-section strong {
+            font-weight: 600;
+            color: #24292e;
+        }
+
+        /* Language-specific syntax highlighting adjustments */
+        .language-javascript {
+            color: #f8f8f2;
+        }
+
+        .language-yaml {
+            color: #f8f8f2;
+        }
+
+        .language-bash {
+            color: #f8f8f2;
+        }
+        @media (min-width: 768px) {
+            .container {
+                flex-direction: row; /* Side by side on desktop */
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="mermaid-section">
+        <div class="zoom-controls">
+            <button onclick="zoomIn()">+</button>
+            <button onclick="zoomOut()">-</button>
+            <button onclick="resetZoom()">Reset</button>
+        </div>
+        <div id="mermaid-container">
+                <pre class="mermaid">
+graph LR
+    BUF["fa:fa-memory Buffer Applications"]
+
+    %% Main Categories
+    FILE["fa:fa-file File Operations"]
+    NET["fa:fa-network-wired Network"]
+    CRYPTO["fa:fa-shield-alt Cryptography"]
+    MEDIA["fa:fa-film Media Processing"]
+    DB["fa:fa-database Database"]
+    STREAM["fa:fa-stream Streaming"]
+
+    BUF --> |"File handling"| FILE
+    BUF --> |"Network data"| NET
+    BUF --> |"Security"| CRYPTO
+    BUF --> |"Media handling"| MEDIA
+    BUF --> |"Data storage"| DB
+    BUF --> |"Data streams"| STREAM
+
+    %% File Operations
+    FILE --> |"Read large files"| F1["fa:fa-file-alt File Reading"]
+    FILE --> |"Write binary"| F2["fa:fa-file-export Binary Files"]
+    FILE --> |"Image processing"| F3["fa:fa-image Image Files"]
+    FILE --> |"ZIP handling"| F4["fa:fa-file-archive Compression"]
+
+    F1 --> |"Chunk processing"| F1A["fa:fa-puzzle-piece File Chunks"]
+    F2 --> |"Binary data"| F2A["fa:fa-binary Raw Data"]
+    F3 --> |"Image manipulation"| F3A["fa:fa-crop Image Editing"]
+    F4 --> |"Compression"| F4A["fa:fa-compress-arrows-alt ZIP Operations"]
+
+    %% Network Operations
+    NET --> |"HTTP requests"| N1["fa:fa-globe HTTP Data"]
+    NET --> |"WebSocket"| N2["fa:fa-plug WebSocket Data"]
+    NET --> |"TCP/IP"| N3["fa:fa-network-wired Raw Sockets"]
+    NET --> |"Protocol impl"| N4["fa:fa-cogs Custom Protocols"]
+
+    N1 --> |"Request body"| N1A["fa:fa-arrow-right Request Processing"]
+    N2 --> |"Binary messages"| N2A["fa:fa-exchange-alt Real-time Data"]
+    N3 --> |"Socket data"| N3A["fa:fa-random Raw Data Transfer"]
+    N4 --> |"Custom format"| N4A["fa:fa-code Protocol Design"]
+
+    %% Cryptography
+    CRYPTO --> |"Encryption"| C1["fa:fa-lock Data Encryption"]
+    CRYPTO --> |"Hashing"| C2["fa:fa-hashtag Hash Functions"]
+    CRYPTO --> |"Signatures"| C3["fa:fa-signature Digital Signatures"]
+    CRYPTO --> |"Random data"| C4["fa:fa-dice Random Generation"]
+
+    C1 --> |"AES/RSA"| C1A["fa:fa-key Encryption Algos"]
+    C2 --> |"SHA/MD5"| C2A["fa:fa-fingerprint Hash Types"]
+    C3 --> |"Sign/Verify"| C3A["fa:fa-check-double Verification"]
+    C4 --> |"Secure random"| C4A["fa:fa-random Cryptographic Random"]
+
+    %% Media Processing
+    MEDIA --> |"Audio processing"| M1["fa:fa-music Audio Data"]
+    MEDIA --> |"Video handling"| M2["fa:fa-video Video Processing"]
+    MEDIA --> |"Image manipulation"| M3["fa:fa-image Image Processing"]
+    MEDIA --> |"Streaming media"| M4["fa:fa-play-circle Media Streams"]
+
+    M1 --> |"Audio formats"| M1A["fa:fa-file-audio Format Handling"]
+    M2 --> |"Video encoding"| M2A["fa:fa-file-video Video Encoding"]
+    M3 --> |"Image formats"| M3A["fa:fa-file-image Format Processing"]
+    M4 --> |"Stream chunks"| M4A["fa:fa-forward Streaming Data"]
+
+    %% Database
+    DB --> |"BLOB storage"| D1["fa:fa-database Binary Storage"]
+    DB --> |"Data export"| D2["fa:fa-file-export Data Export"]
+    DB --> |"Binary import"| D3["fa:fa-file-import Data Import"]
+    DB --> |"Cache"| D4["fa:fa-archive Data Cache"]
+
+    D1 --> |"Binary objects"| D1A["fa:fa-save BLOB Operations"]
+    D2 --> |"Export format"| D2A["fa:fa-file-download Export Processing"]
+    D3 --> |"Import parsing"| D3A["fa:fa-file-upload Import Processing"]
+    D4 --> |"Cache data"| D4A["fa:fa-server Cache Storage"]
+
+    %% Streaming
+    STREAM --> |"Data chunks"| S1["fa:fa-cubes Chunk Processing"]
+    STREAM --> |"Transform"| S2["fa:fa-random Data Transform"]
+    STREAM --> |"Pipe"| S3["fa:fa-pipe Stream Pipes"]
+    STREAM --> |"Back pressure"| S4["fa:fa-tachometer-alt Flow Control"]
+
+    S1 --> |"Process chunks"| S1A["fa:fa-cogs Chunk Handling"]
+    S2 --> |"Transform data"| S2A["fa:fa-exchange-alt Data Conversion"]
+    S3 --> |"Connect streams"| S3A["fa:fa-project-diagram Stream Flow"]
+    S4 --> |"Control flow"| S4A["fa:fa-sliders-h Flow Management"]
+
+    %% Style
+    style BUF fill:#f9f,stroke:#333,stroke-width:4px
+    style FILE fill:#bbf,stroke:#333,stroke-width:2px
+    style NET fill:#bfb,stroke:#333,stroke-width:2px
+    style CRYPTO fill:#fbf,stroke:#333,stroke-width:2px
+    style MEDIA fill:#ffb,stroke:#333,stroke-width:2px
+    style DB fill:#fbb,stroke:#333,stroke-width:2px
+    style STREAM fill:#bff,stroke:#333,stroke-width:2px
+                </pre>
+        </div>
+    </div>
+    <div class="markdown-section" id="markdown-content">
+    </div>
+</div>
+
+<script>
+    // Initialize Mermaid
+    mermaid.initialize({ startOnLoad: true });
+
+    // Zoom functionality
+    let currentZoom = 1;
+    const zoomStep = 0.1;
+    const container = document.getElementById('mermaid-container');
+
+    function zoomIn() {
+        currentZoom += zoomStep;
+        applyZoom();
+    }
+
+    function zoomOut() {
+        if (currentZoom > zoomStep) {
+            currentZoom -= zoomStep;
+            applyZoom();
+        }
+    }
+
+    function resetZoom() {
+        currentZoom = 1;
+        applyZoom();
+    }
+
+    function applyZoom() {
+        container.style.transform = `scale(${currentZoom})`;
+    }
+
+    // Configure marked to use Prism for syntax highlighting
+    marked.setOptions({
+        highlight: function(code, lang) {
+            if (Prism.languages[lang]) {
+                return Prism.highlight(code, Prism.languages[lang], lang);
+            }
+            return code;
+        }
+    });
+
+    // Markdown content
+    const markdownContent = `# Buffer Applications Guide
+
+## 1. File Handling
+File operations in Node.js often involve working with buffers for efficient reading and writing of data.
+
+### Reading Large Files
+\`\`\`typescript
+import { createReadStream } from 'fs';
+
+const readLargeFile = async (filePath: string) => {
+    const chunks: Buffer[] = [];
+
+    return new Promise<Buffer>((resolve, reject) => {
+        const stream = createReadStream(filePath);
+
+        stream.on('data', (chunk: Buffer) => {
+            chunks.push(chunk);
+        });
+
+        stream.on('end', () => {
+            resolve(Buffer.concat(chunks));
+        });
+
+        stream.on('error', reject);
+    });
+};
+\`\`\`
+
+### Binary File Processing
+\`\`\`typescript
+const processBinaryFile = (buffer: Buffer) => {
+    // Read a 32-bit integer from the buffer
+    const value = buffer.readInt32BE(0);
+
+    // Write to specific position in buffer
+    const newBuffer = Buffer.alloc(8);
+    newBuffer.writeInt32BE(value, 0);
+    newBuffer.writeInt32BE(value * 2, 4);
+
+    return newBuffer;
+};
+\`\`\`
+
+## 2. Network Data
+Network operations frequently use buffers for data transmission and reception.
+
+### HTTP Request Body Handling
+\`\`\`typescript
+import { IncomingMessage } from 'http';
+
+const readRequestBody = async (req: IncomingMessage): Promise<Buffer> => {
+    const chunks: Buffer[] = [];
+
+    return new Promise((resolve, reject) => {
+        req.on('data', (chunk: Buffer) => chunks.push(chunk));
+        req.on('end', () => resolve(Buffer.concat(chunks)));
+        req.on('error', reject);
+    });
+};
+\`\`\`
+
+### WebSocket Binary Messages
+\`\`\`typescript
+import WebSocket from 'ws';
+
+const ws = new WebSocket('ws://example.com');
+
+ws.on('message', (data: Buffer) => {
+    // Handle binary message
+    const messageType = data.readUInt8(0);
+    const payload = data.slice(1);
+
+    switch(messageType) {
+        case 0x01: // Text message
+            console.log(payload.toString('utf8'));
+            break;
+        case 0x02: // Binary message
+            processBuffer(payload);
+            break;
+    }
+});
+\`\`\`
+
+## 3. Security (Cryptography)
+Buffers are essential for cryptographic operations, handling raw binary data for encryption and hashing.
+
+### Encryption Example
+\`\`\`typescript
+import { createCipheriv, randomBytes } from 'crypto';
+
+const encryptData = (data: Buffer, key: Buffer): Buffer => {
+    const iv = randomBytes(16);
+    const cipher = createCipheriv('aes-256-cbc', key, iv);
+
+    const encrypted = Buffer.concat([
+        cipher.update(data),
+        cipher.final()
+    ]);
+
+    // Return IV + encrypted data
+    return Buffer.concat([iv, encrypted]);
+};
+\`\`\`
+
+### Hashing Example
+\`\`\`typescript
+import { createHash } from 'crypto';
+
+const hashData = (data: Buffer): Buffer => {
+    const hash = createHash('sha256');
+    hash.update(data);
+    return hash.digest();
+};
+\`\`\`
+
+## 4. Media Handling
+Working with media files requires buffer manipulation for processing audio, video, and images.
+
+### Image Processing
+\`\`\`typescript
+const processImage = (imageBuffer: Buffer) => {
+    // Read image dimensions from buffer
+    const width = imageBuffer.readUInt32BE(0);
+    const height = imageBuffer.readUInt32BE(4);
+    const pixelData = imageBuffer.slice(8);
+
+    // Process each pixel (assuming RGB format)
+    for (let i = 0; i < pixelData.length; i += 3) {
+        // Invert colors
+        pixelData[i] = 255 - pixelData[i];     // R
+        pixelData[i + 1] = 255 - pixelData[i + 1]; // G
+        pixelData[i + 2] = 255 - pixelData[i + 2]; // B
+    }
+
+    return Buffer.concat([imageBuffer.slice(0, 8), pixelData]);
+};
+\`\`\`
+
+## 5. Data Storage
+Database operations often involve buffer handling for efficient storage and retrieval of binary data.
+
+### BLOB Storage
+\`\`\`typescript
+import { Pool } from 'pg';
+
+const pool = new Pool();
+
+const storeBinaryData = async (id: string, data: Buffer) => {
+    const client = await pool.connect();
+    try {
+        await client.query(
+            'INSERT INTO binary_data (id, data) VALUES ($1, $2)',
+            [id, data]
+        );
+    } finally {
+        client.release();
+    }
+};
+
+const retrieveBinaryData = async (id: string): Promise<Buffer> => {
+    const client = await pool.connect();
+    try {
+        const result = await client.query(
+            'SELECT data FROM binary_data WHERE id = $1',
+            [id]
+        );
+        return result.rows[0].data;
+    } finally {
+        client.release();
+    }
+};
+\`\`\`
+
+## 6. Data Streams
+Streaming operations use buffers for efficient data processing and transfer.
+
+### Transform Stream
+\`\`\`typescript
+import { Transform } from 'stream';
+
+class BufferTransform extends Transform {
+    constructor(private transformFn: (chunk: Buffer) => Buffer) {
+        super();
+    }
+
+    _transform(chunk: Buffer, encoding: string, callback: Function) {
+        try {
+            const transformed = this.transformFn(chunk);
+            this.push(transformed);
+            callback();
+        } catch (err) {
+            callback(err);
+        }
+    }
+}
+
+// Usage example
+const upperCaseTransform = new BufferTransform((chunk: Buffer) => {
+    return Buffer.from(chunk.toString().toUpperCase());
+});
+\`\`\`
+
+
+\`\`\`
+
+`
+
+    // Render markdown content
+    document.getElementById('markdown-content').innerHTML = marked.parse(markdownContent);
+
+    // Trigger Prism highlighting
+    Prism.highlightAll();
+</script>
+</body>
+</html>
