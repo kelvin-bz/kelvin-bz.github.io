@@ -4,115 +4,186 @@
     <meta charset="UTF-8">
     <style>
         .container {
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
             padding: 20px;
             font-family: system-ui, -apple-system, sans-serif;
-            background-color: #f8f9fa;
-        }
-        .quiz-header {
-            text-align: center;
-            margin-bottom: 30px;
-            background-color: #61dafb;
-            color: #282c34;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            line-height: 1.6;
         }
         .question {
-            margin-bottom: 20px;
+            background-color: #fff;
             padding: 20px;
-            border: 1px solid #e9ecef;
+            margin-bottom: 25px;
             border-radius: 8px;
-            background-color: white;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .question-header {
-            font-size: 1.1em;
-            margin-bottom: 15px;
         }
         .options {
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            margin-top: 15px;
+            gap: 10px;
+            margin-top: 10px;
         }
         .option {
-            padding: 12px 15px;
-            border: 1px solid #dee2e6;
-            border-radius: 6px;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s;
         }
         .option:hover {
-            background-color: #f8f9fa;
+            background-color: #f5f5f5;
             transform: translateX(5px);
         }
-        .option code {
-            background-color: #f8f9fa;
-            padding: 2px 4px;
-            border-radius: 4px;
-            font-family: monospace;
+        .selected {
+            background-color: #e3f2fd;
         }
         .correct {
-            background-color: #d4edda;
-            border-color: #c3e6cb;
-            color: #155724;
+            background-color: #e8f5e9;
+            border-color: #81c784;
         }
         .incorrect {
-            background-color: #f8d7da;
-            border-color: #f5c6cb;
-            color: #721c24;
+            background-color: #ffebee;
+            border-color: #e57373;
         }
         .input-answer {
             width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            border: 1px solid #dee2e6;
-            border-radius: 6px;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
             font-size: 16px;
         }
-        .submit-btn {
-            padding: 10px 20px;
-            background-color: #61dafb;
-            color: #282c34;
+        button {
+            margin-top: 10px;
+            padding: 8px 16px;
+            background-color: #2196f3;
+            color: white;
             border: none;
-            border-radius: 6px;
+            border-radius: 4px;
             cursor: pointer;
-            transition: background-color 0.2s;
+            transition: background-color 0.3s;
         }
-        .submit-btn:hover {
-            background-color: #4fa8c9;
+        button:hover {
+            background-color: #1976d2;
         }
         #score {
-            margin-top: 30px;
+            margin-top: 20px;
             padding: 20px;
-            background-color: white;
+            background-color: #f5f5f5;
             border-radius: 8px;
             text-align: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            font-size: 1.2em;
         }
         .feedback {
-            margin-top: 15px;
-            padding: 12px;
-            border-radius: 6px;
-            display: none;
-            font-size: 0.95em;
-        }
-        code {
-            background-color: #f8f9fa;
-            padding: 2px 6px;
+            margin-top: 10px;
+            padding: 15px;
             border-radius: 4px;
-            font-family: monospace;
-            color: #e83e8c;
+            display: none;
+            line-height: 1.6;
+        }
+        .code-block {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre;
+            overflow-x: auto;
+            line-height: 1.5;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            position: relative;
+        }
+        .copy-button {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .explanation-text {
+            margin-bottom: 10px;
+        }
+        .code-comment {
+            color: #6a737d;
+        }
+        .code-output {
+            color: #0a3069;
+            border-left: 3px solid #2196f3;
+            margin-left: 10px;
+            padding-left: 10px;
+        }
+
+        .node foreignObject {
+            overflow: visible;
+            white-space: normal;
+        }
+
+        .node foreignObject p {
+            /*margin: 0;*/
+            padding: 0px;
+            text-align: center;
+            width: auto !important;
+            min-width: 200px;
         }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.4.0/mermaid.min.js"></script>
+    <link rel="stylesheet" href="/css/all.min.css">
+    <link rel="stylesheet" href="../../css/all.min.css">
 </head>
 <body>
 <div class="container">
     <div class="quiz-header">
         <h1>⚛️ ReactJS Master Quiz</h1>
         <p>Test your knowledge of React concepts, hooks, and best practices!</p>
+    </div>
+
+    <div class="mermaid">
+        graph LR
+        Components["fa:fa-puzzle-piece Components"]
+        Components -->|"Class Based"| ClassComp["fa:fa-cube Class Components"]
+        Components -->|"Function Based"| FuncComp["fa:fa-function Function Components"]
+
+        Components -->|"Manages"| State["fa:fa-database State"]
+        State -->|"Component State"| UseState["fa:fa-box useState Hook"]
+        State -->|"Complex State"| UseReducer["fa:fa-cogs useReducer Hook"]
+        State -->|"Global State"| Context["fa:fa-sitemap Context API"]
+
+        Effects["fa:fa-sync Side Effects"]
+        Effects -->|"Lifecycle"| UseEffect["fa:fa-clock useEffect Hook"]
+        Effects -->|"DOM Access"| UseRef["fa:fa-link useRef Hook"]
+        Effects -->|"Performance"| UseMemo["fa:fa-memory useMemo/useCallback"]
+
+        Concepts["fa:fa-lightbulb Concepts"]
+        Concepts -->|"One-way"| DataFlow["fa:fa-arrow-down Data Flow"]
+        Concepts -->|"Virtual"| VDOM["fa:fa-copy Virtual DOM"]
+        Concepts -->|"UI Updates"| Reconciliation["fa:fa-sync Reconciliation"]
+
+        Components -->|"Accepts"| Props["fa:fa-arrow-right Props"]
+        Props -->|"Read Only"| Immutable["fa:fa-lock Immutable"]
+        Props -->|"Can Be"| PropTypes["fa:fa-check-circle PropTypes"]
+
+        Events["fa:fa-bolt Events"]
+        Events -->|"Synthetic"| SyntheticEvents["fa:fa-random Synthetic Events"]
+        Events -->|"Handlers"| EventHandlers["fa:fa-code Event Handlers"]
+
+        Styling["fa:fa-paint-brush Styling"]
+        Styling -->|"CSS"| CSS["fa:fa-file-code CSS Modules"]
+        Styling -->|"Inline"| Inline["fa:fa-code Inline Styles"]
+        Styling -->|"CSS-in-JS"| StyledComp["fa:fa-palette Styled Components"]
+
+        Router["fa:fa-route Routing"]
+        Router -->|"Client-Side"| RouterDOM["fa:fa-map React Router"]
+        Router -->|"Navigation"| Navigation["fa:fa-compass useNavigate/Link"]
+        Router -->|"Parameters"| Params["fa:fa-key useParams"]
+
+        Forms["fab:fa-wpforms Forms"]
+        Forms -->|"Controlled"| Controlled["fa:fa-sliders-h Controlled Components"]
+        Forms -->|"Uncontrolled"| Uncontrolled["fa:fa-toggle-off Uncontrolled Components"]
+        Forms -->|"Validation"| Validation["fa:fa-check-circle Form Validation"]
     </div>
     <div id="questions"></div>
     <div id="score"></div>
