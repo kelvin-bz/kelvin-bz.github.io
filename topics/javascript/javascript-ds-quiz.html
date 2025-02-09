@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <style>
         .container {
-            max-width: 900px;
+            max-width: 90vw;
             margin: 0 auto;
             padding: 20px;
             font-family: system-ui, -apple-system, sans-serif;
@@ -126,6 +126,7 @@
             /*margin: 0;*/
             padding: 0px;
             text-align: center;
+            font-size: 26px;
             width: auto !important;
             min-width: 200px;
         }
@@ -145,50 +146,118 @@
         %% Arrays Section
         Arrays["fa:fa-list Arrays"]
         DS -->|"Ordered collection"| Arrays
-        Arrays -->|"Add/Remove"| ArrMod["fa:fa-pencil-alt Modification"]
+        Arrays -->|"Modification"| ArrMod["fa:fa-pencil-alt Modification"]
         Arrays -->|"Query"| ArrQuery["fa:fa-search Query"]
-        Arrays -->|"Extract"| ArrExtract["fa:fa-cut Extraction"]
+        Arrays -->|"Iteration"| ArrIter["fa:fa-sync Iteration"]
+        Arrays -->|"Transform"| ArrTrans["fa:fa-random Transform"]
+        Arrays -->|"Order"| ArrOrder["fa:fa-sort Order"]
 
+        %% Array Modification - Linear Flow
         ArrMod -->|"Add to end"| Push["fa:fa-arrow-right push()"]
-        ArrMod -->|"Add to start"| Unshift["fa:fa-arrow-left unshift()"]
-        ArrMod -->|"Remove from end"| Pop["fa:fa-times-circle pop()"]
+        Push -->|"Add to start"| Unshift["fa:fa-arrow-left unshift()"]
+        Unshift -->|"Remove from end"| Pop["fa:fa-times-circle pop()"]
+        Pop -->|"Remove from start"| Shift["fa:fa-backspace shift()"]
+        Shift -->|"Add/Remove at index"| Splice["fa:fa-cut splice()"]
+        Splice -->|"Fill values"| Fill["fa:fa-fill-drip fill()"]
 
+        %% Array Query - Linear Flow
         ArrQuery -->|"Check existence"| Includes["fa:fa-check includes()"]
-        ArrQuery -->|"Get length"| Length["fa:fa-ruler length"]
+        Includes -->|"Find index"| IndexOf["fa:fa-search-location indexOf()"]
+        IndexOf -->|"Get length"| Length["fa:fa-ruler length"]
+        Length -->|"Find element"| Find["fa:fa-search-plus find()"]
+        Find -->|"Check condition"| Some["fa:fa-question-circle some()"]
+        Some -->|"Check all"| Every["fa:fa-check-double every()"]
 
-        ArrExtract -->|"Get remaining"| Rest["fa:fa-ellipsis-h ...rest"]
-        ArrExtract -->|"First element"| First["fa:fa-step-forward first"]
+        %% Array Iteration - Linear Flow
+        ArrIter -->|"For each element"| ForEach["fa:fa-redo forEach()"]
+        ForEach -->|"Generate entries"| Entries["fa:fa-key entries()"]
+        Entries -->|"Get iterator"| Iterator["fa:fa-forward Symbol.iterator"]
+
+        %% Array Transform - Linear Flow
+        ArrTrans -->|"Create new array"| Map["fa:fa-map map()"]
+        Map -->|"Filter elements"| Filter["fa:fa-filter filter()"]
+        Filter -->|"Accumulate"| Reduce["fa:fa-compress-arrows-alt reduce()"]
+        Reduce -->|"Get portion"| Slice["fa:fa-layer-group slice()"]
+        Slice -->|"Join strings"| Join["fa:fa-link join()"]
+        Join -->|"Flatten"| Flat["fa:fa-layer-group flat()"]
+
+        %% Array Order - Linear Flow
+        ArrOrder -->|"Reverse order"| Reverse["fa:fa-exchange-alt reverse()"]
+        Reverse -->|"Sort elements"| Sort["fa:fa-sort-alpha-down sort()"]
 
         %% Objects Section
         Objects["fa:fa-cube Objects"]
         DS -->|"Key-value pairs"| Objects
         Objects -->|"Properties"| ObjProp["fa:fa-key Properties"]
         Objects -->|"Operations"| ObjOp["fa:fa-cogs Operations"]
+        Objects -->|"Prototype"| ObjProto["fa:fa-dna Prototype"]
+        Objects -->|"Descriptors"| ObjDesc["fa:fa-file-signature Descriptors"]
 
+        %% Object Properties - Linear Flow
         ObjProp -->|"Get all keys"| Keys["fa:fa-key Object.keys()"]
-        ObjProp -->|"Destructure"| Destruct["fa:fa-puzzle-piece { a, c = 3 }"]
+        Keys -->|"Get all values"| Values["fa:fa-list-ul Object.values()"]
+        Values -->|"Get entries"| ObjEntries["fa:fa-th Object.entries()"]
+        ObjEntries -->|"Destructure"| Destruct["fa:fa-puzzle-piece { a, b = 3 }"]
+        Destruct -->|"Check property"| HasProp["fa:fa-check-circle hasOwnProperty()"]
 
+        %% Object Operations - Linear Flow
         ObjOp -->|"Spread"| Spread["fa:fa-copy {...obj}"]
+        Spread -->|"Merge objects"| Assign["fa:fa-object-group Object.assign()"]
+        Assign -->|"Freeze object"| Freeze["fa:fa-snowflake Object.freeze()"]
+        Freeze -->|"Seal object"| Seal["fa:fa-lock Object.seal()"]
+        Seal -->|"Create object"| Create["fa:fa-plus-circle Object.create()"]
+
+        %% Object Prototype - Linear Flow
+        ObjProto -->|"Get prototype"| GetProto["fa:fa-arrow-up getPrototypeOf()"]
+        GetProto -->|"Set prototype"| SetProto["fa:fa-arrow-down setPrototypeOf()"]
+        SetProto -->|"Check in chain"| IsProto["fa:fa-code-branch isPrototypeOf()"]
+
+        %% Object Descriptors - Linear Flow
+        ObjDesc -->|"Define property"| DefProp["fa:fa-edit defineProperty()"]
+        DefProp -->|"Get descriptor"| GetDesc["fa:fa-info getOwnPropertyDescriptor()"]
 
         %% Map Section
         Maps["fa:fa-map Maps"]
         DS -->|"Unique keys"| Maps
         Maps -->|"Modifications"| MapMod["fa:fa-wrench Methods"]
-        Maps -->|"Properties"| MapProp["fa:fa-info Properties"]
+        Maps -->|"Query"| MapQuery["fa:fa-search-plus Query"]
+        Maps -->|"Iteration"| MapIter["fa:fa-sync Iteration"]
 
+        %% Map Modifications - Linear Flow
         MapMod -->|"Add/Update"| Set["fa:fa-plus-circle set()"]
-        MapMod -->|"Get pairs"| Entries["fa:fa-th entries()"]
+        Set -->|"Remove"| Delete["fa:fa-minus-circle delete()"]
+        Delete -->|"Clear all"| Clear["fa:fa-eraser clear()"]
 
-        MapProp -->|"Count elements"| Size["fa:fa-calculator size"]
+        %% Map Query - Linear Flow
+        MapQuery -->|"Get value"| Get["fa:fa-hand-point-right get()"]
+        Get -->|"Check key"| Has["fa:fa-check-square has()"]
+        Has -->|"Count entries"| Size["fa:fa-calculator size"]
+
+        %% Map Iteration - Linear Flow
+        MapIter -->|"Get key-values"| MapEntries["fa:fa-th entries()"]
+        MapEntries -->|"Get all keys"| MapKeys["fa:fa-key keys()"]
+        MapKeys -->|"Get all values"| MapValues["fa:fa-list-ul values()"]
 
         %% Set Section
         Sets["fa:fa-layer-group Sets"]
         DS -->|"Unique values"| Sets
-        Sets -->|"Properties"| SetProp["fa:fa-info-circle Properties"]
-        Sets -->|"Features"| SetFeat["fa:fa-star Features"]
+        Sets -->|"Modifications"| SetMod["fa:fa-wrench Methods"]
+        Sets -->|"Query"| SetQuery["fa:fa-search-plus Query"]
+        Sets -->|"Operations"| SetOp["fa:fa-random Operations"]
 
-        SetProp -->|"Count unique"| SetSize["fa:fa-hashtag size"]
-        SetFeat -->|"No duplicates"| Unique["fa:fa-fingerprint Unique values"]
+        %% Set Modifications - Linear Flow
+        SetMod -->|"Add value"| Add["fa:fa-plus-circle add()"]
+        Add -->|"Remove value"| DelSet["fa:fa-minus-circle delete()"]
+        DelSet -->|"Clear all"| ClearSet["fa:fa-eraser clear()"]
+
+        %% Set Query - Linear Flow
+        SetQuery -->|"Check value"| HasSet["fa:fa-check-square has()"]
+        HasSet -->|"Count values"| SetSize["fa:fa-hashtag size"]
+
+        %% Set Operations - Linear Flow
+        SetOp -->|"Union"| Union["fa:fa-object-group union()"]
+        Union -->|"Intersection"| Intersect["fa:fa-object-ungroup intersection()"]
+        Intersect -->|"Difference"| Diff["fa:fa-minus difference()"]
 
         %% Styles
         style DS fill:#f9f,stroke:#333,stroke-width:2px
@@ -197,11 +266,13 @@
         style Maps fill:#bfb,stroke:#333,stroke-width:2px
         style Sets fill:#ffb,stroke:#333,stroke-width:2px
     </div>
+
     <div id="questions"></div>
     <div id="score"></div>
 </div>
 
 <script>
+
 const quizData = {
     "title": "JavaScript Data Structures Quiz",
     "description": "Test your understanding of JavaScript data structures and methods!",
