@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Believe You Can - A Funny Take</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f5f5f5;
+            font-family: Arial, sans-serif;
+        }
+
+        main {
+            text-align: center;
+            width: 100%;
+            max-width: 600px;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .funny-quote {
+            margin: 1rem auto;
+            display: inline-block;
+            font-size: calc(14px + 1vmin);
+            padding: 1rem;
+            border-radius: 10px;
+            background: #fff4bf;
+            border: 2px dashed #FFA500;
+            max-width: 80%;
+            box-sizing: border-box;
+        }
+
+        .funny-image {
+            margin-top: 1rem;
+            width: 60%;
+            max-width: 250px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        @media (max-height: 400px) {
+            .funny-quote {
+                font-size: calc(12px + 0.5vmin);
+                padding: 0.5rem;
+                margin: 0.5rem auto;
+            }
+            .funny-image {
+                max-width: 150px;
+                margin-top: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<main>
+    <div class="funny-quote">
+        "Believe you can and you're halfway there."<br>
+        — Theodore Roosevelt (but let's pretend it's from a wise llama)
+    </div>
+
+    <img
+            class="funny-image"
+            src="https://media.giphy.com/media/26n6WywJyh39n1pBu/giphy.gif"
+            alt="Funny Llama Placeholder"
+    />
+</main>
+</body>
+</html>
