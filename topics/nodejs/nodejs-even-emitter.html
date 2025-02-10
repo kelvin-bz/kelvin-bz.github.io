@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <style>
         .container {
-            max-width: 900px;
+            max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
             font-family: system-ui, -apple-system, sans-serif;
@@ -292,7 +292,36 @@ class OrderEventListeners {
     }
     // ...
 }
-`
+`,
+                    mermaid: `
+                    graph LR
+    Client[Client] --> OrderService[OrderService]
+    OrderService --> OrderRepository[OrderRepository]
+    OrderService --> EventEmitter[EventEmitter]
+    EventEmitter --> OrderEventListeners[OrderEventListeners]
+
+    subgraph Events
+        OrderCreated[ORDER_CREATED]
+        OrderPaid[ORDER_PAID]
+    end
+
+    EventEmitter --> Events
+
+    subgraph Listener Actions
+        NotifyCustomer[Notify Customer]
+        CheckInventory[Check Inventory]
+        StartShipping[Start Shipping]
+    end
+
+    OrderEventListeners --> NotifyCustomer
+    OrderEventListeners --> CheckInventory
+    OrderEventListeners --> StartShipping
+
+    style OrderService fill:#f9f,stroke:#333,stroke-width:2px
+    style EventEmitter fill:#bbf,stroke:#333,stroke-width:2px
+    style Events fill:#dfd,stroke:#333,stroke-width:2px
+    style Listener Actions fill:#ffd,stroke:#333,stroke-width:2px
+                    `
                 }
             },
             {
@@ -606,9 +635,15 @@ emitter.emit('userEvent', 'John', 'login');  // User John performed login`
                         <button class="copy-button" onclick="copyToClipboard(\`${explanation.code}\`, this)">Copy</button>
                     </div>
                 ` : ''}
+                 ${explanation.mermaid ? `
+                    <div class="mermaid">
+                        ${explanation.mermaid}
+                    </div>
+                ` : ''}
             `;
 
         feedbackDiv.style.backgroundColor = isCorrect ? '#e8f5e9' : '#ffebee';
+        mermaid.init();
     }
 
     function checkAnswer(selected, correct, optionDiv, questionDiv, explanation) {
