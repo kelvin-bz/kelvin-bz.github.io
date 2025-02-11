@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MUI</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.6.1/mermaid.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.2/marked.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-jsx.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+    <link rel="stylesheet" href="/css/all.min.css">
+    <link rel="stylesheet" href="../../css/all.min.css">
+
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+            flex-direction: column; /* Stack vertically by default */
+        }
+
+        .mermaid-section, .markdown-section {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .mermaid-section {
+            background: #f5f5f5;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .node foreignObject {
+            overflow: visible;
+            white-space: normal;
+        }
+
+        .node foreignObject p {
+            /*margin: 0;*/
+            padding: 0px;
+            text-align: center;
+            width: auto !important;
+            min-width: 200px;
+        }
+
+
+        .markdown-section {
+            background: white;
+            padding: 30px;
+            line-height: 1.6;
+        }
+
+        .zoom-controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: white;
+            padding: 5px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .zoom-controls button {
+            margin: 0 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+            background: #f0f0f0;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+
+        .zoom-controls button:hover {
+            background: #e0e0e0;
+        }
+
+        #mermaid-container {
+            transform-origin: top left;
+            transition: transform 0.3s ease;
+        }
+
+        /* Code block styling */
+        pre[class*="language-"] {
+            border-radius: 6px;
+            margin: 1.5em 0;
+            padding: 1em;
+            overflow: auto;
+            background: #2d2d2d;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        code[class*="language-"] {
+            font-family: 'Fira Code', 'Consolas', Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+            font-size: 0.9em;
+            line-height: 1.4;
+            text-shadow: none;
+        }
+
+        /* Markdown content styling */
+        .markdown-section h1 {
+            font-size: 2em;
+            margin-bottom: 1em;
+            border-bottom: 2px solid #eaecef;
+            padding-bottom: 0.3em;
+        }
+
+        .markdown-section h2 {
+            font-size: 1.5em;
+            margin: 1.5em 0 1em;
+        }
+
+        .markdown-section ul, .markdown-section ol {
+            padding-left: 2em;
+        }
+
+        .markdown-section li {
+            margin: 0.5em 0;
+        }
+
+        .markdown-section strong {
+            font-weight: 600;
+            color: #24292e;
+        }
+
+        /* Language-specific syntax highlighting adjustments */
+        .language-javascript {
+            color: #f8f8f2;
+        }
+
+        .language-yaml {
+            color: #f8f8f2;
+        }
+
+        .language-bash {
+            color: #f8f8f2;
+        }
+        @media (min-width: 768px) {
+            .container {
+                flex-direction: row; /* Side by side on desktop */
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="mermaid-section">
+        <div class="zoom-controls">
+            <button onclick="zoomIn()">+</button>
+            <button onclick="zoomOut()">-</button>
+            <button onclick="resetZoom()">Reset</button>
+        </div>
+        <div class="mermaid-container">
+                <pre class="mermaid">
+graph LR
+    %% Existing Nodes
+    Components["fa:fa-puzzle-piece MUI Components"]
+    Layout["fa:fa-th-large Layout"]
+    Theme["fa:fa-palette Theming"]
+    Styling["fa:fa-paint-brush Styling"]
+    Utils["fa:fa-tools Utilities"]
+
+    %% Existing Sub-Sections of Components
+    Components --> |"Building blocks"| Basic["fa:fa-cube Basic Components"]
+    Components --> |"Form elements"| Forms["fab:fa-wpforms Form Controls"]
+    Components --> |"Layout elements"| Navigation["fa:fa-compass Navigation"]
+    Components --> |"User feedback"| Feedback["fa:fa-comment Feedback"]
+    Components --> |"Data display"| Display["fa:fa-table Data Display"]
+
+    Basic --> |"Core elements"| Basic1["fa:fa-square Button"]
+    Basic --> |"Content wrapper"| Basic2["fa:fa-box Paper"]
+    Basic --> |"Visual grouping"| Basic3["fa:fa-layer-group Card"]
+    Basic --> |"Typography"| Basic4["fa:fa-font Typography"]
+
+    Forms --> |"User input"| Forms1["fa:fa-keyboard TextField"]
+    Forms --> |"Options"| Forms2["fa:fa-check-square Checkbox"]
+    Forms --> |"Single choice"| Forms3["fa:fa-dot-circle Radio"]
+    Forms --> |"Selections"| Forms4["fa:fa-list Select"]
+
+    %% Existing Sub-Sections of Layout
+    Layout --> |"Grid system"| Layout1["fa:fa-th Grid"]
+    Layout --> |"Containers"| Layout2["fa:fa-box Container"]
+    Layout --> |"Breakpoints"| Layout3["fa:fa-mobile-alt Responsive"]
+    Layout --> |"Spacing"| Layout4["fa:fa-arrows-alt Spacing"]
+
+    %% Existing Sub-Sections of Theme
+    Theme --> |"Color scheme"| Theme1["fa:fa-palette Palette"]
+    Theme --> |"Typography"| Theme2["fa:fa-text-height Font"]
+    Theme --> |"Dark/Light"| Theme3["fa:fa-adjust Mode"]
+    Theme --> |"Customization"| Theme4["fa:fa-sliders-h Custom Theme"]
+
+    %% Existing Sub-Sections of Styling
+    Styling --> |"CSS-in-JS"| Styling1["fa:fa-code styled"]
+    Styling --> |"Hook based"| Styling2["fa:fa-hook makeStyles"]
+    Styling --> |"Direct CSS"| Styling3["fab:fa-css3 sx prop"]
+    Styling --> |"Class based"| Styling4["fa:fa-paint-roller className"]
+
+    %% NEW: Lab Components (Experimental)
+    Components --> |"Experimental"| Lab["fa:fa-flask Lab Components"]
+    Lab --> Lab1["fa:fa-stream Timeline"]
+    Lab --> Lab2["fa:fa-tree TreeView"]
+    Lab --> Lab3["fa:fa-clock Pickers"]
+
+    %% NEW: Icons
+    Components --> |"Visual symbols"| Icons["fa:fa-icons Icons"]
+    Icons --> Icons1["fa:fa-icons Material Icons"]
+    Icons --> Icons2["fa:fa-image SVG Icons"]
+
+    %% NEW: Utilities Sub-Sections
+    Utils --> |"Pre-built hooks"| Utils1["fa:fa-check Hooks"]
+    Utils --> |"Accessibility helpers"| Utils2["fa:fa-wheelchair Accessibility"]
+    Utils --> |"Localization/i18n"| Utils3["fa:fa-globe Localization"]
+    Utils --> |"Testing support"| Utils4["fa:fa-vial Testing Library"]
+    Utils --> |"Advanced styling"| Utils5["fa:fa-cogs clsx & Other Helpers"]
+
+                </pre>
+        </div>
+
+        <div class="mermaid-container">
+                <pre class="mermaid">
+graph LR
+    Components["fa:fa-puzzle-piece Components"] --> |"Contains reusable UI elements"| Common["fa:fa-share-alt Common"]
+    Components --> |"Handles page structure"| Layout["fa:fa-columns Layout"]
+    Components --> |"Feature specific modules"| Features["fa:fa-star Features"]
+
+    Common --> |"Basic UI element"| Button["fa:fa-square Button Component"]
+    Common --> |"Input handling"| TextField["fa:fa-keyboard TextField Component"]
+    Common --> |"Content container"| Card["fa:fa-credit-card Card Component"]
+
+    Layout --> |"Top navigation"| Header["fa:fa-heading Header"]
+    Layout --> |"Bottom section"| Footer["fa:fa-shoe-prints Footer"]
+    Layout --> |"Side navigation"| Sidebar["fa:fa-bars Sidebar"]
+    Layout --> |"Menu structure"| Navigation["fa:fa-compass Navigation"]
+
+    Features --> |"Product display"| Products["fa:fa-shopping-bag Products"]
+    Features --> |"Shopping cart"| Cart["fa:fa-shopping-cart Cart"]
+    Features --> |"Payment process"| Checkout["fa:fa-credit-card Checkout"]
+
+    Products --> |"Individual item"| ProductCard["fa:fa-tag ProductCard"]
+    Products --> |"Item collection"| ProductList["fa:fa-list ProductList"]
+    Products --> |"Item information"| ProductDetails["fa:fa-info-circle ProductDetails"]
+
+    Services["fa:fa-cogs Services"] --> |"API configuration"| Api["fa:fa-cloud API"]
+    Services --> |"User management"| Auth["fa:fa-user-lock Auth"]
+
+    Api --> |"Axios setup"| AxiosConfig["fa:fa-wrench axios.config.js"]
+    Api --> |"API routes"| Endpoints["fa:fa-route endpoints.js"]
+
+    Utils["fa:fa-tools Utils"] --> |"Data formatting"| Formatters["fa:fa-font formatters.js"]
+    Utils --> |"Data validation"| Validators["fa:fa-check-circle validators.js"]
+    Utils --> |"Global values"| Constants["fa:fa-cube constants.js"]
+
+    Theme["fa:fa-palette Theme"] --> |"Color schemes"| Palette["fa:fa-fill palette.js"]
+    Theme --> |"Text styles"| Typography["fa:fa-text-height typography.js"]
+    Theme --> |"UI overrides"| ComponentStyles["fa:fa-brush components.js"]
+
+    Contexts["fa:fa-project-diagram Contexts"] --> |"Cart state"| CartContext["fa:fa-shopping-basket CartContext"]
+    Contexts --> |"User state"| AuthContext["fa:fa-user-shield AuthContext"]
+
+    Pages["fa:fa-file-alt Pages"] --> |"Landing page"| Home["fa:fa-home Home"]
+    Pages --> |"Product listing"| ProductsPage["fa:fa-store Products"]
+    Pages --> |"Item details"| ProductDetailPage["fa:fa-search ProductDetail"]
+    Pages --> |"Cart view"| CartPage["fa:fa-shopping-cart Cart"]
+    Pages --> |"Payment"| CheckoutPage["fa:fa-money-check Checkout"]
+
+    Routes["fa:fa-route Routes"] --> |"Protected routes"| PrivateRoute["fa:fa-lock PrivateRoute"]
+    Routes --> |"Open routes"| PublicRoute["fa:fa-unlock PublicRoute"]
+    Routes --> |"Open routes"| PublicRoute["fa:fa-unlock PublicRoute"]
+
+                </pre>
+        </div>
+    </div>
+    <div class="markdown-section" id="markdown-content">
+    </div>
+</div>
+
+
+
+<script>
+    // Initialize Mermaid
+    mermaid.initialize({ startOnLoad: true });
+
+    // Zoom functionality
+    let currentZoom = 1;
+    const zoomStep = 0.1;
+    const container = document.getElementsByClassName('mermaid-container');
+
+    function zoomIn() {
+        currentZoom += zoomStep;
+        applyZoom();
+    }
+
+    function zoomOut() {
+        if (currentZoom > zoomStep) {
+            currentZoom -= zoomStep;
+            applyZoom();
+        }
+    }
+
+    function resetZoom() {
+        currentZoom = 1;
+        applyZoom();
+    }
+
+    function applyZoom() {
+        container.style.transform = `scale(${currentZoom})`;
+    }
+
+    // Configure marked to use Prism for syntax highlighting
+    marked.setOptions({
+        highlight: function(code, lang) {
+            if (Prism.languages[lang]) {
+                return Prism.highlight(code, Prism.languages[lang], lang);
+            }
+            return code;
+        }
+    });
+
+    // Markdown content
+    const markdownContent = `
+---
+
+## 1. **MUI Components** (puzzle-piece)
+
+**Example:** A simple component using a Button.
+
+\`\`\`jsx
+import React from 'react';
+import { Button, Card, CardContent, Typography } from '@mui/material';
+
+function ComponentsExample() {
+  return (
+    <Card>
+      <CardContent>
+        <Typography variant="h5" gutterBottom>
+          MUI Components Example
+        </Typography>
+        <Button variant="contained" color="primary">
+          Click Me
+        </Button>
+      </CardContent>
+    </Card>
+  );
+}
+
+export default ComponentsExample;
+\`\`\`
+
+### Key Points
+- **Button** and **Card** are standard Material UI components.
+- \`variant="contained"\` gives the button a filled style; \`color="primary"\` ties in the theme’s primary color.
+
+---
+
+## 2. **Layout** (th-large)
+
+**Example:** A layout using Container and Grid to create a responsive structure.
+
+\`\`\`jsx
+import React from 'react';
+import { Container, Grid, Box } from '@mui/material';
+
+function LayoutExample() {
+  return (
+    <Container maxWidth="md">
+      <Grid container spacing={2}>
+        <Grid item xs={12} sm={6}>
+          <Box p={2} bgcolor="info.main" color="white">
+            Column 1
+          </Box>
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <Box p={2} bgcolor="success.main" color="white">
+            Column 2
+          </Box>
+        </Grid>
+      </Grid>
+    </Container>
+  );
+}
+
+export default LayoutExample;
+\`\`\`
+
+### Key Points
+- **Container** centers your content and provides max-width constraints.
+- **Grid** is used for responsive layouts with customizable spacing and breakpoints.
+- **Box** is a convenient wrapper for styling and spacing.
+
+---
+
+## 3. **Theming** (palette)
+
+**Example:** Creating a custom theme and applying it with ThemeProvider.
+
+\`\`\`jsx
+import React from 'react';
+import { createTheme, ThemeProvider, Typography } from '@mui/material';
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#1976d2', // Custom primary color
+    },
+    secondary: {
+      main: '#ff4081', // Custom secondary color
+    },
+  },
+  typography: {
+    fontFamily: 'Roboto, Arial, sans-serif',
+    h5: {
+      fontWeight: 700,
+    },
+  },
+});
+
+function ThemeExample() {
+  return (
+    <ThemeProvider theme={theme}>
+      <Typography variant="h5" color="primary">
+        Custom Themed Text
+      </Typography>
+      <Typography variant="body1" color="secondary">
+        Secondary Colored Text
+      </Typography>
+    </ThemeProvider>
+  );
+}
+
+export default ThemeExample;
+\`\`\`
+
+### Key Points
+- **createTheme** allows you to define custom palettes, typography, and more.
+- **ThemeProvider** applies the theme across child components.
+- Colors and typography are pulled from the theme automatically.
+
+---
+
+## 4. **Styling** (paint-brush)
+
+MUI v5 offers multiple ways to style components:
+
+### A) **Using the \`styled\` API** (CSS-in-JS)
+
+\`\`\`jsx
+import React from 'react';
+import { styled } from '@mui/material/styles';
+import Button from '@mui/material/Button';
+
+const CustomButton = styled(Button)({
+  backgroundColor: 'rebeccapurple',
+  color: '#fff',
+  '&:hover': {
+    backgroundColor: 'indigo',
+  },
+});
+
+function StyledExample() {
+  return <CustomButton variant="contained">Styled Button</CustomButton>;
+}
+
+export default StyledExample;
+\`\`\`
+
+### B) **Using the \`sx\` prop**
+
+\`\`\`jsx
+import React from 'react';
+import { Box } from '@mui/material';
+
+function SxExample() {
+  return (
+    <Box
+      sx={{
+        bgcolor: 'primary.main',
+        color: '#fff',
+        p: 2,
+        textAlign: 'center',
+      }}
+    >
+      Box styled with sx prop
+    </Box>
+  );
+}
+
+export default SxExample;
+\`\`\`
+
+### C) **Using \`makeStyles\`** (legacy/optional in v5)
+
+\`\`\`jsx
+import React from 'react';
+import { makeStyles } from '@mui/styles';
+import Button from '@mui/material/Button';
+
+const useStyles = makeStyles({
+  root: {
+    backgroundColor: 'tomato',
+    color: '#fff',
+    '&:hover': {
+      backgroundColor: 'red',
+    },
+  },
+});
+
+function MakeStylesExample() {
+  const classes = useStyles();
+  return <Button className={classes.root}>makeStyles Button</Button>;
+}
+
+export default MakeStylesExample;
+\`\`\`
+
+> **Note:** In v5, \`makeStyles\` is part of the legacy \`@mui/styles\` package, which has different installation steps. The recommended approach for new projects is the \`styled\` or \`sx\` APIs.
+
+---
+
+## 5. **Utilities** (tools)
+
+**Example:** Using the \`useTheme\` and \`useMediaQuery\` hooks to handle responsiveness.
+
+\`\`\`jsx
+import React from 'react';
+import { useTheme, useMediaQuery } from '@mui/material';
+
+function UtilitiesExample() {
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+
+  return (
+    <div>
+      {isSmallScreen ? (
+        <p>On a small screen</p>
+      ) : (
+        <p>On a larger screen</p>
+      )}
+    </div>
+  );
+}
+
+export default UtilitiesExample;
+\`\`\`
+
+### Key Points
+- **useTheme** provides direct access to the current Material UI theme object.
+- **useMediaQuery** is a utility hook for applying different UI states or logic based on responsive breakpoints.
+
+---
+
+### Putting It All Together
+
+In a larger application, you might have a structure like this:
+
+\`\`\`
+src/
+  |-- assets/
+  |   |-- images/
+  |   |-- icons/
+  |   \`-- fonts/
+  |
+  |-- components/
+  |   |-- common/              # Reusable components
+  |   |   |-- Button/
+  |   |   |   |-- Button.jsx
+  |   |   |   |-- Button.styles.js
+  |   |   |   \`-- Button.test.js
+  |   |   |-- TextField/
+  |   |   \`-- Card/
+  |   |
+  |   |-- layout/             # Layout components
+  |   |   |-- Header/
+  |   |   |-- Footer/
+  |   |   |-- Sidebar/
+  |   |   \`-- Navigation/
+  |   |
+  |   \`-- features/           # Feature-specific components
+  |       |-- products/
+  |       |   |-- ProductCard/
+  |       |   |-- ProductList/
+  |       |   \`-- ProductDetails/
+  |       |-- cart/
+  |       \`-- checkout/
+  |
+  |-- theme/                  # MUI theme configuration
+  |   |-- index.js           # Main theme export
+  |   |-- palette.js         # Color definitions
+  |   |-- typography.js      # Typography settings
+  |   \`-- components.js      # Component style overrides
+  |
+  |-- hooks/                 # Custom hooks
+  |   |-- useCart.js
+  |   \`-- useAuth.js
+  |
+  |-- services/              # API and other services
+  |   |-- api/
+  |   |   |-- axios.config.js
+  |   |   \`-- endpoints.js
+  |   \`-- auth/
+  |
+  |-- utils/                 # Utility functions
+  |   |-- formatters.js
+  |   |-- validators.js
+  |   \`-- constants.js
+  |
+  |-- contexts/              # React contexts
+  |   |-- CartContext.js
+  |   \`-- AuthContext.js
+  |
+  |-- pages/                 # Page components
+  |   |-- Home/
+  |   |-- Products/
+  |   |-- ProductDetail/
+  |   |-- Cart/
+  |   \`-- Checkout/
+  |
+  |-- routes/                # Route configurations
+  |   |-- PrivateRoute.jsx
+  |   |-- PublicRoute.jsx
+  |   \`-- index.js
+  |
+  |-- App.jsx
+  \`-- index.js
+\`\`\`
+
+Where **\`index.js\`** or **\`App.js\`** wraps everything inside the \`<ThemeProvider>\`, and each example is used in different parts of your UI as needed.
+
+---
+
+`
+
+    const markdownContentEcommece = `
+    Below is an example of how you might implement the **key files** in your ecommerce project using Material-UI (MUI).
+
+---
+
+## \`index.js\`
+This is the entry point of your React application. It renders the \`App\` component within a React Router and Material-UI’s \`ThemeProvider\`.
+
+\`\`\`jsx
+// src/index.js
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { BrowserRouter } from 'react-router-dom';
+import { ThemeProvider, CssBaseline } from '@mui/material';
+import App from './App';
+import theme from './theme';
+
+ReactDOM.render(
+  <React.StrictMode>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </ThemeProvider>
+  </React.StrictMode>,
+  document.getElementById('root')
+);
+\`\`\`
+
+---
+
+## \`App.jsx\`
+The main application component where you might place your global layouts (e.g., \`Header\`, \`Footer\`) and wrap your routes.
+
+\`\`\`jsx
+// src/App.jsx
+import React from 'react';
+import Header from './components/layout/Header/Header';
+import Footer from './components/layout/Footer/Footer';
+import AppRoutes from './routes'; // This is the routes/index.js
+
+function App() {
+  return (
+    <div>
+      <Header />
+      <AppRoutes />
+      <Footer />
+    </div>
+  );
+}
+
+export default App;
+\`\`\`
+
+---
+
+## \`theme/index.js\`
+This file combines the palette, typography, and component overrides into a single MUI theme that you apply across your app.
+
+\`\`\`jsx
+// src/theme/index.js
+import { createTheme } from '@mui/material/styles';
+import palette from './palette';
+import typography from './typography';
+import componentsOverride from './components';
+
+const theme = createTheme({
+  palette,
+  typography,
+  components: componentsOverride,
+});
+
+export default theme;
+\`\`\`
+
+### \`theme/palette.js\`
+\`\`\`js
+// src/theme/palette.js
+export default {
+  primary: {
+    main: '#1976d2',
+  },
+  secondary: {
+    main: '#dc004e',
+  },
+  // ... other colors
+};
+\`\`\`
+
+### \`theme/typography.js\`
+\`\`\`js
+// src/theme/typography.js
+export default {
+  fontFamily: "'Roboto', 'Helvetica', 'Arial', sans-serif",
+  h1: { fontSize: '2rem', fontWeight: 500 },
+  h2: { fontSize: '1.75rem', fontWeight: 500 },
+  // ... other typography settings
+};
+\`\`\`
+
+### \`theme/components.js\`
+\`\`\`js
+// src/theme/components.js
+export default {
+  MuiButton: {
+    styleOverrides: {
+      root: {
+        textTransform: 'none',
+      },
+    },
+  },
+  // ... override other components
+};
+\`\`\`
+
+---
+
+## \`routes/index.js\`
+Defines your main routing configuration using React Router.
+
+\`\`\`jsx
+// src/routes/index.js
+import React from 'react';
+import { Routes, Route } from 'react-router-dom';
+
+import Home from '../pages/Home';
+import Products from '../pages/Products';
+import ProductDetail from '../pages/ProductDetail';
+import Cart from '../pages/Cart';
+import Checkout from '../pages/Checkout';
+
+import PrivateRoute from './PrivateRoute';
+import PublicRoute from './PublicRoute';
+
+function AppRoutes() {
+  return (
+    <Routes>
+      <Route path="/" element={<Home />} />
+
+      <Route
+        path="/products"
+        element={
+          <PublicRoute>
+            <Products />
+          </PublicRoute>
+        }
+      />
+
+      <Route
+        path="/products/:id"
+        element={
+          <PublicRoute>
+            <ProductDetail />
+          </PublicRoute>
+        }
+      />
+
+      <Route
+        path="/cart"
+        element={
+          <PrivateRoute>
+            <Cart />
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/checkout"
+        element={
+          <PrivateRoute>
+            <Checkout />
+          </PrivateRoute>
+        }
+      />
+    </Routes>
+  );
+}
+
+export default AppRoutes;
+\`\`\`
+
+---
+
+## \`routes/PrivateRoute.jsx\`
+A higher-order component to protect routes that require authentication (e.g., \`Cart\`, \`Checkout\`). You might check an \`isAuthenticated\` value from your \`AuthContext\`.
+
+\`\`\`jsx
+// src/routes/PrivateRoute.jsx
+import React from 'react';
+import { Navigate } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
+
+function PrivateRoute({ children }) {
+  const { isAuthenticated } = useAuth();
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return children;
+}
+
+export default PrivateRoute;
+\`\`\`
+
+---
+
+## \`routes/PublicRoute.jsx\`
+A simple route wrapper that might redirect authenticated users away from pages like \`Login\` or \`Signup\`. If your app doesn’t need this distinction, you can omit it.
+
+\`\`\`jsx
+// src/routes/PublicRoute.jsx
+import React from 'react';
+import { Navigate } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
+
+function PublicRoute({ children }) {
+  const { isAuthenticated } = useAuth();
+
+  if (isAuthenticated) {
+    return <Navigate to="/" replace />;
+  }
+
+  return children;
+}
+
+export default PublicRoute;
+\`\`\`
+
+---
+
+## Example Page: \`pages/Home/index.jsx\`
+Your page components are usually simple. They might import feature components or layout blocks.
+
+\`\`\`jsx
+// src/pages/Home/index.jsx
+import React from 'react';
+import { Typography } from '@mui/material';
+
+function Home() {
+  return (
+    <div>
+      <Typography variant="h1">Welcome to Our Store</Typography>
+      {/* Possibly showcase some featured products, banners, etc. */}
+    </div>
+  );
+}
+
+export default Home;
+\`\`\`
+
+---
+
+## Example Feature Component: \`ProductCard.jsx\`
+A reusable card to display product information. It can be part of \`products/ProductCard/\` or as a general common component.
+
+\`\`\`jsx
+// src/components/features/products/ProductCard/ProductCard.jsx
+import React from 'react';
+import { Card, CardContent, CardMedia, Typography, Button } from '@mui/material';
+
+function ProductCard({ product }) {
+  const { title, price, image } = product;
+
+  return (
+    <Card>
+      <CardMedia
+        component="img"
+        height="200"
+        image={image}
+        alt={title}
+      />
+      <CardContent>
+        <Typography variant="h6">{title}</Typography>
+        <Typography variant="body1">\${price}</Typography>
+        <Button variant="contained" color="primary">
+          Add to Cart
+        </Button>
+      </CardContent>
+    </Card>
+  );
+}
+
+export default ProductCard;
+\`\`\`
+
+---
+
+## \`contexts/AuthContext.js\`
+Context that manages authentication state (e.g., user info, login, logout). This is just a skeleton. You’ll fill in details with your actual logic.
+
+\`\`\`jsx
+// src/contexts/AuthContext.js
+import React, { createContext, useState, useEffect, useContext } from 'react';
+
+const AuthContext = createContext();
+
+export const AuthProvider = ({ children }) => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  const login = (credentials) => {
+    // Perform login logic, set isAuthenticated to true if successful
+    setIsAuthenticated(true);
+  };
+
+  const logout = () => {
+    // Perform logout logic, set isAuthenticated to false
+    setIsAuthenticated(false);
+  };
+
+  useEffect(() => {
+    // Perhaps check token existence and validate if user is logged in
+  }, []);
+
+  return (
+    <AuthContext.Provider
+      value={{
+        isAuthenticated,
+        login,
+        logout,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
+};
+
+export function useAuthContext() {
+  return useContext(AuthContext);
+}
+\`\`\`
+
+---
+
+## \`contexts/CartContext.js\`
+Context that manages the shopping cart (add/remove items, handle totals, etc.).
+
+\`\`\`jsx
+// src/contexts/CartContext.js
+import React, { createContext, useState, useContext } from 'react';
+
+const CartContext = createContext();
+
+export const CartProvider = ({ children }) => {
+  const [cartItems, setCartItems] = useState([]);
+
+  const addItem = (product) => {
+    setCartItems((prevItems) => [...prevItems, product]);
+  };
+
+  const removeItem = (productId) => {
+    setCartItems((prevItems) => prevItems.filter(item => item.id !== productId));
+  };
+
+  return (
+    <CartContext.Provider
+      value={{
+        cartItems,
+        addItem,
+        removeItem,
+      }}
+    >
+      {children}
+    </CartContext.Provider>
+  );
+};
+
+export function useCartContext() {
+  return useContext(CartContext);
+}
+\`\`\`
+
+---
+
+## \`hooks/useAuth.js\`
+A custom hook to provide a convenient way to access the \`AuthContext\`.
+
+\`\`\`jsx
+// src/hooks/useAuth.js
+import { useAuthContext } from '../contexts/AuthContext';
+
+export function useAuth() {
+  const { isAuthenticated, login, logout } = useAuthContext();
+  return { isAuthenticated, login, logout };
+}
+\`\`\`
+
+---
+
+## \`hooks/useCart.js\`
+A custom hook for accessing cart operations.
+
+\`\`\`jsx
+// src/hooks/useCart.js
+import { useCartContext } from '../contexts/CartContext';
+
+export function useCart() {
+  const { cartItems, addItem, removeItem } = useCartContext();
+  return { cartItems, addItem, removeItem };
+}
+\`\`\`
+
+---
+
+## Wrap Up
+With this structure:
+
+- **\`App.jsx\`** sets up the overall layout and includes routes.
+- **\`routes/\`** handles both public and private route logic.
+- **\`contexts/\`** stores global state (auth, cart, etc.).
+- **\`hooks/\`** give convenient abstractions over your contexts.
+- **\`theme/\`** centralizes your Material-UI customizations (palette, typography, etc.).
+- **\`components/\`** houses reusable UI elements, layouts, and feature-specific components.
+- **\`pages/\`** contain higher-level page structures that use feature components.
+
+From here, you would refine each file with more specific logic, styling, and additional components (e.g., ProductList, ProductDetails, etc.). The important part is maintaining a clear, consistent structure so you know where each piece of logic and UI belongs. This helps keep your ecommerce codebase scalable and maintainable as you add more features.`
+    // Render markdown content
+    document.getElementById('markdown-content').innerHTML = marked.parse(markdownContent + markdownContentEcommece);
+
+    // Trigger Prism highlighting
+    Prism.highlightAll();
+</script>
+</body>
+</html>

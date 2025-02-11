@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Typescript Documentation</title>
+
+    <!-- External Dependencies -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.6.1/mermaid.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.2/marked.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+    <link rel="stylesheet" href="/css/all.min.css">
+
+    <style>
+        /* Reset and Base Styles */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        /* Layout Container */
+        .container {
+            display: flex;
+            height: 100vh;
+            flex-direction: row;
+            position: relative;
+        }
+
+        /* Panel Sections */
+        .mermaid-section,
+        .markdown-section {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            position: relative;
+            min-width: 200px;
+        }
+
+        .mermaid-section {
+            background: #f5f5f5;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .markdown-section {
+            background: white;
+            padding: 30px;
+            line-height: 1.6;
+        }
+
+        /* Mermaid Specific Styles */
+        .node foreignObject {
+            overflow: visible;
+            white-space: normal;
+        }
+
+        .node foreignObject p {
+            padding: 0;
+            text-align: center;
+            width: auto !important;
+            min-width: 200px;
+        }
+
+        #mermaid-container {
+            transform-origin: top left;
+            transition: transform 0.3s ease;
+        }
+
+        /* Zoom Controls */
+        .zoom-controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: white;
+            padding: 5px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .zoom-controls button {
+            margin: 0 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+            background: #f0f0f0;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+
+        .zoom-controls button:hover {
+            background: #e0e0e0;
+        }
+
+        /* Splitter Styles */
+        .splitter {
+            width: 8px;
+            background: #ddd;
+            cursor: col-resize;
+            transition: background 0.3s;
+        }
+
+        .splitter:hover,
+        .splitter.dragging {
+            background: #999;
+        }
+
+        /* Code Block Styling */
+        pre[class*="language-"] {
+            border-radius: 6px;
+            margin: 1.5em 0;
+            padding: 1em;
+            overflow: auto;
+            background: #2d2d2d;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        code[class*="language-"] {
+            font-family: 'Fira Code', 'Consolas', Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+            font-size: 0.9em;
+            line-height: 1.4;
+            text-shadow: none;
+        }
+
+        /* Markdown Content Styling */
+        .markdown-section h1 {
+            font-size: 2em;
+            margin-bottom: 1em;
+            border-bottom: 2px solid #eaecef;
+            padding-bottom: 0.3em;
+        }
+
+        .markdown-section h2 {
+            font-size: 1.5em;
+            margin: 1.5em 0 1em;
+        }
+
+        .markdown-section ul,
+        .markdown-section ol {
+            padding-left: 2em;
+        }
+
+        .markdown-section li {
+            margin: 0.5em 0;
+        }
+
+        .markdown-section strong {
+            font-weight: 600;
+            color: #24292e;
+        }
+
+        /* Syntax Highlighting */
+        .language-javascript,
+        .language-yaml,
+        .language-bash {
+            color: #f8f8f2;
+        }
+
+        /* Responsive Design */
+        @media (min-width: 768px) {
+            .container {
+                flex-direction: row;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="mermaid-section">
+        <div class="zoom-controls">
+            <button onclick="zoomIn()">+</button>
+            <button onclick="zoomOut()">-</button>
+            <button onclick="resetZoom()">Reset</button>
+        </div>
+        <div id="mermaid-container">
+                <pre class="mermaid">
+                    graph LR
+                    BUF["fa:fa-memory Buffer Applications"]
+                </pre>
+        </div>
+    </div>
+    <div class="splitter" id="splitter"></div>
+    <div class="markdown-section" id="markdown-content"></div>
+</div>
+
+<script>
+    // Initialize configurations
+    mermaid.initialize({ startOnLoad: true });
+
+    marked.setOptions({
+        highlight: function(code, lang) {
+            if (Prism.languages[lang]) {
+                return Prism.highlight(code, Prism.languages[lang], lang);
+            }
+            return code;
+        }
+    });
+
+    // Zoom functionality
+    let currentZoom = 1;
+    const zoomStep = 0.1;
+    const container = document.getElementById('mermaid-container');
+
+    function zoomIn() {
+        currentZoom += zoomStep;
+        applyZoom();
+    }
+
+    function zoomOut() {
+        if (currentZoom > zoomStep) {
+            currentZoom -= zoomStep;
+            applyZoom();
+        }
+    }
+
+    function resetZoom() {
+        currentZoom = 1;
+        applyZoom();
+    }
+
+    function applyZoom() {
+        container.style.transform = `scale(${currentZoom})`;
+    }
+
+    // Splitter functionality
+    const splitter = document.getElementById('splitter');
+    const containerElement = document.querySelector('.container');
+    let isDragging = false;
+
+    splitter.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        splitter.classList.add('dragging');
+        document.body.style.userSelect = 'none';
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+
+        const containerRect = containerElement.getBoundingClientRect();
+        const percentage = ((e.clientX - containerRect.left) / containerRect.width) * 100;
+
+        if (percentage > 20 && percentage < 80) {
+            const mermaidSection = document.querySelector('.mermaid-section');
+            const markdownSection = document.querySelector('.markdown-section');
+
+            mermaidSection.style.flex = `${percentage}`;
+            markdownSection.style.flex = `${100 - percentage}`;
+        }
+    });
+
+    document.addEventListener('mouseup', () => {
+        isDragging = false;
+        splitter.classList.remove('dragging');
+        document.body.style.userSelect = '';
+    });
+
+    // Initialize content
+    const markdownContent = `sample`;
+    document.getElementById('markdown-content').innerHTML = marked.parse(markdownContent);
+    Prism.highlightAll();
+</script>
+</body>
+</html>

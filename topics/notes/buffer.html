@@ -27,7 +27,8 @@
         .container {
             display: flex;
             height: 100vh;
-            flex-direction: column; /* Stack vertically by default */
+            flex-direction: row;
+            position: relative;
         }
 
         .mermaid-section, .markdown-section {
@@ -35,6 +36,7 @@
             padding: 20px;
             overflow-y: auto;
             position: relative;
+            min-width: 200px;
         }
 
         .mermaid-section {
@@ -42,6 +44,13 @@
             display: flex;
             flex-direction: column;
         }
+
+        .markdown-section {
+            background: white;
+            padding: 30px;
+            line-height: 1.6;
+        }
+
 
         .node foreignObject {
             overflow: visible;
@@ -147,6 +156,18 @@
         .language-bash {
             color: #f8f8f2;
         }
+
+        .splitter {
+            width: 8px;
+            background: #ddd;
+            cursor: col-resize;
+            transition: background 0.3s;
+        }
+
+        .splitter:hover, .splitter.dragging {
+            background: #999;
+        }
+
         @media (min-width: 768px) {
             .container {
                 flex-direction: row; /* Side by side on desktop */
@@ -259,6 +280,7 @@ graph LR
                 </pre>
         </div>
     </div>
+    <div class="splitter" id="splitter"></div>
     <div class="markdown-section" id="markdown-content">
     </div>
 </div>
@@ -516,6 +538,45 @@ const upperCaseTransform = new BufferTransform((chunk: Buffer) => {
 
     // Trigger Prism highlighting
     Prism.highlightAll();
+</script>
+
+<script>
+    // Initialize Mermaid and other existing scripts...
+
+    // Splitter functionality
+    const splitter = document.getElementById('splitter');
+    const container2 = document.querySelector('.container');
+    let isDragging = false;
+
+    splitter.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        splitter.classList.add('dragging');
+        document.body.style.userSelect = 'none';
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+
+        const containerRect = container2.getBoundingClientRect();
+        const percentage = ((e.clientX - containerRect.left) / containerRect.width) * 100;
+
+        // Limit the minimum size of each panel
+        if (percentage > 20 && percentage < 80) {
+            const mermaidSection = document.querySelector('.mermaid-section');
+            const markdownSection = document.querySelector('.markdown-section');
+
+            mermaidSection.style.flex = `${percentage}`;
+            markdownSection.style.flex = `${100 - percentage}`;
+        }
+    });
+
+    document.addEventListener('mouseup', () => {
+        isDragging = false;
+        splitter.classList.remove('dragging');
+        document.body.style.userSelect = '';
+    });
+
+    // Your existing JavaScript continues...
 </script>
 </body>
 </html>
