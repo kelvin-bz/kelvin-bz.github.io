@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Typescript</title>
+    <title>Stream</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.6.1/mermaid.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.2/marked.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
@@ -184,35 +184,44 @@
         <div class="mermaid-container">
         <pre class="mermaid">
 graph LR
-    %% Main Components
-    Users["fa:fa-users User Portal"]
-    Frontend["fa:fa-desktop Client Interface"]
-    Backend["fa:fa-server Backend Services"]
-    Storage["fa:fa-database Data Storage"]
-    KYAN["fa:fa-flask KYAN API"]
+    Streams["fa:fa-stream Node.js Streams"]
 
-    %% Basic Flow
-    Users --> |"Access via browser"| Frontend
-    Frontend --> |"API requests"| Backend
-    Backend --> |"Data operations"| Storage
-    Backend --> |"Experiment data"| KYAN
-        </pre>
-        </div>
-        <div class="mermaid-container">
-        <pre class="mermaid">
-graph LR
-    %% Main Components
-    Users["fa:fa-users User Portal"]
-    Frontend["fa:fa-desktop Client Interface"]
-    Backend["fa:fa-server Backend Services"]
-    Storage["fa:fa-database Data Storage"]
-    KYAN["fa:fa-flask KYAN API"]
+    %% Main Stream Types
+    Readable["fa:fa-arrow-down Readable"]
+    Writable["fa:fa-arrow-up Writable"]
+    Duplex["fa:fa-exchange-alt Duplex"]
+    Transform["fa:fa-random Transform"]
 
-    %% Basic Flow
-    Users --> |"Access via browser"| Frontend
-    Frontend --> |"API requests"| Backend
-    Backend --> |"Data operations"| Storage
-    Backend --> |"Experiment data"| KYAN
+    %% Core Events
+    Events["fa:fa-bolt Events"]
+
+    %% Main Operations
+    Pipe["fa:fa-project-diagram Pipe"]
+
+    %% Relationships
+    Streams --> |"Read data from source"| Readable
+    Streams --> |"Write data to destination"| Writable
+    Streams --> |"Read and Write data"| Duplex
+    Streams --> |"Modify data while flowing"| Transform
+
+    %% Event Types
+    Events --> |"When data available"| Events1["fa:fa-play data"]
+    Events --> |"When completed"| Events2["fa:fa-stop end/finish"]
+    Events --> |"When error occurs"| Events3["fa:fa-exclamation-triangle error"]
+
+    %% Common Examples
+    Readable --> |"File reading"| R1["fa:fa-file File Stream"]
+    Writable --> |"File writing"| W1["fa:fa-save File Stream"]
+    Duplex --> |"Network communication"| D1["fa:fa-network-wired Socket"]
+    Transform --> |"Data modification"| T1["fa:fa-font Text Transform"]
+
+    %% Pipe Operation
+    Pipe --> |"Connect streams"| P1["fa:fa-long-arrow-alt-right pipe()"]
+
+    %% Style
+    style Streams fill:#f9f,stroke:#333,stroke-width:4px
+    style Events fill:#bbf,stroke:#333,stroke-width:2px
+    style Pipe fill:#fbf,stroke:#333,stroke-width:2px
         </pre>
         </div>
     </div>
@@ -266,18 +275,68 @@ graph LR
     });
 
     // Markdown content
-    const markdownContent = `# Sample Content
+    const markdownContent = `
 
-This is a sample markdown content that will render differently based on screen size.
-- On mobile, the layout is vertical.
-- On desktop, it is side by side.
+Below is a Node.js script that reads a log file (server.log), filters out lines containing the keyword "ERROR," and writes them into a separate file (error.log).
 
 \`\`\`typescript
-// Sample TypeScript code
-const greet = (name: string): string => {
-  return \`Hello, \${name}!\`;
-};
-console.log(greet("World"));
+const fs = require('fs');
+const readline = require('readline');
+const inputFile = 'server.log';
+const outputFile = 'error.log';
+// Create a read stream
+const readStream = fs.createReadStream(inputFile, { encoding: 'utf8' });
+// Create a write stream
+
+const writeStream = fs.createWriteStream(outputFile);
+// Use readline to process line by line
+
+const rl = readline.createInterface({
+  input: readStream,
+  crlfDelay: Infinity, // Handles different line endings
+});
+
+rl.on('line', (line) => {
+  if (line.includes('ERROR')) {
+    writeStream.write(line + '\\n'); // Write only error logs
+  }
+});
+
+rl.on('close', () => {
+  console.log('Processing complete: Filtered logs saved to error.log');
+  writeStream.end();
+});
+\`\`\`
+
+# Transform
+
+\`\`\`js
+    const fs = require('fs');
+const { Transform } = require('stream');
+
+class UpperCaseTransform extends Transform {
+    _transform(chunk, encoding, callback) {
+        // Convert incoming data to uppercase
+        const upperCaseData = chunk.toString().toUpperCase();
+        // Push the transformed data
+        this.push(upperCaseData);
+        // Signal that we're done processing this chunk
+        callback();
+    }
+}
+
+
+// Create readable and writable streams
+const inputStream = fs.createReadStream('input.txt', { highWaterMark: 10 }); // Force small chunks
+const outputStream = fs.createWriteStream('output.txt');
+
+// Apply the censor transform stream
+inputStream.pipe(new UpperCaseTransform()).pipe(outputStream);
+
+outputStream.on('finish', () => {
+    console.log('✅ Processing complete. Check output.txt');
+});
+
 \`\`\`
 `;
 
