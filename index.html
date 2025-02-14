@@ -175,12 +175,12 @@
     </style>
 </head>
 
- <script>
-     // Wait for DOM to be fully loaded
-     document.addEventListener('DOMContentLoaded', function() {
-     // Create the main styles
-     const styleElement = document.createElement('style');
-     styleElement.textContent = `
+<script>
+    // Wait for DOM to be fully loaded
+    document.addEventListener('DOMContentLoaded', function () {
+        // Create the main styles
+        const styleElement = document.createElement('style');
+        styleElement.textContent = `
         #quote {
             display: flex;
             justify-content: center;
@@ -214,37 +214,37 @@
             box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
     `;
-     document.head.appendChild(styleElement);
+        document.head.appendChild(styleElement);
 
-     // Get the quote container
-     const quoteContainer = document.getElementById('quote');
+        // Get the quote container
+        const quoteContainer = document.getElementById('quote');
 
-     // Create main element
-     const mainElement = document.createElement('main');
+        // Create main element
+        const mainElement = document.createElement('main');
 
-     // Create quote div
-     const quoteDiv = document.createElement('div');
-     quoteDiv.className = 'funny-quote';
-     quoteDiv.textContent = `"Believe you can and you're halfway there."
+        // Create quote div
+        const quoteDiv = document.createElement('div');
+        quoteDiv.className = 'funny-quote';
+        quoteDiv.textContent = `"Believe you can and you're halfway there."
        Theodore Roosevelt`;
 
-     // Create image element
-     const imgElement = document.createElement('img');
-     imgElement.className = 'funny-image';
-     imgElement.width = 200;
-     imgElement.src = 'https://media.giphy.com/media/26n6WywJyh39n1pBu/giphy.gif';
-     imgElement.alt = 'Lazy Llama';
+        // Create image element
+        const imgElement = document.createElement('img');
+        imgElement.className = 'funny-image';
+        imgElement.width = 200;
+        imgElement.src = 'https://media.giphy.com/media/26n6WywJyh39n1pBu/giphy.gif';
+        imgElement.alt = 'Lazy Llama';
 
-     // add a div and add imgElement to it
-     const imgDiv = document.createElement('div');
-     imgDiv.className = 'img-container';
-     imgDiv.appendChild(imgElement);
+        // add a div and add imgElement to it
+        const imgDiv = document.createElement('div');
+        imgDiv.className = 'img-container';
+        imgDiv.appendChild(imgElement);
 
-     // Append elements
-     mainElement.appendChild(imgDiv);
-     mainElement.appendChild(quoteDiv);
-     quoteContainer.appendChild(mainElement);
- });
+        // Append elements
+        mainElement.appendChild(imgDiv);
+        mainElement.appendChild(quoteDiv);
+        quoteContainer.appendChild(mainElement);
+    });
 
 </script>
 
@@ -271,14 +271,12 @@
                 <li class="quiz-item">
                     <a href="topics/notes/typescript.html" class="quiz-link">📦Typescript</a>
                 </li>
-                <li class="quiz-item">
-                    <a href="topics/notes/buffer.html" class="quiz-link">🍔 Buffer</a>
-                </li>
+
                 <li class="quiz-item">
                     <a href="topics/notes/reactjs.html" class="quiz-link">⚛️ ReactJS</a>
                 </li>
                 <li class="quiz-item">
-                <a href="topics/notes/mui.html" class="quiz-link">🎨 MUI</a>
+                    <a href="topics/notes/mui.html" class="quiz-link">🎨 MUI</a>
                 </li>
                 <li class="quiz-item">
                     <a href="topics/notes/stream.html" class="quiz-link">🌊 Stream</a>
@@ -286,7 +284,7 @@
 
 
             </ul>
-            <div class="topic-stats">4 notes</div>
+            <div class="topic-stats">5 notes</div>
         </div>
 
         <!-- JavaScript Section -->
@@ -301,7 +299,8 @@
                     <a href="topics/javascript/js-array-quiz.html" class="quiz-link">Array</a>
                 </li>
                 <li class="quiz-item">
-                    <a href="topics/javascript/arrow-functions-binding.html" class="quiz-link">Arrow Functions & Binding</a>
+                    <a href="topics/javascript/arrow-functions-binding.html" class="quiz-link">Arrow Functions &
+                        Binding</a>
                 </li>
                 <li class="quiz-item">
                     <a href="topics/javascript/scope-quiz.html" class="quiz-link">Scope</a>
@@ -413,10 +412,12 @@
                     <a href="topics/expressjs/expressjs-quiz-1.html" class="quiz-link">Basic</a>
                 </li>
                 <li class="quiz-item">
-                    <a href="topics/expressjs/express-error-handling-quiz-1.html" class="quiz-link">Error Handling (1)</a>
+                    <a href="topics/expressjs/express-error-handling-quiz-1.html" class="quiz-link">Error Handling
+                        (1)</a>
                 </li>
                 <li class="quiz-item">
-                    <a href="topics/expressjs/express-error-handling-quiz-2.html" class="quiz-link">Error Handling (2)</a>
+                    <a href="topics/expressjs/express-error-handling-quiz-2.html" class="quiz-link">Error Handling
+                        (2)</a>
                 </li>
             </ul>
             <div class="topic-stats">3 quizzes</div>
@@ -521,9 +522,11 @@
                     <a href="topics/linear-algebra/basic-vector.html" class="quiz-link">Vectors</a>
                 </li>
                 <li class="quiz-item">
-                    <a href="topics/linear-algebra/linear-transformations-and-matrices.html" class="quiz-link">Linear transformations and matrices</a>
+                    <a href="topics/linear-algebra/linear-transformations-and-matrices.html" class="quiz-link">Linear
+                        transformations and matrices</a>
                 </li>
-                    <a href="topics/linear-algebra/matrix-multiplication-as-composition.html" class="quiz-link">Matrix Multiplication As Composition</a>
+                <a href="topics/linear-algebra/matrix-multiplication-as-composition.html" class="quiz-link">Matrix
+                    Multiplication As Composition</a>
                 </li>
                 <li class="quiz-item">
                     <a href="topics/linear-algebra/determinant.html" class="quiz-link">Determinant</a>
@@ -552,9 +555,6 @@
 </div>
 
 <script>
-
-
-
 
 
     const searchBar = document.querySelector('.search-bar');
