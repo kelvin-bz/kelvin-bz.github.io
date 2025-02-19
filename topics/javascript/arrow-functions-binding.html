@@ -2,14 +2,76 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.4.0/mermaid.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.2/marked.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+
+    <link rel="stylesheet" href="/css/all.min.css">
+    <link rel="stylesheet" href="../../css/all.min.css">
     <style>
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 20px;
-            font-family: system-ui, -apple-system, sans-serif;
-            line-height: 1.6;
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
         }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            padding: 20px;
+            gap: 20px;
+        }
+
+        .top-section {
+            display: flex;
+            height: calc(100vh - 40px); /* Full viewport height minus container padding */
+        }
+
+        .mermaid-section {
+            flex: 1;
+            padding: 20px;
+            background: #f5f5f5;
+            position: relative;
+            min-width: 200px;
+            overflow-y: auto;
+            height: 100%; /* Take full height of parent */
+        }
+
+        .markdown-section {
+            flex: 1;
+            padding: 30px;
+            background: white;
+            overflow-y: auto;
+            line-height: 1.6;
+            height: calc(100vh - 40px); /* Full viewport height minus container padding */
+            max-height: 100vh;
+        }
+
+        .quiz-section {
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #ddd;
+            flex-shrink: 0;
+        }
+
+        /* Splitter */
+        .splitter {
+            width: 8px;
+            background: #ddd;
+            cursor: col-resize;
+            transition: background 0.3s;
+        }
+
+        .splitter:hover {
+            background: #999;
+        }
+
+        /* Keep your existing quiz styles */
         .question {
             background-color: #fff;
             padding: 20px;
@@ -129,61 +191,256 @@
             width: auto !important;
             min-width: 200px;
         }
+
+        /* Markdown content styling */
+        .markdown-section h1 {
+            font-size: 2em;
+            margin-bottom: 1em;
+            border-bottom: 2px solid #eaecef;
+            padding-bottom: 0.3em;
+        }
+
+        .markdown-section h2 {
+            font-size: 1.5em;
+            margin: 1.5em 0 1em;
+        }
+
+        .markdown-section ul,
+        .markdown-section ol {
+            padding-left: 2em;
+        }
+
+        .markdown-section li {
+            margin: 0.5em 0;
+        }
+
+        /* Code block styling */
+        pre[class*="language-"] {
+            border-radius: 6px;
+            margin: 1.5em 0;
+            padding: 1em;
+            overflow: auto;
+            background: #2d2d2d !important;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        code[class*="language-"] {
+            font-family: 'Fira Code', 'Consolas', Monaco, monospace;
+            font-size: 0.9em;
+            line-height: 1.4;
+            color: #f8f8f2 !important;
+        }
+
+        .token.comment {
+            color: #6a737d !important;
+        }
+
+        .token.string {
+            color: #98c379 !important;
+        }
+
+        .token.keyword {
+            color: #c678dd !important;
+        }
+
+        .token.function {
+            color: #61afef !important;
+        }
+
+        .token.class-name {
+            color: #e5c07b !important;
+        }
+
+        .token.operator {
+            color: #56b6c2 !important;
+        }
     </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.4.0/mermaid.min.js"></script>
-    <link rel="stylesheet" href="/css/all.min.css">
-    <link rel="stylesheet" href="../../css/all.min.css">
 </head>
 <body>
 <div class="container">
-    <div class="mermaid">
-        graph LR
-        %% Main Concept
-        ArrowFn["fa:fa-arrow-right Arrow Function"]
+    <div class="top-section">
+        <div class="mermaid-section">
+            <div class="mermaid">
+                graph LR
+                %% Main Concept
+                ArrowFn["fa:fa-arrow-right Arrow Function"]
 
-        %% Main Categories
-        Binding["fa:fa-link Binding"]
-        Syntax["fa:fa-code Syntax"]
-        Usage["fa:fa-check Best For"]
-        Limits["fa:fa-ban Limitations"]
+                %% Main Categories
+                Binding["fa:fa-link Binding"]
+                Syntax["fa:fa-code Syntax"]
+                Usage["fa:fa-check Best For"]
+                Limits["fa:fa-ban Limitations"]
 
-        %% Connections
-        ArrowFn -->|"Has lexical"| Binding
-        ArrowFn -->|"Provides"| Syntax
-        ArrowFn -->|"Ideal for"| Usage
-        ArrowFn -->|"Cannot be used for"| Limits
+                %% Connections
+                ArrowFn -->|"Has lexical"| Binding
+                ArrowFn -->|"Provides"| Syntax
+                ArrowFn -->|"Ideal for"| Usage
+                ArrowFn -->|"Cannot be used for"| Limits
 
-        %% Detailed Characteristics
-        Binding --> B1["fa:fa-info Inherits this from parent"]
-        Binding --> B2["fa:fa-info Cannot be rebound"]
-        Binding --> B3["fa:fa-info Captures parent scope"]
+                %% Detailed Characteristics
+                Binding --> B1["fa:fa-info Inherits this from parent"]
+                Binding --> B2["fa:fa-info Cannot be rebound"]
+                Binding --> B3["fa:fa-info Captures parent scope"]
 
-        Syntax --> S1["fa:fa-code () => {}"]
-        Syntax --> S2["fa:fa-code param => expression"]
-        Syntax --> S3["fa:fa-code (a, b) => { return a + b }"]
+                Syntax --> S1["fa:fa-code () => {}"]
+                Syntax --> S2["fa:fa-code param => expression"]
+                Syntax --> S3["fa:fa-code (a, b) => { return a + b }"]
 
-        Usage --> U1["fa:fa-bolt Callbacks"]
-        Usage --> U2["fa:fa-clock Async operations"]
-        Usage --> U3["fa:fa-exchange-alt Array methods"]
+                Usage --> U1["fa:fa-bolt Callbacks"]
+                Usage --> U2["fa:fa-clock Async operations"]
+                Usage --> U3["fa:fa-exchange-alt Array methods"]
 
-        Limits --> L1["fa:fa-times Constructor functions"]
-        Limits --> L2["fa:fa-times Object methods"]
-        Limits --> L3["fa:fa-times Dynamic this binding"]
+                Limits --> L1["fa:fa-times Constructor functions"]
+                Limits --> L2["fa:fa-times Object methods"]
+                Limits --> L3["fa:fa-times Dynamic this binding"]
 
-        %% Styling
-        style ArrowFn fill:#82b366,stroke:#618e4c,stroke-width:2px
-        style Binding fill:#9673a6,stroke:#714c7d,stroke-width:2px
-        style Syntax fill:#4a90e2,stroke:#2e5c8a,stroke-width:2px
-        style Usage fill:#ff9900,stroke:#cc7a00,stroke-width:2px
-        style Limits fill:#e85642,stroke:#b43421,stroke-width:2px
+                %% Styling
+                style ArrowFn fill:#82b366,stroke:#618e4c,stroke-width:2px
+                style Binding fill:#9673a6,stroke:#714c7d,stroke-width:2px
+                style Syntax fill:#4a90e2,stroke:#2e5c8a,stroke-width:2px
+                style Usage fill:#ff9900,stroke:#cc7a00,stroke-width:2px
+                style Limits fill:#e85642,stroke:#b43421,stroke-width:2px
+            </div>
+            <div class="mermaid">
+                graph LR
+                T["fa:fa-code this Behavior"]
+
+                %% Main Categories
+                OM["fa:fa-cube Object Method"]
+                CM["fa:fa-cogs Class Method"]
+                CL["fa:fa-box Closure"]
+                AS["fa:fa-clock Async"]
+
+                T -->|"context depends on call"| OM
+                T -->|"instance binding"| CM
+                T -->|"scope capture"| CL
+                T -->|"context loss risk"| AS
+            </div>
+        </div>
+        <div class="splitter"></div>
+        <div class="markdown-section" id="markdown-content">
+            <!-- Markdown content will be rendered here -->
+        </div>
     </div>
-    <div id="questions"></div>
-    <div id="score"></div>
-
+    <div class="quiz-section">
+        <h2>Quiz</h2>
+        <div id="questions"></div>
+        <div id="score"></div>
+    </div>
 </div>
 
-
 <script>
+    // Initialize mermaid
+    mermaid.initialize({ startOnLoad: true });
+
+    // Configure marked with Prism highlighting
+    marked.setOptions({
+        highlight: function(code, lang) {
+            if (Prism.languages[lang]) {
+                return Prism.highlight(code, Prism.languages[lang], lang);
+            }
+            return code;
+        },
+        langPrefix: 'language-',  // Add this to match Prism's CSS classes
+        breaks: true,
+        gfm: true
+    });
+
+    const markdownContent = `
+- Arrow functions **do not** have their own \`this\`. they **inherit** \`this\` from the surrounding lexical scope.
+- **Objects do not create a scope in JavaScript**
+### Example:
+\`\`\`javascript
+class Person {
+  constructor(name) {
+    this.name = name;
+  }
+
+  sayHello() {
+    setTimeout(() => {
+      console.log(\`Hello, my name is ${this.name}\`);
+    }, 1000);
+  }
+}
+
+const p = new Person("Alice");
+p.sayHello();  // ✅ Works! Logs: "Hello, my name is Alice"
+\`\`\`
+Here, the arrow function inside \`setTimeout\` inherits \`this\` from \`sayHello\`, which refers to the \`Person\` instance.
+
+### Counter Example:
+If you use a **regular function**, it creates its own \`this\`:
+\`\`\`javascript
+class Person {
+  constructor(name) {
+    this.name = name;
+  }
+
+  sayHello() {
+    setTimeout(function() {
+      console.log(\`Hello, my name is ${this.name}\`);
+    }, 1000);
+  }
+}
+
+const p = new Person("Alice");
+p.sayHello(); // ❌ \`this\` is undefined or refers to \`window\` in non-strict mode
+\`\`\`
+To fix this with a regular function, you must explicitly bind \`this\`:
+\`\`\`javascript
+setTimeout(function() {
+  console.log(\`Hello, my name is ${this.name}\`);
+}.bind(this), 1000);
+\`\`\`
+
+### Summary:
+- ✅ Arrow functions **inherit** \`this\` from the surrounding scope.
+- ❌ Regular functions **create their own** \`this\`, requiring \`.bind(this)\`, \`self = this\`, or using \`call/apply\`.`;
+
+    // Setup splitter functionality
+    function setupSplitter() {
+        const splitter = document.querySelector('.splitter');
+        const container = document.querySelector('.top-section');
+        let isDragging = false;
+
+        splitter.addEventListener('mousedown', () => {
+            isDragging = true;
+            document.body.style.userSelect = 'none';
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            const containerRect = container.getBoundingClientRect();
+            const percentage = ((e.clientX - containerRect.left) / containerRect.width) * 100;
+
+            if (percentage > 20 && percentage < 80) {
+                const mermaidSection = document.querySelector('.mermaid-section');
+                const markdownSection = document.querySelector('.markdown-section');
+                mermaidSection.style.flex = `${percentage}`;
+                markdownSection.style.flex = `${100 - percentage}`;
+            }
+        });
+
+        document.addEventListener('mouseup', () => {
+            isDragging = false;
+            document.body.style.userSelect = '';
+        });
+    }
+
+    window.onload = function() {
+        // Render markdown
+        document.getElementById('markdown-content').innerHTML = marked.parse(markdownContent);
+
+        // Highlight all code blocks
+        Prism.highlightAll();
+
+        // Initialize quiz
+        createQuiz();
+
+        // Setup splitter
+        setupSplitter();
+    };
+
     const quizData = {
         questions: [
             {
@@ -364,13 +621,13 @@ class Timer {
     }
 
     start() {
-        setInterval(_____ => {
+        setInterval(_____ {
             this.seconds++;
         }, 1000);
     }
 }`
                 },
-                answer: "()",
+                answer: "() =>",
                 explanation: {
                     text: "Using an arrow function preserves the 'this' binding from the enclosing scope, allowing us to access the Timer instance inside setInterval.",
                     code: `
@@ -385,60 +642,6 @@ class Timer {
         }, 1000);
     }
 }`
-                }
-            },
-            {
-                type: "fill",
-                question: {
-                    text: "Complete the function to create private data using closure:",
-                    code: `
-function createWallet(initialBalance) {
-    let balance = initialBalance;
-
-    return {
-        getBalance: _____ => balance
-    };
-}`
-                },
-                answer: "()",
-                explanation: {
-                    text: "an arrow function will work perfectly fine because it doesn’t rely on the this keyword.",
-                    code: `
-function createWallet(initialBalance) {
-    let balance = initialBalance;  // Private variable
-
-    return {
-        getBalance: () => balance  // Access through closure
-    };
-}`
-                }
-            },
-            {
-                type: "fill",
-                question: {
-                    text: "Complete the code to fix the this binding:",
-                    code: `
-const person = {
-    name: "Bob",
-    sayHiLater: function() {
-        setTimeout(_____ {
-            console.log("Hi, " + this.name);
-        }, 1000);
-    }
-};`
-                },
-                answer: "() =>",
-                explanation: {
-                    text: "Using an arrow function in setTimeout preserves the this binding from the outer scope, allowing access to person.name.",
-                    code: `
-const person = {
-    name: "Bob",
-    sayHiLater: function() {
-        setTimeout(() => {  // Arrow function keeps outer this
-            console.log("Hi, " + this.name);  // "Hi, Bob"
-        }, 1000);
-    }
-};`
                 }
             },
             {
@@ -654,7 +857,6 @@ boundGreet();  // Prints "Hello, Alice"`
 
     let score = 0;
     let answeredQuestions = 0;
-    createQuiz();
 </script>
 </body>
 </html>
