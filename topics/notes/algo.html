@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Algo</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.6.1/mermaid.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.2/marked.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+    <link rel="stylesheet" href="/css/all.min.css" />
+    <link rel="stylesheet" href="../../css/all.min.css" />
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        /* Default: mobile vertical layout */
+        .container {
+            display: flex;
+            height: 100vh;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .mermaid-section,
+        .markdown-section {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            position: relative;
+            min-width: 200px;
+        }
+
+        .mermaid-section {
+            background: #f5f5f5;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .markdown-section {
+            background: white;
+            padding: 30px;
+            line-height: 1.6;
+        }
+
+        .node foreignObject {
+            overflow: visible;
+            white-space: normal;
+        }
+
+        .node foreignObject p {
+            padding: 0;
+            text-align: center;
+            width: auto !important;
+            min-width: 200px;
+        }
+
+        /* Zoom Controls */
+        .zoom-controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: white;
+            padding: 5px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .zoom-controls button {
+            margin: 0 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+            background: #f0f0f0;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+
+        .zoom-controls button:hover {
+            background: #e0e0e0;
+        }
+
+        #mermaid-container {
+            transform-origin: top left;
+            transition: transform 0.3s ease;
+        }
+
+        /* Code block styling */
+        pre[class*="language-"] {
+            border-radius: 6px;
+            margin: 1.5em 0;
+            padding: 1em;
+            overflow: auto;
+            background: #2d2d2d;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        code[class*="language-"] {
+            font-family: 'Fira Code', 'Consolas', Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+            font-size: 0.9em;
+            line-height: 1.4;
+            text-shadow: none;
+        }
+
+        /* Markdown content styling */
+        .markdown-section h1 {
+            font-size: 2em;
+            margin-bottom: 1em;
+            border-bottom: 2px solid #eaecef;
+            padding-bottom: 0.3em;
+        }
+
+        .markdown-section h2 {
+            font-size: 1.5em;
+            margin: 1.5em 0 1em;
+        }
+
+        .markdown-section ul,
+        .markdown-section ol {
+            padding-left: 2em;
+        }
+
+        .markdown-section li {
+            margin: 0.5em 0;
+        }
+
+        .markdown-section strong {
+            font-weight: 600;
+            color: #24292e;
+        }
+
+        /* Language-specific syntax highlighting adjustments */
+        .language-javascript,
+        .language-yaml,
+        .language-bash {
+            color: #f8f8f2;
+        }
+
+        /* Splitter styling */
+        /* Mobile: horizontal splitter */
+        .splitter {
+            height: 8px;
+            width: 100%;
+            background: #ddd;
+            cursor: row-resize;
+            transition: background 0.3s;
+        }
+        .splitter:hover,
+        .splitter.dragging {
+            background: #999;
+        }
+
+        /* Desktop (min-width: 768px): side-by-side layout */
+        @media (min-width: 768px) {
+            .container {
+                flex-direction: row;
+            }
+            .splitter {
+                width: 8px;
+                height: 100%;
+                cursor: col-resize;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="mermaid-section">
+        <div class="zoom-controls">
+            <button onclick="zoomIn()">+</button>
+            <button onclick="zoomOut()">-</button>
+            <button onclick="resetZoom()">Reset</button>
+        </div>
+        <div class="mermaid-container">
+        <pre class="mermaid">
+graph LR
+    TP["fa:fa-code Two Pointer Patterns"] --> P1["fa:fa-arrows-h Opposite Direction"]
+    TP --> P2["fa:fa-arrow-right Same Direction"]
+    TP --> P3["fa:fa-random Fast/Slow"]
+
+    P1 --> P1A["fa:fa-sort-numeric-down Sorted Array Search"]
+    P1 --> P1B["fa:fa-water Container/Area Problems"]
+    P1 --> P1C["fa:fa-palindrome Palindrome Check"]
+
+    P2 --> P2A["fa:fa-compress Remove Duplicates"]
+    P2 --> P2B["fa:fa-walking Window Sliding"]
+    P2 --> P2C["fa:fa-search-location Subarray Finding"]
+
+    P3 --> P3A["fa:fa-circle-notch Cycle Detection"]
+    P3 --> P3B["fa:fa-link Find Middle of LinkedList"]
+    P3 --> P3C["fa:fa-bug Find Duplicates"]
+
+    %% Pattern 1 Examples
+    P1A --> P1A1["fa:fa-equals Two Sum"]
+    P1A --> P1A2["fa:fa-sort-amount-up Three Sum"]
+
+    P1B --> P1B1["fa:fa-water Container With Most Water"]
+    P1B --> P1B2["fa:fa-expand-arrows-alt Trapping Rain Water"]
+
+    P1C --> P1C1["fa:fa-check Valid Palindrome"]
+    P1C --> P1C2["fa:fa-edit Almost Palindrome"]
+
+    %% Pattern 2 Examples
+    P2A --> P2A1["fa:fa-minus Remove Element"]
+    P2A --> P2A2["fa:fa-clone Remove Duplicates"]
+
+    P2B --> P2B1["fa:fa-calculator Maximum Sum Subarray"]
+    P2B --> P2B2["fa:fa-less-than Minimum Size Subarray"]
+
+    P2C --> P2C1["fa:fa-equals Subarray with Sum K"]
+    P2C --> P2C2["fa:fa-compress-arrows-alt Subarray Product"]
+
+    %% Pattern 3 Examples
+    P3A --> P3A1["fa:fa-sync Linked List Cycle"]
+    P3A --> P3A2["fa:fa-circle Find Cycle Start"]
+
+    P3B --> P3B1["fa:fa-divide Middle Node"]
+    P3B --> P3B2["fa:fa-percentage Nth Node From End"]
+
+    P3C --> P3C1["fa:fa-clone Find Duplicate"]
+    P3C --> P3C2["fa:fa-copy Multiple Duplicates"]
+
+    %% Add explanations using style
+    style P1A fill:#f9f,stroke:#333,stroke-width:2px
+    style P1B fill:#f9f,stroke:#333,stroke-width:2px
+    style P1C fill:#f9f,stroke:#333,stroke-width:2px
+    style P2A fill:#bbf,stroke:#333,stroke-width:2px
+    style P2B fill:#bbf,stroke:#333,stroke-width:2px
+    style P2C fill:#bbf,stroke:#333,stroke-width:2px
+    style P3A fill:#bfb,stroke:#333,stroke-width:2px
+    style P3B fill:#bfb,stroke:#333,stroke-width:2px
+    style P3C fill:#bfb,stroke:#333,stroke-width:2px
+        </pre>
+        </div>
+
+        <pre class="mermaid">
+            graph LR
+    PS["fa:fa-calculator Prefix Sum Pattern"] --> P1["fa:fa-ruler Range Sum Query"]
+    PS --> P2["fa:fa-equals Subarray Sum = K"]
+    PS --> P3["fa:fa-balance-scale Balanced Index / Pivot Index"]
+
+    %% Examples Under Range Sum Query
+    P1 --> E1["fa:fa-chart-area Sum of Range (L to R)"]
+    P1 --> E2["fa:fa-file-invoice Precompute for Multiple Queries"]
+
+    %% Examples Under Subarray Sum = K
+    P2 --> E3["fa:fa-not-equal Subarray Not Found Case"]
+    P2 --> E4["fa:fa-search Search via HashMap of Prefixes"]
+
+    %% Examples Under Balanced Index / Pivot
+    P3 --> E5["fa:fa-bullseye Pivot Where Left Sum = Right Sum"]
+    P3 --> E6["fa:fa-key Found Using Prefix Sum - totalSum - prefixSum - arr[i]"]
+
+        </pre>
+    </div>
+    <div class="splitter" id="splitter"></div>
+    <div class="markdown-section" id="markdown-content">
+        <!-- Markdown content will be rendered here -->
+    </div>
+</div>
+
+<script>
+    // Initialize Mermaid
+    mermaid.initialize({ startOnLoad: true });
+
+    // Zoom functionality
+    let currentZoom = 1;
+    const zoomStep = 0.1;
+    // Select all mermaid container elements (if you want to zoom all)
+    const mermaidContainers = document.querySelectorAll('.mermaid-container');
+
+    function zoomIn() {
+        currentZoom += zoomStep;
+        applyZoom();
+    }
+
+    function zoomOut() {
+        if (currentZoom > zoomStep) {
+            currentZoom -= zoomStep;
+            applyZoom();
+        }
+    }
+
+    function resetZoom() {
+        currentZoom = 1;
+        applyZoom();
+    }
+
+    function applyZoom() {
+        mermaidContainers.forEach(container => {
+            container.style.transform = `scale(${currentZoom})`;
+        });
+    }
+
+    // Configure marked to use Prism for syntax highlighting
+    marked.setOptions({
+        highlight: function(code, lang) {
+            if (Prism.languages[lang]) {
+                return Prism.highlight(code, Prism.languages[lang], lang);
+            }
+            return code;
+        }
+    });
+
+    // Markdown content
+    const markdownContent = `
+# Two Pointer Patterns
+##  Opposite Direction Pattern:
+\`\`\`javascript
+// Two Sum Example (P1A1)
+function twoSum(arr, target) {
+    let left = 0;
+    let right = arr.length - 1;
+
+    while (left < right) {
+        const sum = arr[left] + arr[right];
+        if (sum === target) return [left, right];
+        if (sum < target) left++;
+        else right--;
+    }
+    return [-1, -1];
+}
+
+// Valid Palindrome (P1C1)
+function isPalindrome(str) {
+    let left = 0;
+    let right = str.length - 1;
+
+    while (left < right) {
+        if (str[left] !== str[right]) return false;
+        left++;
+        right--;
+    }
+    return true;
+}
+\`\`\`
+
+## Same Direction Pattern:
+\`\`\`javascript
+// Remove Duplicates (P2A2)
+function removeDuplicates(arr) {
+    let writePointer = 1;
+
+    for (let readPointer = 1; readPointer < arr.length; readPointer++) {
+        if (arr[readPointer] !== arr[readPointer - 1]) {
+            arr[writePointer] = arr[readPointer];
+            writePointer++;
+        }
+    }
+    return writePointer;
+}
+
+// Maximum Sum Subarray (P2B1)
+function maxSubArraySum(arr, k) {
+    let maxSum = 0;
+    let windowSum = 0;
+    let start = 0;
+
+    for (let end = 0; end < arr.length; end++) {
+        windowSum += arr[end];
+
+        if (end >= k - 1) {
+            maxSum = Math.max(maxSum, windowSum);
+            windowSum -= arr[start];
+            start++;
+        }
+    }
+    return maxSum;
+}
+\`\`\`
+
+## Fast/Slow Pattern:
+\`\`\`javascript
+// Linked List Cycle (P3A1)
+function hasCycle(head) {
+    let slow = head;
+    let fast = head;
+
+    while (fast && fast.next) {
+        slow = slow.next;
+        fast = fast.next.next;
+        if (slow === fast) return true;
+    }
+    return false;
+}
+
+// Find Middle Node (P3B1)
+function findMiddle(head) {
+    let slow = head;
+    let fast = head;
+
+    while (fast && fast.next) {
+        slow = slow.next;
+        fast = fast.next.next;
+    }
+    return slow;
+}
+\`\`\`
+
+Key Principles for Each Pattern:
+
+1. Opposite Direction (P1):
+   - Use when working with sorted arrays
+   - Pointers start from both ends
+   - Move based on comparison with target
+   - O(n) time complexity
+
+2. Same Direction (P2):
+   - Use for in-place array modifications
+   - Both pointers move forward
+   - Often involves window sliding
+   - Good for subarray problems
+
+3. Fast/Slow (P3):
+   - Primarily used with linked lists
+   - Fast pointer moves 2x speed
+   - Detect cycles or find middle
+   - Space efficient O(1)
+# Prefix Sum Pattern
+
+## What Is the Prefix Sum Pattern?
+
+The **Prefix Sum Pattern** involves creating an auxiliary array (\`prefixSums\`) where each element at index \`i\` contains the sum of all elements in the original array from the start up to \`i\`. Once you have this precomputed prefix sums array, you can quickly calculate the sum of any subarray or use it to solve more advanced problems (such as finding a subarray matching a target sum, determining a pivot/balanced index, etc.) with efficient lookups.
+
+### Key Ideas
+
+1. **Compute Prefix Sums**
+   - \`prefixSums[0] = arr[0]\`
+   - \`prefixSums[i] = prefixSums[i-1] + arr[i]\` for \`i > 0\`.
+
+2. **Range Sum Query** (L to R)
+   - Subarray sum = \`prefixSums[R] - prefixSums[L - 1]\` (when \`L > 0\`).
+   - If \`L = 0\`, then subarray sum = \`prefixSums[R]\`.
+
+3. **Subarray Sum Equals K**
+   - Often solved by tracking \`currentPrefixSum - K\` in a hash map to check if that sum has occurred before.
+
+4. **Pivot Index** (Balanced Index)
+   - An index \`i\` is a pivot if sum of elements to the left = sum of elements to the right.
+   - Using prefix sums and the total sum of the array, you can check if \`prefixSums[i-1] = totalSum - prefixSums[i]\`.
+
+---
+
+## JavaScript Example
+
+Below is a simple demonstration of how to use prefix sums to answer **multiple range-sum queries** efficiently:
+
+\`\`\`js
+// Example array
+const arr = [2, 4, 6, 8, 10];
+
+// 1. Build prefix sum array
+const prefixSums = new Array(arr.length);
+prefixSums[0] = arr[0];
+for (let i = 1; i < arr.length; i++) {
+  prefixSums[i] = prefixSums[i - 1] + arr[i];
+}
+
+// Function to get sum of arr[L..R] using the prefix sums
+function rangeSum(L, R) {
+  if (L === 0) {
+    return prefixSums[R];
+  }
+  return prefixSums[R] - prefixSums[L - 1];
+}
+
+// Example queries
+console.log(rangeSum(0, 2)); // Sum of arr[0..2] = 2 + 4 + 6 = 12
+console.log(rangeSum(1, 3)); // Sum of arr[1..3] = 4 + 6 + 8 = 18
+console.log(rangeSum(2, 4)); // Sum of arr[2..4] = 6 + 8 + 10 = 24
+\`\`\`
+
+### How It Works
+
+- We first compute the \`prefixSums\` array so that \`prefixSums[i]\` holds the sum of \`arr[0] + arr[1] + ... + arr[i]\`.
+- To get the sum of any subarray \`arr[L..R]\`, we use:
+  - \`prefixSums[R] - prefixSums[L - 1]\`, if \`L > 0\`.
+  - If \`L = 0\`, the subarray sum is just \`prefixSums[R]\`.
+
+This approach enables **O(1)** query time after **O(n)** preprocessing time, which is especially powerful if you must answer many queries on the same array.
+
+---
+
+### Additional Usage
+
+1. **Subarray Sum = K**
+   Track the current prefix sum as you iterate. Maintain a map (\`prefixSumFrequency\`) where the key is a prefix sum value and the value is the number of times it’s been seen. If at any point \`currentPrefix - K\` exists in the map, then there is a subarray ending at the current index that sums to \`K\`.
+
+2. **Pivot Index**
+   If \`totalSum\` is the total of all elements, the pivot condition for index \`i\` becomes:
+   \`prefixSums[i - 1] === (totalSum - prefixSums[i])\` (handle edge cases when \`i = 0\`).
+
+By mastering these variations, you can solve a wide range of array-based questions efficiently.
+
+
+`;
+
+    // Render markdown content
+    document.getElementById('markdown-content').innerHTML = marked.parse(markdownContent);
+
+    // Trigger Prism highlighting
+    Prism.highlightAll();
+</script>
+
+<script>
+    // Splitter functionality
+    const splitter = document.getElementById('splitter');
+    const container = document.querySelector('.container');
+    let isDragging = false;
+
+    splitter.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        splitter.classList.add('dragging');
+        document.body.style.userSelect = 'none';
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+
+        const containerRect = container.getBoundingClientRect();
+        // Check if we're in mobile (vertical layout) or desktop (horizontal layout)
+        if (window.innerWidth < 768) {
+            // Vertical resizing based on Y-coordinate
+            const percentage = ((e.clientY - containerRect.top) / containerRect.height) * 100;
+            if (percentage > 20 && percentage < 80) {
+                const mermaidSection = document.querySelector('.mermaid-section');
+                const markdownSection = document.querySelector('.markdown-section');
+                mermaidSection.style.flex = `${percentage}`;
+                markdownSection.style.flex = `${100 - percentage}`;
+            }
+        } else {
+            // Horizontal resizing based on X-coordinate
+            const percentage = ((e.clientX - containerRect.left) / containerRect.width) * 100;
+            if (percentage > 20 && percentage < 80) {
+                const mermaidSection = document.querySelector('.mermaid-section');
+                const markdownSection = document.querySelector('.markdown-section');
+                mermaidSection.style.flex = `${percentage}`;
+                markdownSection.style.flex = `${100 - percentage}`;
+            }
+        }
+    });
+
+    document.addEventListener('mouseup', () => {
+        isDragging = false;
+        splitter.classList.remove('dragging');
+        document.body.style.userSelect = '';
+    });
+</script>
+</body>
+</html>
