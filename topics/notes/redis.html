@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Typescript</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.4.0/mermaid.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.2/marked.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+    <link rel="stylesheet" href="/css/all.min.css" />
+    <link rel="stylesheet" href="../../css/all.min.css" />
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        /* Default: mobile vertical layout */
+        .container {
+            display: flex;
+            height: 100vh;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .mermaid-section,
+        .markdown-section {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            position: relative;
+            min-width: 200px;
+        }
+
+        .mermaid-section {
+            background: #f5f5f5;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .markdown-section {
+            background: white;
+            padding: 30px;
+            line-height: 1.6;
+        }
+
+        .node foreignObject {
+            overflow: visible;
+            white-space: normal;
+        }
+
+        .node foreignObject p {
+            padding: 0;
+            text-align: center;
+            width: auto !important;
+            min-width: 200px;
+        }
+
+        /* Zoom Controls */
+        .zoom-controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: white;
+            padding: 5px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .zoom-controls button {
+            margin: 0 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+            background: #f0f0f0;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+
+        .zoom-controls button:hover {
+            background: #e0e0e0;
+        }
+
+        #mermaid-container {
+            transform-origin: top left;
+            transition: transform 0.3s ease;
+        }
+
+        /* Code block styling */
+        pre[class*="language-"] {
+            border-radius: 6px;
+            margin: 1.5em 0;
+            padding: 1em;
+            overflow: auto;
+            background: #2d2d2d;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        code[class*="language-"] {
+            font-family: 'Fira Code', 'Consolas', Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+            font-size: 0.9em;
+            line-height: 1.4;
+            text-shadow: none;
+        }
+
+        /* Markdown content styling */
+        .markdown-section h1 {
+            font-size: 2em;
+            margin-bottom: 1em;
+            border-bottom: 2px solid #eaecef;
+            padding-bottom: 0.3em;
+        }
+
+        .markdown-section h2 {
+            font-size: 1.5em;
+            margin: 1.5em 0 1em;
+        }
+
+        .markdown-section ul,
+        .markdown-section ol {
+            padding-left: 2em;
+        }
+
+        .markdown-section li {
+            margin: 0.5em 0;
+        }
+
+        .markdown-section strong {
+            font-weight: 600;
+            color: #24292e;
+        }
+
+        /* Language-specific syntax highlighting adjustments */
+        .language-javascript,
+        .language-yaml,
+        .language-bash {
+            color: #f8f8f2;
+        }
+
+        /* Splitter styling */
+        /* Mobile: horizontal splitter */
+        .splitter {
+            height: 8px;
+            width: 100%;
+            background: #ddd;
+            cursor: row-resize;
+            transition: background 0.3s;
+        }
+        .splitter:hover,
+        .splitter.dragging {
+            background: #999;
+        }
+
+        /* Desktop (min-width: 768px): side-by-side layout */
+        @media (min-width: 768px) {
+            .container {
+                flex-direction: row;
+            }
+            .splitter {
+                width: 8px;
+                height: 100%;
+                cursor: col-resize;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="mermaid-section">
+        <div class="zoom-controls">
+            <button onclick="zoomIn()">+</button>
+            <button onclick="zoomOut()">-</button>
+            <button onclick="resetZoom()">Reset</button>
+        </div>
+        <div class="mermaid-container">
+        <pre class="mermaid">
+graph LR
+
+    %% ---------------------------
+    %% Primary Sections
+    %% ---------------------------
+    Types["fa:fa-cubes Data Types"]
+    Features["fa:fa-star Features"]
+    UseCases["fa:fa-lightbulb Use Cases"]
+    Commands["fa:fa-terminal Commands"]
+
+    style Types fill:#2E86C1,stroke:#333,stroke-width:2px
+    style Features fill:#27AE60,stroke:#333,stroke-width:2px
+    style UseCases fill:#8E44AD,stroke:#333,stroke-width:2px
+    style Commands fill:#F39C12,stroke:#333,stroke-width:2px
+
+    %% ---------------------------
+    %% Data Types
+    %% ---------------------------
+    Types --> |"Simple string values"| Strings["fa:fa-font Strings"]
+    Types --> |"Ordered list of strings"| Lists["fa:fa-list Lists"]
+    Types --> |"Unique members"| Sets["fa:fa-object-group Sets"]
+    Types --> |"Score-based ordering"| SortedSets["fa:fa-sort Sorted Sets"]
+    Types --> |"Field-value pairs"| Hashes["fa:fa-hashtag Hashes"]
+
+    %% Strings Sub-nodes
+    Strings --> |"Get value"| GET_cmd["fa:fa-eye GET"]
+    Strings --> |"Set value"| SET_cmd["fa:fa-pencil-alt SET"]
+    Strings --> |"Multi-get"| MGET_cmd["fa:fa-eye MGET"]
+    Strings --> |"Multi-set"| MSET_cmd["fa:fa-pencil-alt MSET"]
+
+    %% Lists Sub-nodes
+    Lists --> |"Push left"| LPUSH_cmd["fa:fa-arrow-left LPUSH"]
+    Lists --> |"Push right"| RPUSH_cmd["fa:fa-arrow-right RPUSH"]
+    Lists --> |"Pop left"| LPOP_cmd["fa:fa-arrow-left LPOP"]
+    Lists --> |"Range elements"| LRANGE_cmd["fa:fa-bars LRANGE"]
+
+    %% Sets Sub-nodes
+    Sets --> |"Add member"| SADD_cmd["fa:fa-plus SADD"]
+    Sets --> |"Remove member"| SREM_cmd["fa:fa-minus SREM"]
+    Sets --> |"Check membership"| SISMEMBER_cmd["fa:fa-check SISMEMBER"]
+    Sets --> |"Set cardinality"| SCARD_cmd["fa:fa-hashtag SCARD"]
+
+    %% Sorted Sets Sub-nodes
+    SortedSets --> |"Add member-score"| ZADD_cmd["fa:fa-plus ZADD"]
+    SortedSets --> |"Range by score"| ZRANGE_cmd["fa:fa-sort ZRANGE"]
+    SortedSets --> |"Increment score"| ZINCRBY_cmd["fa:fa-plus-square ZINCRBY"]
+    SortedSets --> |"Remove member"| ZREM_cmd["fa:fa-trash-alt ZREM"]
+
+    %% Hashes Sub-nodes
+    Hashes --> |"Set field"| HSET_cmd["fa:fa-pencil-alt HSET"]
+    Hashes --> |"Get field"| HGET_cmd["fa:fa-eye HGET"]
+    Hashes --> |"Multiple fields"| HMSET_cmd["fa:fa-layer-group HMSET"]
+    Hashes --> |"All fields/values"| HGETALL_cmd["fa:fa-list HGETALL"]
+
+
+    %% ---------------------------
+    %% Features
+    %% ---------------------------
+    Features --> |"Automatic deletion"| Expiration["fa:fa-clock TTL/Expiration"]
+    Features --> |"Data backup"| Persistence["fa:fa-save Persistence"]
+    Features --> |"Master-slave setup"| Replication["fa:fa-copy Replication"]
+    Features --> |"Pub/Sub messaging"| PubSub["fa:fa-broadcast-tower Pub/Sub"]
+
+    %% Expiration Sub-nodes
+    Expiration --> |"Set expire time"| EXPIRE_cmd["fa:fa-hourglass EXPIRE"]
+    Expiration --> |"Get time left"| TTL_cmd["fa:fa-stopwatch TTL"]
+    Expiration --> |"Expire at UNIX time"| EXPIREAT_cmd["fa:fa-clock EXPIREAT"]
+
+    %% Persistence Sub-nodes
+    Persistence --> |"Snapshot (RDB)"| RDB["fa:fa-database RDB"]
+    Persistence --> |"Append-only file"| AOF["fa:fa-file-alt AOF"]
+
+    %% Replication Sub-nodes
+    Replication --> |"Primary-replica"| MasterSlave["fa:fa-copy Master/Replica"]
+    Replication --> |"Redis Cluster"| Cluster["fa:fa-network-wired Cluster"]
+
+    %% Pub/Sub Sub-nodes
+    PubSub --> |"Publish message"| PUBLISH_cmd["fa:fa-bullhorn PUBLISH"]
+    PubSub --> |"Subscribe channel"| SUBSCRIBE_cmd["fa:fa-microphone SUBSCRIBE"]
+
+    %% ---------------------------
+    %% Atomic Operations
+    %% ---------------------------
+    %% (Already shown in prior example, included here for completeness)
+    Features --> |"Thread-safe ops"| Atomic["fa:fa-atom Atomic Operations"]
+    style Atomic fill:#E74C3C,stroke:#333,stroke-width:2px
+
+    Atomic --> |"Increment/Decrement"| Counter["fa:fa-plus-minus INCR/DECR"]
+    Atomic --> |"Multiple commands"| Transaction["fa:fa-exchange-alt Transactions"]
+    Atomic --> |"Compare and set"| CAS["fa:fa-not-equal CAS Operations"]
+
+    Counter --> |"Atomic counter"| AtomicCounter["fa:fa-calculator Atomic Counters"]
+    Transaction --> |"All or nothing"| MULTI["fa:fa-layer-group MULTI/EXEC"]
+    CAS --> |"Optimistic locking"| WATCH["fa:fa-eye WATCH/UNWATCH"]
+
+
+    %% ---------------------------
+    %% Use Cases
+    %% ---------------------------
+    UseCases --> |"Quick data retrieval"| Cache["fa:fa-bolt Caching"]
+    UseCases --> |"Real-time counters"| CounterUse["fa:fa-calculator Counter"]
+    UseCases --> |"User activity tracking"| Session["fa:fa-user-clock Session Store"]
+    UseCases --> |"Task scheduling"| Queue["fa:fa-tasks Queue"]
+
+    %% Cache Sub-nodes
+    Cache --> |"In-memory speed"| InMemory["fa:fa-rocket In-Memory"]
+    Cache --> |"Eviction policy"| Evict["fa:fa-times-circle Evictions"]
+
+    %% Counter Sub-nodes
+    CounterUse --> |"Leaderboards"| Leaderboard["fa:fa-trophy Leaderboards"]
+    CounterUse --> |"Rate limiting"| RateLimit["fa:fa-clock Rate Limiting"]
+
+    %% Session Sub-nodes
+    Session --> |"Store user data"| StoreData["fa:fa-user Session Data"]
+    Session --> |"Auto-expire sessions"| SessionExpire["fa:fa-clock Session TTL"]
+
+    %% Queue Sub-nodes
+    Queue --> |"List-based queue"| ListQueue["fa:fa-list-ol List Queue"]
+    Queue --> |"Blocking pop"| BlockingPop["fa:fa-hourglass-half BLPOP/BRPOP"]
+
+
+    %% ---------------------------
+    %% Commands
+    %% ---------------------------
+    Commands --> |"Write data"| SetCmd["fa:fa-pencil-alt SET"]
+    Commands --> |"Read data"| GetCmd["fa:fa-eye GET"]
+    Commands --> |"Remove data"| DelCmd["fa:fa-trash DEL"]
+    Commands --> |"Check existence"| ExistsCmd["fa:fa-search EXISTS"]
+
+    %% Extended Commands Sub-nodes
+    SetCmd --> |"Options: NX, XX"| SetOpts["fa:fa-cog SET Options"]
+    DelCmd --> |"Async unlink"| Unlink["fa:fa-unlink UNLINK"]
+
+        </pre>
+            <pre class="mermaid">
+flowchart LR
+    subgraph lazyCaching["🐢 Lazy Caching - Cache-aside"]
+        style lazyCaching fill:#e6f7ff,stroke:#69c0ff
+             subgraph App[" "]
+                app["📱 Application"]
+                db["🗄️ Database"]
+             end
+
+        subgraph cache2[" "]
+            cache["💾 Redis Cache"]
+        end
+
+
+        app --> |"1 Check cache"| cache
+        cache --> |"2 Cache miss"| app
+        app --> |"3 Query database"| db
+        db --> |"4 Return data"| app
+        app --> |". Update cache"| cache
+    end
+            </pre>
+
+            <pre class="mermaid">
+flowchart TD
+    subgraph writeThroughCaching["✍️ Write-through Caching"]
+        style writeThroughCaching fill:#f6ffed,stroke:#95de64
+        app["📱 Application"]
+        subgraph datalayer[" "]
+         cache["💾 Redis Cache"]
+         db["🗄️ Database"]
+        end
+
+
+
+        app --> |"1 Write data"| cache
+        app --> |"1 Write data"| db
+        cache --> |"2 Acknowledge"| app
+        db --> |"2 Acknowledge"| app
+    end
+            </pre>
+
+            <pre class="mermaid">
+graph LR
+    subgraph pubSub["📡 Redis Pub/Sub System"]
+        publisher["👤 Publisher"]
+        subscriber1["👥 Subscriber 1"]
+        subscriber2["👥 Subscriber 2"]
+        channel1["📢 Channel 1"]
+        channel2["📢 Channel 2"]
+    end
+
+    publisher -->|"Publish"| channel1
+    publisher -->|"Publish"| channel2
+    channel1 -->|"Broadcast"| subscriber1
+    channel1 -->|"Broadcast"| subscriber2
+    channel2 -->|"Broadcast"| subscriber1
+
+    style pubSub fill:#f5f5f5,stroke:#333,stroke-width:2px
+    style publisher fill:#bbdefb,stroke:#1976d2,stroke-width:2px
+    style subscriber1 fill:#c8e6c9,stroke:#388e3c,stroke-width:2px
+    style subscriber2 fill:#c8e6c9,stroke:#388e3c,stroke-width:2px
+    style channel1 fill:#ffe0b2,stroke:#f57c00,stroke-width:2px
+    style channel2 fill:#ffe0b2,stroke:#f57c00,stroke-width:2px
+
+            </pre>
+
+            <pre class="mermaid">
+                graph LR
+    subgraph transactionFlow["fa:fa-exchange-alt Redis Transaction Flow"]
+        watch["fa:fa-eye WATCH key(s)"] -->|"Optional"| startTransaction
+        startTransaction["fa:fa-play-circle MULTI"] --> queueOperations
+        subgraph queueOperations["fa:fa-tasks Queue Operations"]
+            operation1["fa:fa-terminal Operation 1"] --> operation2["fa:fa-terminal Operation 2"]
+            operation2 --> operation3["fa:fa-terminal ... Operation N"]
+        end
+        queueOperations -->|"Execute"| executeTransaction["fa:fa-play EXEC"]
+        queueOperations -->|"Cancel"| discardTransaction["fa:fa-ban DISCARD"]
+        executeTransaction -->|"Success"| logSuccess["fa:fa-check-circle Transaction Complete"]
+        executeTransaction -->|"Error"| logError["fa:fa-exclamation-circle Error Logged"]
+        executeTransaction -->|"WATCH triggered"| watchTriggered["fa:fa-times-circle Transaction Aborted"]
+    end
+
+    classDef default stroke:#333,stroke-width:2px;
+    classDef watch fill:#e1bee7,stroke:#8e24aa,stroke-width:2px;
+    classDef multi fill:#bbdefb,stroke:#1976d2,stroke-width:2px;
+    classDef queue fill:#c8e6c9,stroke:#388e3c,stroke-width:2px;
+    classDef exec fill:#fff9c4,stroke:#fbc02d,stroke-width:2px;
+    classDef discard fill:#ffcdd2,stroke:#d32f2f,stroke-width:2px;
+    classDef success fill:#dcedc8,stroke:#689f38,stroke-width:2px;
+    classDef failure fill:#ffcdd2,stroke:#d32f2f,stroke-width:2px;
+
+    class watch watch;
+    class startTransaction multi;
+    class operation1,operation2,operation3 queue;
+    class executeTransaction exec;
+    class discardTransaction discard;
+    class logSuccess success;
+    class logError,watchTriggered failure;
+            </pre>
+        </div>
+
+    </div>
+    <div class="splitter" id="splitter"></div>
+    <div class="markdown-section" id="markdown-content">
+        <!-- Markdown content will be rendered here -->
+    </div>
+</div>
+
+<script>
+    // Initialize Mermaid
+    mermaid.initialize({ startOnLoad: true });
+
+    // Zoom functionality
+    let currentZoom = 1;
+    const zoomStep = 0.1;
+    // Select all mermaid container elements (if you want to zoom all)
+    const mermaidContainers = document.querySelectorAll('.mermaid-container');
+
+    function zoomIn() {
+        currentZoom += zoomStep;
+        applyZoom();
+    }
+
+    function zoomOut() {
+        if (currentZoom > zoomStep) {
+            currentZoom -= zoomStep;
+            applyZoom();
+        }
+    }
+
+    function resetZoom() {
+        currentZoom = 1;
+        applyZoom();
+    }
+
+    function applyZoom() {
+        mermaidContainers.forEach(container => {
+            container.style.transform = `scale(${currentZoom})`;
+        });
+    }
+
+    // Configure marked to use Prism for syntax highlighting
+    marked.setOptions({
+        highlight: function(code, lang) {
+            if (Prism.languages[lang]) {
+                return Prism.highlight(code, Prism.languages[lang], lang);
+            }
+            return code;
+        }
+    });
+
+    // Markdown content
+    const markdownContent = `
+## Lazy Cache
+Lazy caching checks the cache first and only queries the database on a cache miss.
+
+\`\`\`javascript
+app.get('/user/:id', async (req, res) => {
+  const { id } = req.params;
+  const cacheKey = \`user:\${id}\`;
+
+  try {
+    let userData = await redis.get(cacheKey);
+
+    if (!userData) {
+      const result = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
+      userData = result.rows[0];
+
+      if (userData) {
+        await redis.setex(cacheKey, 3600, JSON.stringify(userData));
+      }
+    } else {
+      userData = JSON.parse(userData);
+    }
+
+    res.json(userData || { error: 'User not found' });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+\`\`\`
+
+Pros:
+- Reduced database load
+- Faster response times for cached data
+- Only caches data that is actually requested
+
+Cons:
+- Initial requests for uncached data are slower
+- Potential for stale data if not properly invalidated
+- Complexity in managing cache consistency
+
+## Write-through
+Write-through caching updates both the cache and the database simultaneously.
+
+\`\`\`javascript
+app.post('/user', async (req, res) => {
+  const { userData } = req.body;
+  const userId = generateUniqueId();
+  const cacheKey = \`user:\${userId}\`;
+
+  try {
+    await Promise.all([
+      redis.setex(cacheKey, 3600, JSON.stringify(userData)),
+      pool.query('INSERT INTO users (id, data) VALUES ($1, $2)', [userId, userData])
+    ]);
+
+    res.json({ message: 'User created successfully', userId });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+\`\`\`
+
+Pros:
+- Cache is always up-to-date with the database
+- Simplified read operations
+
+Cons:
+- Increased write latency
+- Higher resource usage for writes
+- May cache infrequently accessed data
+
+
+
+`;
+
+    // Render markdown content
+    document.getElementById('markdown-content').innerHTML = marked.parse(markdownContent);
+
+    // Trigger Prism highlighting
+    Prism.highlightAll();
+</script>
+
+<script>
+    // Splitter functionality
+    const splitter = document.getElementById('splitter');
+    const container = document.querySelector('.container');
+    let isDragging = false;
+
+    splitter.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        splitter.classList.add('dragging');
+        document.body.style.userSelect = 'none';
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+
+        const containerRect = container.getBoundingClientRect();
+        // Check if we're in mobile (vertical layout) or desktop (horizontal layout)
+        if (window.innerWidth < 768) {
+            // Vertical resizing based on Y-coordinate
+            const percentage = ((e.clientY - containerRect.top) / containerRect.height) * 100;
+            if (percentage > 20 && percentage < 80) {
+                const mermaidSection = document.querySelector('.mermaid-section');
+                const markdownSection = document.querySelector('.markdown-section');
+                mermaidSection.style.flex = `${percentage}`;
+                markdownSection.style.flex = `${100 - percentage}`;
+            }
+        } else {
+            // Horizontal resizing based on X-coordinate
+            const percentage = ((e.clientX - containerRect.left) / containerRect.width) * 100;
+            if (percentage > 20 && percentage < 80) {
+                const mermaidSection = document.querySelector('.mermaid-section');
+                const markdownSection = document.querySelector('.markdown-section');
+                mermaidSection.style.flex = `${percentage}`;
+                markdownSection.style.flex = `${100 - percentage}`;
+            }
+        }
+    });
+
+    document.addEventListener('mouseup', () => {
+        isDragging = false;
+        splitter.classList.remove('dragging');
+        document.body.style.userSelect = '';
+    });
+</script>
+</body>
+</html>
