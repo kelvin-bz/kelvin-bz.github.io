@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Terraform</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.6.1/mermaid.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.2/marked.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-hcl.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.4/dist/purify.min.js"></script>
+</head>
+<link rel="stylesheet" href="/css/all.min.css"/>
+<link rel="stylesheet" href="../../css/all.min.css"/>
+
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+        overflow: hidden;
+        height: 100vh;
+    }
+
+    /* Default: mobile vertical layout */
+    .container {
+        display: flex;
+        height: 100vh;
+        flex-direction: column;
+        position: relative;
+    }
+
+    .mermaid-section,
+    .markdown-section {
+        flex: 1;
+        padding: 20px;
+        overflow-y: auto;
+        position: relative;
+        min-width: 200px;
+    }
+
+    .mermaid-section {
+        background: #f5f5f5;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .markdown-section {
+        background: white;
+        padding: 30px;
+        line-height: 1.6;
+    }
+
+    .node foreignObject {
+        overflow: visible;
+        white-space: normal;
+    }
+
+    .node foreignObject p {
+        padding: 0;
+        text-align: center;
+        width: auto !important;
+        min-width: 200px;
+    }
+
+    /* Zoom Controls */
+    .zoom-controls {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        z-index: 1000;
+        background: white;
+        padding: 5px;
+        border-radius: 5px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .zoom-controls button {
+        margin: 0 5px;
+        padding: 5px 10px;
+        cursor: pointer;
+        background: #f0f0f0;
+        border: 1px solid #ddd;
+        border-radius: 3px;
+    }
+
+    .zoom-controls button:hover {
+        background: #e0e0e0;
+    }
+
+    #mermaid-container {
+        transform-origin: top left;
+        transition: transform 0.3s ease;
+    }
+
+    /* Code block styling */
+    pre[class*="language-"] {
+        border-radius: 6px;
+        margin: 1.5em 0;
+        padding: 1em;
+        overflow: auto;
+        background: #2d2d2d;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    code[class*="language-"] {
+        font-family: 'Fira Code', 'Consolas', Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+        font-size: 0.9em;
+        line-height: 1.4;
+        text-shadow: none;
+    }
+
+    /* Markdown content styling */
+    .markdown-section h1 {
+        font-size: 2em;
+        margin-bottom: 1em;
+        border-bottom: 2px solid #eaecef;
+        padding-bottom: 0.3em;
+    }
+
+    .markdown-section h2 {
+        font-size: 1.5em;
+        margin: 1.5em 0 1em;
+    }
+
+    .markdown-section ul,
+    .markdown-section ol {
+        padding-left: 2em;
+    }
+
+    .markdown-section li {
+        margin: 0.5em 0;
+    }
+
+    .markdown-section strong {
+        font-weight: 600;
+        color: #24292e;
+    }
+
+    /* Language-specific syntax highlighting adjustments */
+    .language-javascript,
+    .language-yaml,
+    .language-bash {
+        color: #f8f8f2;
+    }
+
+    /* Splitter styling */
+    /* Mobile: horizontal splitter */
+    .splitter {
+        height: 8px;
+        width: 100%;
+        background: #ddd;
+        cursor: row-resize;
+        transition: background 0.3s;
+    }
+
+    .splitter:hover,
+    .splitter.dragging {
+        background: #999;
+    }
+
+    /* Desktop (min-width: 768px): side-by-side layout */
+    @media (min-width: 768px) {
+        .container {
+            flex-direction: row;
+        }
+
+        .splitter {
+            width: 8px;
+            height: 100%;
+            cursor: col-resize;
+        }
+    }
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="mermaid-section">
+        <div class="zoom-controls">
+            <button onclick="zoomIn()">+</button>
+            <button onclick="zoomOut()">-</button>
+            <button onclick="resetZoom()">Reset</button>
+        </div>
+        <div class="mermaid-container">
+        <pre class="mermaid">
+graph TB
+    subgraph VPC[VPC 10.0.0.0/16]
+        subgraph PublicSubnets[Public Subnets]
+            PS1[Public Subnet 1<br/>10.0.1.0/24<br/>us-east-1a]
+            PS2[Public Subnet 2<br/>10.0.2.0/24<br/>us-east-1b]
+        end
+
+        subgraph ALB[Application Load Balancer]
+            LB[ALB<br/>Port 80]
+            TG1[Target Group:<br/>auth-tg]
+            TG2[Target Group:<br/>ecommerce-tg]
+        end
+
+        subgraph ECS[ECS Cluster]
+            subgraph AuthService[Auth Service]
+                AS[Fargate Tasks<br/>auth-container<br/>nginx:alpine]
+            end
+            subgraph EcommerceService[Ecommerce Service]
+                ES[Fargate Tasks<br/>ecommerce-container<br/>nginx:alpine]
+            end
+        end
+
+        subgraph SecurityGroups[Security Groups]
+            ALBSG[ALB SG<br/>Inbound: 80<br/>Source: 0.0.0.0/0]
+            FSG[Fargate SG<br/>Inbound: 80<br/>Source: ALB SG]
+        end
+    end
+
+    Internet((Internet)) --> IGW[Internet Gateway]
+    IGW --> LB
+
+    LB --> |/auth/*| TG1
+    LB --> |/ecommerce/*| TG2
+
+    TG1 --> AS
+    TG2 --> ES
+
+    ALBSG --> FSG
+
+    PS1 ---- AS & ES
+    PS2 ---- AS & ES
+
+    style VPC fill:#f5f5f5,stroke:#333,stroke-width:2px
+    style PublicSubnets fill:#e1f5fe,stroke:#333,stroke-width:1px
+    style ALB fill:#fff3e0,stroke:#333,stroke-width:1px
+    style ECS fill:#e8f5e9,stroke:#333,stroke-width:1px
+    style SecurityGroups fill:#fce4ec,stroke:#333,stroke-width:1px
+        </pre>
+        </div>
+        <div class="mermaid-container">
+
+         <pre class="mermaid">
+graph LR
+    B[environments]
+    C[modules]
+
+    B --> D[dev]
+    B --> E[prod]
+
+    D --> D1[main.tf]
+    D --> D2[variables.tf]
+    D --> D3[terraform.tfvars]
+    D --> D4[provider.tf]
+    D --> D5[backend.tf]
+    D --> D6[outputs.tf]
+
+    E --> E1[main.tf]
+    E --> E2[variables.tf]
+    E --> E3[terraform.tfvars]
+    E --> E4[provider.tf]
+    E --> E5[backend.tf]
+    E --> E6[outputs.tf]
+
+    C --> F[ecs]
+    C --> G[networking]
+    C --> H[rds]
+    C --> I[security]
+
+    F --> F1[main.tf]
+    F --> F2[variables.tf]
+    F --> F3[outputs.tf]
+    F --> F4[ecs-cluster.tf]
+    F --> F5[ecs-service-product.tf]
+    F --> F6[ecs-service-order.tf]
+    F --> F7[task-definitions.tf]
+
+    G --> G1[main.tf]
+    G --> G2[variables.tf]
+    G --> G3[outputs.tf]
+    G --> G4[vpc.tf]
+    G --> G5[subnets.tf]
+    G --> G6[security-groups.tf]
+    G --> G7[alb.tf]
+
+    H --> H1[main.tf]
+    H --> H2[variables.tf]
+    H --> H3[outputs.tf]
+    H --> H4[rds-product.tf]
+    H --> H5[rds-order.tf]
+
+    I --> I1[main.tf]
+    I --> I2[variables.tf]
+    I --> I3[outputs.tf]
+    I --> I4[iam-roles.tf]
+    I --> I5[kms.tf]
+
+      </pre>
+        </div>
+    </div>
+    <div class="splitter" id="splitter"></div>
+    <div class="markdown-section" id="markdown-content">
+        <h1> Simple Ecommerce</h1>
+
+
+
+        <pre>
+
+        1. A VPC with two public subnets across different availability zones
+        2. An Application Load Balancer that routes traffic based on paths:
+        - `/auth/*` routes to the auth service
+        - `/ecommerce/*` routes to the ecommerce service
+        3. Two ECS Fargate services running nginx containers
+        4. Security groups controlling traffic flow:
+        - ALB security group allowing inbound HTTP traffic from internet
+        - Fargate security group allowing traffic only from the ALB
+        5. Internet Gateway providing internet connectivity
+
+        </pre>
+
+        <pre>
+            <code id="terraform-code" class="language-hcl">
+    terraform {
+      required_providers {
+        aws = {
+          source  = "hashicorp/aws"
+          version = "~> 5.0"
+        }
+      }
+      required_version = ">= 1.2.0"
+    }
+
+    provider "aws" {
+      region = "us-east-1"
+    }
+
+    ##################
+    # VPC + Subnets  #
+    ##################
+
+    resource "aws_vpc" "main" {
+      cidr_block = "10.0.0.0/16"
+      tags = {
+        Name = "demo-vpc"
+      }
+    }
+
+    resource "aws_internet_gateway" "gw" {
+      vpc_id = aws_vpc.main.id
+      tags = {
+        Name = "demo-internet-gateway"
+      }
+    }
+
+    resource "aws_subnet" "public_1" {
+      vpc_id                  = aws_vpc.main.id
+      cidr_block             = "10.0.1.0/24"
+      map_public_ip_on_launch = true
+      availability_zone       = "us-east-1a"
+      tags = {
+        Name = "demo-public-subnet-1"
+      }
+    }
+
+    resource "aws_subnet" "public_2" {
+      vpc_id                  = aws_vpc.main.id
+      cidr_block             = "10.0.2.0/24"
+      map_public_ip_on_launch = true
+      availability_zone       = "us-east-1b"
+      tags = {
+        Name = "demo-public-subnet-2"
+      }
+    }
+
+    resource "aws_route_table" "public" {
+      vpc_id = aws_vpc.main.id
+      tags = {
+        Name = "demo-public-rt"
+      }
+    }
+
+    resource "aws_route" "public_default_route" {
+      route_table_id         = aws_route_table.public.id
+      destination_cidr_block = "0.0.0.0/0"
+      gateway_id             = aws_internet_gateway.gw.id
+    }
+
+    resource "aws_route_table_association" "public_1" {
+      subnet_id      = aws_subnet.public_1.id
+      route_table_id = aws_route_table.public.id
+    }
+
+    resource "aws_route_table_association" "public_2" {
+      subnet_id      = aws_subnet.public_2.id
+      route_table_id = aws_route_table.public.id
+    }
+
+    #######################
+    # Security Group (ALB)#
+    #######################
+
+    resource "aws_security_group" "alb_sg" {
+      name        = "demo-alb-sg"
+      description = "ALB security group"
+      vpc_id      = aws_vpc.main.id
+
+      ingress {
+        description      = "Allow HTTP inbound"
+        from_port        = 80
+        to_port          = 80
+        protocol         = "tcp"
+        cidr_blocks      = ["0.0.0.0/0"]
+      }
+
+      egress {
+        description = "Allow all outbound"
+        from_port   = 0
+        to_port     = 0
+        protocol    = "-1"
+        cidr_blocks = ["0.0.0.0/0"]
+      }
+
+      tags = {
+        Name = "demo-alb-sg"
+      }
+    }
+
+    ############################
+    # Security Group (Fargate) #
+    ############################
+
+    resource "aws_security_group" "fargate_sg" {
+      name        = "demo-fargate-sg"
+      description = "Fargate service security group"
+      vpc_id      = aws_vpc.main.id
+
+      # ALB --> Fargate Services
+      ingress {
+        description            = "Allow inbound from ALB on port 80"
+        from_port              = 80
+        to_port                = 80
+        protocol               = "tcp"
+        security_groups        = [aws_security_group.alb_sg.id]
+      }
+
+      egress {
+        description = "Allow all outbound"
+        from_port   = 0
+        to_port     = 0
+        protocol    = "-1"
+        cidr_blocks = ["0.0.0.0/0"]
+      }
+
+      tags = {
+        Name = "demo-fargate-sg"
+      }
+    }
+
+    ########################
+    # Application LB Setup #
+    ########################
+
+    resource "aws_lb" "this" {
+      name               = "demo-alb"
+      load_balancer_type = "application"
+      security_groups    = [aws_security_group.alb_sg.id]
+      subnets            = [aws_subnet.public_1.id, aws_subnet.public_2.id]
+
+      tags = {
+        Name = "demo-alb"
+      }
+    }
+
+    resource "aws_lb_target_group" "auth_tg" {
+      name        = "tg-auth"
+      port        = 80
+      protocol    = "HTTP"
+      vpc_id      = aws_vpc.main.id
+      target_type = "ip"
+
+      health_check {
+        path = "/"
+        port = "traffic-port"
+      }
+    }
+
+    resource "aws_lb_target_group" "ecommerce_tg" {
+      name        = "tg-ecommerce"
+      port        = 80
+      protocol    = "HTTP"
+      vpc_id      = aws_vpc.main.id
+      target_type = "ip"
+
+      health_check {
+        path = "/"
+        port = "traffic-port"
+      }
+    }
+
+    resource "aws_lb_listener" "http" {
+      load_balancer_arn = aws_lb.this.arn
+      port              = "80"
+      protocol          = "HTTP"
+      default_action {
+        type = "fixed-response"
+        fixed_response {
+          content_type = "text/plain"
+          message_body = "404 Not Found"
+          status_code  = "404"
+        }
+      }
+    }
+
+    # Path-based routing: /auth/* => auth_tg, /ecommerce/* => ecommerce_tg
+    resource "aws_lb_listener_rule" "auth_rule" {
+      listener_arn = aws_lb_listener.http.arn
+      priority     = 10
+
+      action {
+        type             = "forward"
+        target_group_arn = aws_lb_target_group.auth_tg.arn
+      }
+
+      condition {
+        path_pattern {
+          values = ["/auth/*"]
+        }
+      }
+    }
+
+    resource "aws_lb_listener_rule" "ecommerce_rule" {
+      listener_arn = aws_lb_listener.http.arn
+      priority     = 20
+
+      action {
+        type             = "forward"
+        target_group_arn = aws_lb_target_group.ecommerce_tg.arn
+      }
+
+      condition {
+        path_pattern {
+          values = ["/ecommerce/*"]
+        }
+      }
+    }
+
+    ############################
+    # ECS Cluster + IAM + Task #
+    ############################
+
+    resource "aws_ecs_cluster" "this" {
+      name = "demo-cluster"
+    }
+
+    resource "aws_iam_role" "task_execution_role" {
+      name               = "demo-ecsTaskExecutionRole"
+      assume_role_policy = data.aws_iam_policy_document.ecs_task_execution_role.json
+    }
+
+    data "aws_iam_policy_document" "ecs_task_execution_role" {
+      statement {
+        actions = [
+          "sts:AssumeRole",
+        ]
+        principals {
+          type        = "Service"
+          identifiers = ["ecs-tasks.amazonaws.com"]
+        }
+      }
+    }
+
+    # Attach AWS managed policy for ECS Task Execution
+    resource "aws_iam_role_policy_attachment" "task_execution_attach" {
+      policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+      role       = aws_iam_role.task_execution_role.name
+    }
+
+    ##########################
+    # Auth Service Resources #
+    ##########################
+
+    # Minimal Task Definition for the auth service
+    resource "aws_ecs_task_definition" "auth" {
+      family                   = "auth-task"
+      network_mode             = "awsvpc"
+      requires_compatibilities = ["FARGATE"]
+      cpu                      = 256
+      memory                   = 512
+      execution_role_arn       = aws_iam_role.task_execution_role.arn
+
+      container_definitions = <<EOF
+                    [
+                    {
+        "name": "auth-container",
+        "image": "nginx:alpine",
+        "essential": true,
+        "portMappings": [
+          {
+            "containerPort": 80,
+            "hostPort": 80
+          }
+        ]
+      }
+    ]
+    EOF
+    }
+
+    resource "aws_ecs_service" "auth" {
+      name            = "auth-service"
+      cluster         = aws_ecs_cluster.this.id
+      task_definition = aws_ecs_task_definition.auth.arn
+      desired_count   = 1
+      launch_type     = "FARGATE"
+
+      network_configuration {
+        subnets          = [aws_subnet.public_1.id, aws_subnet.public_2.id]
+        security_groups  = [aws_security_group.fargate_sg.id]
+        assign_public_ip = true
+      }
+
+      load_balancer {
+        target_group_arn = aws_lb_target_group.auth_tg.arn
+        container_name   = "auth-container"
+        container_port   = 80
+      }
+
+      depends_on = [
+        aws_lb_listener_rule.auth_rule
+      ]
+    }
+
+    #################################
+    # Ecommerce Service Resources   #
+    #################################
+
+    resource "aws_ecs_task_definition" "ecommerce" {
+      family                   = "ecommerce-task"
+      network_mode             = "awsvpc"
+      requires_compatibilities = ["FARGATE"]
+      cpu                      = 256
+      memory                   = 512
+      execution_role_arn       = aws_iam_role.task_execution_role.arn
+
+      container_definitions = <<EOF
+                    [
+                    {
+        "name": "ecommerce-container",
+        "image": "nginx:alpine",
+        "essential": true,
+        "portMappings": [
+          {
+            "containerPort": 80,
+            "hostPort": 80
+          }
+        ]
+      }
+    ]
+    EOF
+    }
+
+    resource "aws_ecs_service" "ecommerce" {
+      name            = "ecommerce-service"
+      cluster         = aws_ecs_cluster.this.id
+      task_definition = aws_ecs_task_definition.ecommerce.arn
+      desired_count   = 1
+      launch_type     = "FARGATE"
+
+      network_configuration {
+        subnets          = [aws_subnet.public_1.id, aws_subnet.public_2.id]
+        security_groups  = [aws_security_group.fargate_sg.id]
+        assign_public_ip = true
+      }
+
+      load_balancer {
+        target_group_arn = aws_lb_target_group.ecommerce_tg.arn
+        container_name   = "ecommerce-container"
+        container_port   = 80
+      }
+
+      depends_on = [
+        aws_lb_listener_rule.ecommerce_rule
+      ]
+    }
+
+    ################
+    # Outputs      #
+    ################
+
+    output "alb_dns_name" {
+      description = "DNS name of the load balancer"
+      value       = aws_lb.this.dns_name
+    }
+            </code>
+            </code>
+        </pre>
+
+
+
+    </div>
+
+
+</div>
+
+<script>
+    // Initialize Mermaid
+    mermaid.initialize({startOnLoad: true});
+
+    // Zoom functionality
+    let currentZoom = 1;
+    const zoomStep = 0.1;
+    // Select all mermaid container elements (if you want to zoom all)
+    const mermaidContainers = document.querySelectorAll('.mermaid-container');
+
+    function zoomIn() {
+        currentZoom += zoomStep;
+        applyZoom();
+    }
+
+    function zoomOut() {
+        if (currentZoom > zoomStep) {
+            currentZoom -= zoomStep;
+            applyZoom();
+        }
+    }
+
+    function resetZoom() {
+        currentZoom = 1;
+        applyZoom();
+    }
+
+    function applyZoom() {
+        mermaidContainers.forEach(container => {
+            container.style.transform = `scale(\\${currentZoom})`;
+        });
+    }
+
+    // Configure marked to use Prism for syntax highlighting
+    marked.setOptions({
+        highlight: function (code, lang) {
+            if (Prism.languages[lang]) {
+                return Prism.highlight(code, Prism.languages[lang], lang);
+            }
+            return code;
+        }
+    });
+
+
+</script>
+
+<script>
+    // Splitter functionality
+    const splitter = document.getElementById('splitter');
+    const container = document.querySelector('.container');
+    let isDragging = false;
+
+    splitter.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        splitter.classList.add('dragging');
+        document.body.style.userSelect = 'none';
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+
+        const containerRect = container.getBoundingClientRect();
+        // Check if we're in mobile (vertical layout) or desktop (horizontal layout)
+        if (window.innerWidth < 768) {
+            // Vertical resizing based on Y-coordinate
+            const percentage = ((e.clientY - containerRect.top) / containerRect.height) * 100;
+            if (percentage > 20 && percentage < 80) {
+                const mermaidSection = document.querySelector('.mermaid-section');
+                const markdownSection = document.querySelector('.markdown-section');
+                mermaidSection.style.flex = `\\${percentage}`;
+                markdownSection.style.flex = `\\${100 - percentage}`;
+            }
+        } else {
+            // Horizontal resizing based on X-coordinate
+            const percentage = ((e.clientX - containerRect.left) / containerRect.width) * 100;
+            if (percentage > 20 && percentage < 80) {
+                const mermaidSection = document.querySelector('.mermaid-section');
+                const markdownSection = document.querySelector('.markdown-section');
+                mermaidSection.style.flex = `\\${percentage}`;
+                markdownSection.style.flex = `\\${100 - percentage}`;
+            }
+        }
+    });
+
+    document.addEventListener('mouseup', () => {
+        isDragging = false;
+        splitter.classList.remove('dragging');
+        document.body.style.userSelect = '';
+    });
+</script>
+</body>
+</html>
