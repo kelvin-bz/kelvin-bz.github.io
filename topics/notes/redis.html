@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Redis</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.4.0/mermaid.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.6.1/mermaid.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.2/marked.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
@@ -12,6 +12,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
     <link rel="stylesheet" href="/css/all.min.css" />
     <link rel="stylesheet" href="../../css/all.min.css" />
 
@@ -184,137 +185,33 @@
         <div class="mermaid-container">
         <pre class="mermaid">
 graph LR
-
-    %% ---------------------------
     %% Primary Sections
-    %% ---------------------------
     Types["fa:fa-cubes Data Types"]
     Features["fa:fa-star Features"]
     UseCases["fa:fa-lightbulb Use Cases"]
-    Commands["fa:fa-terminal Commands"]
 
     style Types fill:#2E86C1,stroke:#333,stroke-width:2px
     style Features fill:#27AE60,stroke:#333,stroke-width:2px
     style UseCases fill:#8E44AD,stroke:#333,stroke-width:2px
-    style Commands fill:#F39C12,stroke:#333,stroke-width:2px
 
-    %% ---------------------------
     %% Data Types
-    %% ---------------------------
-    Types --> |"Simple string values"| Strings["fa:fa-font Strings"]
-    Types --> |"Ordered list of strings"| Lists["fa:fa-list Lists"]
+    Types --> |"Simple values"| Strings["fa:fa-font Strings"]
+    Types --> |"Ordered lists"| Lists["fa:fa-list Lists"]
     Types --> |"Unique members"| Sets["fa:fa-object-group Sets"]
-    Types --> |"Score-based ordering"| SortedSets["fa:fa-sort Sorted Sets"]
+    Types --> |"Scored members"| SortedSets["fa:fa-sort Sorted Sets"]
     Types --> |"Field-value pairs"| Hashes["fa:fa-hashtag Hashes"]
 
-    %% Strings Sub-nodes
-    Strings --> |"Get value"| GET_cmd["fa:fa-eye GET"]
-    Strings --> |"Set value"| SET_cmd["fa:fa-pencil-alt SET"]
-    Strings --> |"Multi-get"| MGET_cmd["fa:fa-eye MGET"]
-    Strings --> |"Multi-set"| MSET_cmd["fa:fa-pencil-alt MSET"]
-
-    %% Lists Sub-nodes
-    Lists --> |"Push left"| LPUSH_cmd["fa:fa-arrow-left LPUSH"]
-    Lists --> |"Push right"| RPUSH_cmd["fa:fa-arrow-right RPUSH"]
-    Lists --> |"Pop left"| LPOP_cmd["fa:fa-arrow-left LPOP"]
-    Lists --> |"Range elements"| LRANGE_cmd["fa:fa-bars LRANGE"]
-
-    %% Sets Sub-nodes
-    Sets --> |"Add member"| SADD_cmd["fa:fa-plus SADD"]
-    Sets --> |"Remove member"| SREM_cmd["fa:fa-minus SREM"]
-    Sets --> |"Check membership"| SISMEMBER_cmd["fa:fa-check SISMEMBER"]
-    Sets --> |"Set cardinality"| SCARD_cmd["fa:fa-hashtag SCARD"]
-
-    %% Sorted Sets Sub-nodes
-    SortedSets --> |"Add member-score"| ZADD_cmd["fa:fa-plus ZADD"]
-    SortedSets --> |"Range by score"| ZRANGE_cmd["fa:fa-sort ZRANGE"]
-    SortedSets --> |"Increment score"| ZINCRBY_cmd["fa:fa-plus-square ZINCRBY"]
-    SortedSets --> |"Remove member"| ZREM_cmd["fa:fa-trash-alt ZREM"]
-
-    %% Hashes Sub-nodes
-    Hashes --> |"Set field"| HSET_cmd["fa:fa-pencil-alt HSET"]
-    Hashes --> |"Get field"| HGET_cmd["fa:fa-eye HGET"]
-    Hashes --> |"Multiple fields"| HMSET_cmd["fa:fa-layer-group HMSET"]
-    Hashes --> |"All fields/values"| HGETALL_cmd["fa:fa-list HGETALL"]
-
-
-    %% ---------------------------
     %% Features
-    %% ---------------------------
-    Features --> |"Automatic deletion"| Expiration["fa:fa-clock TTL/Expiration"]
-    Features --> |"Data backup"| Persistence["fa:fa-save Persistence"]
-    Features --> |"Master-slave setup"| Replication["fa:fa-copy Replication"]
-    Features --> |"Pub/Sub messaging"| PubSub["fa:fa-broadcast-tower Pub/Sub"]
-
-    %% Expiration Sub-nodes
-    Expiration --> |"Set expire time"| EXPIRE_cmd["fa:fa-hourglass EXPIRE"]
-    Expiration --> |"Get time left"| TTL_cmd["fa:fa-stopwatch TTL"]
-    Expiration --> |"Expire at UNIX time"| EXPIREAT_cmd["fa:fa-clock EXPIREAT"]
-
-    %% Persistence Sub-nodes
-    Persistence --> |"Snapshot (RDB)"| RDB["fa:fa-database RDB"]
-    Persistence --> |"Append-only file"| AOF["fa:fa-file-alt AOF"]
-
-    %% Replication Sub-nodes
-    Replication --> |"Primary-replica"| MasterSlave["fa:fa-copy Master/Replica"]
-    Replication --> |"Redis Cluster"| Cluster["fa:fa-network-wired Cluster"]
-
-    %% Pub/Sub Sub-nodes
-    PubSub --> |"Publish message"| PUBLISH_cmd["fa:fa-bullhorn PUBLISH"]
-    PubSub --> |"Subscribe channel"| SUBSCRIBE_cmd["fa:fa-microphone SUBSCRIBE"]
-
-    %% ---------------------------
-    %% Atomic Operations
-    %% ---------------------------
-    %% (Already shown in prior example, included here for completeness)
+    Features --> |"Auto expiration"| Expiration["fa:fa-clock TTL"]
+    Features --> |"Data durability"| Persistence["fa:fa-save Persistence"]
     Features --> |"Thread-safe ops"| Atomic["fa:fa-atom Atomic Operations"]
-    style Atomic fill:#E74C3C,stroke:#333,stroke-width:2px
+    Features --> |"Messaging"| PubSub["fa:fa-broadcast-tower Pub/Sub"]
 
-    Atomic --> |"Increment/Decrement"| Counter["fa:fa-plus-minus INCR/DECR"]
-    Atomic --> |"Multiple commands"| Transaction["fa:fa-exchange-alt Transactions"]
-    Atomic --> |"Compare and set"| CAS["fa:fa-not-equal CAS Operations"]
-
-    Counter --> |"Atomic counter"| AtomicCounter["fa:fa-calculator Atomic Counters"]
-    Transaction --> |"All or nothing"| MULTI["fa:fa-layer-group MULTI/EXEC"]
-    CAS --> |"Optimistic locking"| WATCH["fa:fa-eye WATCH/UNWATCH"]
-
-
-    %% ---------------------------
     %% Use Cases
-    %% ---------------------------
-    UseCases --> |"Quick data retrieval"| Cache["fa:fa-bolt Caching"]
-    UseCases --> |"Real-time counters"| CounterUse["fa:fa-calculator Counter"]
-    UseCases --> |"User activity tracking"| Session["fa:fa-user-clock Session Store"]
-    UseCases --> |"Task scheduling"| Queue["fa:fa-tasks Queue"]
-
-    %% Cache Sub-nodes
-    Cache --> |"In-memory speed"| InMemory["fa:fa-rocket In-Memory"]
-    Cache --> |"Eviction policy"| Evict["fa:fa-times-circle Evictions"]
-
-    %% Counter Sub-nodes
-    CounterUse --> |"Leaderboards"| Leaderboard["fa:fa-trophy Leaderboards"]
-    CounterUse --> |"Rate limiting"| RateLimit["fa:fa-clock Rate Limiting"]
-
-    %% Session Sub-nodes
-    Session --> |"Store user data"| StoreData["fa:fa-user Session Data"]
-    Session --> |"Auto-expire sessions"| SessionExpire["fa:fa-clock Session TTL"]
-
-    %% Queue Sub-nodes
-    Queue --> |"List-based queue"| ListQueue["fa:fa-list-ol List Queue"]
-    Queue --> |"Blocking pop"| BlockingPop["fa:fa-hourglass-half BLPOP/BRPOP"]
-
-
-    %% ---------------------------
-    %% Commands
-    %% ---------------------------
-    Commands --> |"Write data"| SetCmd["fa:fa-pencil-alt SET"]
-    Commands --> |"Read data"| GetCmd["fa:fa-eye GET"]
-    Commands --> |"Remove data"| DelCmd["fa:fa-trash DEL"]
-    Commands --> |"Check existence"| ExistsCmd["fa:fa-search EXISTS"]
-
-    %% Extended Commands Sub-nodes
-    SetCmd --> |"Options: NX, XX"| SetOpts["fa:fa-cog SET Options"]
-    DelCmd --> |"Async unlink"| Unlink["fa:fa-unlink UNLINK"]
+    UseCases --> |"Fast access"| Cache["fa:fa-bolt Caching"]
+    UseCases --> |"Real-time stats"| CounterUse["fa:fa-calculator Counters"]
+    UseCases --> |"User data"| Session["fa:fa-user-clock Sessions"]
+    UseCases --> |"Task handling"| Queue["fa:fa-tasks Queues"]
 
         </pre>
             <pre class="mermaid">
@@ -421,7 +318,114 @@ graph LR
     </div>
     <div class="splitter" id="splitter"></div>
     <div class="markdown-section" id="markdown-content">
-        <!-- Markdown content will be rendered here -->
+        <pre class="markdown-content">
+             `
+## Lazy Cache
+Lazy caching checks the cache first and only queries the database on a cache miss.
+
+```javascript
+app.get('/user/:id', async (req, res) => {
+  const { id } = req.params;
+  const cacheKey = \`user:\${id}\`;
+
+  try {
+    let userData = await redis.get(cacheKey);
+
+    if (!userData) {
+      const result = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
+      userData = result.rows[0];
+
+      if (userData) {
+        await redis.setex(cacheKey, 3600, JSON.stringify(userData));
+      }
+    } else {
+      userData = JSON.parse(userData);
+    }
+
+    res.json(userData || { error: 'User not found' });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+```
+
+Pros:
+- Reduced database load
+- Faster response times for cached data
+- Only caches data that is actually requested
+
+Cons:
+- Initial requests for uncached data are slower
+- Potential for stale data if not properly invalidated
+- Complexity in managing cache consistency
+
+## Write-through
+Write-through caching updates both the cache and the database simultaneously.
+
+```javascript
+app.post('/user', async (req, res) => {
+  const { userData } = req.body;
+  const userId = generateUniqueId();
+  const cacheKey = \`user:\${userId}\`;
+
+  try {
+    await Promise.all([
+      redis.setex(cacheKey, 3600, JSON.stringify(userData)),
+      pool.query('INSERT INTO users (id, data) VALUES ($1, $2)', [userId, userData])
+    ]);
+
+    res.json({ message: 'User created successfully', userId });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+```
+
+Pros:
+- Cache is always up-to-date with the database
+- Simplified read operations
+
+Cons:
+- Increased write latency
+- Higher resource usage for writes
+- May cache infrequently accessed data
+
+## LUA Scripting
+Redis supports Lua scripting for complex operations that ensure atomic execution
+
+```js
+const reserveStockScript = `
+  local stock = tonumber(redis.call('GET', KEYS[1]) or 0)
+  local reserved = tonumber(redis.call('GET', KEYS[2]) or 0)
+
+  if stock - reserved <= 0 then
+    return {err="Out of stock"}
+  end
+
+  redis.call('INCR', KEYS[2])
+  return 1
+`;
+
+async function reserveStock(userId, productId) {
+  const result = await redis.eval(
+    reserveStockScript,
+    2,
+    `product:${productId}:stock`,
+    `product:${productId}:stock_reserved`
+  );
+
+  if (result && result.err) {
+    throw new Error(result.err);
+  }
+
+  return true; // Successfully reserved
+}
+```
+`;
+        </pre>
+
     </div>
 </div>
 
@@ -465,92 +469,26 @@ graph LR
                 return Prism.highlight(code, Prism.languages[lang], lang);
             }
             return code;
-        }
+        },
+        breaks: true,
+        gfm: true
     });
-
-    // Markdown content
-    const markdownContent = `
-## Lazy Cache
-Lazy caching checks the cache first and only queries the database on a cache miss.
-
-\`\`\`javascript
-app.get('/user/:id', async (req, res) => {
-  const { id } = req.params;
-  const cacheKey = \`user:\${id}\`;
-
-  try {
-    let userData = await redis.get(cacheKey);
-
-    if (!userData) {
-      const result = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
-      userData = result.rows[0];
-
-      if (userData) {
-        await redis.setex(cacheKey, 3600, JSON.stringify(userData));
-      }
-    } else {
-      userData = JSON.parse(userData);
-    }
-
-    res.json(userData || { error: 'User not found' });
-  } catch (error) {
-    console.error('Error:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
-\`\`\`
-
-Pros:
-- Reduced database load
-- Faster response times for cached data
-- Only caches data that is actually requested
-
-Cons:
-- Initial requests for uncached data are slower
-- Potential for stale data if not properly invalidated
-- Complexity in managing cache consistency
-
-## Write-through
-Write-through caching updates both the cache and the database simultaneously.
-
-\`\`\`javascript
-app.post('/user', async (req, res) => {
-  const { userData } = req.body;
-  const userId = generateUniqueId();
-  const cacheKey = \`user:\${userId}\`;
-
-  try {
-    await Promise.all([
-      redis.setex(cacheKey, 3600, JSON.stringify(userData)),
-      pool.query('INSERT INTO users (id, data) VALUES ($1, $2)', [userId, userData])
-    ]);
-
-    res.json({ message: 'User created successfully', userId });
-  } catch (error) {
-    console.error('Error:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
-\`\`\`
-
-Pros:
-- Cache is always up-to-date with the database
-- Simplified read operations
-
-Cons:
-- Increased write latency
-- Higher resource usage for writes
-- May cache infrequently accessed data
-
-
-
-`;
-
-    // Render markdown content
-    document.getElementById('markdown-content').innerHTML = marked.parse(markdownContent);
 
     // Trigger Prism highlighting
     Prism.highlightAll();
+
+    // Render markdown content
+    document.addEventListener('DOMContentLoaded', function() {
+        const markdownElement = document.querySelector('.markdown-content');
+        if (markdownElement) {
+            const markdownContent = markdownElement.textContent.trim();
+            const markdownSection = document.querySelector('.markdown-section');
+            markdownSection.innerHTML = marked.parse(markdownContent);
+
+            // Re-apply Prism highlighting after markdown is rendered
+            Prism.highlightAllUnder(markdownSection);
+        }
+    });
 </script>
 
 <script>
