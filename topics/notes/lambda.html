@@ -164,89 +164,47 @@
         </div>
         <div id="mermaid-container">
                 <pre class="mermaid">
-graph LR
+graph TD
+    %% Central Lambda Node
+    Lambda["fa:fa-cube AWS Lambda Function"]
 
-    Features["fa:fa-star Features"]
-    Features -->|"Serverless"| Serverless["fa:fa-cloud No Server Management"]
-    Serverless -->|"Fully Managed"| Managed["fa:fa-wrench Managed Infrastructure"]
-    Serverless -->|"No Provisioning"| NoProvision["fa:fa-ban No Provisioning Required"]
+    %% BEFORE LAMBDA (Triggers)
+    subgraph Before[" "]
+        Triggers["fa:fa-play Triggers"]
+        Triggers -->|"Storage"| S3["fa:fa-database S3 Events"]
+        Triggers -->|"HTTP"| API["fa:fa-globe API Gateway"]
+        Triggers -->|"Queue"| SQS["fa:fa-tasks SQS"]
+        Triggers -->|"Schedule"| EventBridge["fa:fa-clock EventBridge"]
+    end
 
-    Features -->|"Scales"| AutoScale["fa:fa-arrows-alt Auto Scaling"]
-    AutoScale -->|"Concurrency"| ScaleConcurrency["fa:fa-random Concurrency Scaling"]
-    AutoScale -->|"Event-Driven"| EventDriven["fa:fa-bolt Event-Based Execution"]
+    %% INSIDE LAMBDA (Runtime & Config)
+    subgraph Lambda["Lambda "]
+        Runtime["fa:fa-code Runtimes"]
+        Runtime -->|"Languages"| Languages["Node.js, Python, Java, .NET, Go"]
 
-    Features -->|"Pay Per Use"| Pricing["fa:fa-dollar-sign Pay-as-you-go"]
-    Pricing -->|"Granular Billing"| Billing["fa:fa-clock Millisecond Billing"]
-    Pricing -->|"Free Tier"| FreeTier["fa:fa-gift Free Tier Available"]
+        Config["fa:fa-cogs Configuration"]
+        Config -->|"Resources"| Memory["Memory: 128MB-10GB"]
+        Config -->|"Time"| Timeout["Timeout: Max 15 Min"]
 
-    Runtime["fa:fa-code Runtimes"]
-    Runtime -->|"JavaScript"| Node["fab:fa-node-js Node.js"]
+        IAM["fa:fa-shield-alt IAM Permissions"]
+    end
 
-    Runtime -->|"Python"| Python["fab:fa-python Python"]
+    %% AFTER LAMBDA (Integrations & Monitoring)
+    subgraph After[" "]
+        Integration["fa:fa-plug Integrations"]
+        Integration -->|"Database"| DB["fa:fa-database DynamoDB/RDS"]
 
-    Runtime -->|"Java"| Java["fab:fa-java Java"]
+        Response["fa:fa-reply Responses"]
+        Response -->|"Sync"| SyncResp["Synchronous Response"]
+        Response -->|"Async"| AsyncResp["Asynchronous Process"]
 
-    Runtime -->|"Others"| Others["fa:fa-ellipsis-h .NET, Go, Ruby"]
+        Monitor["fa:fa-chart-line Monitoring"]
+        Monitor -->|"Metrics"| CloudWatch["CloudWatch"]
+    end
 
-    Triggers["fa:fa-play Triggers"]
-    Triggers -->|"Storage"| S3["fa:fa-database S3 Events"]
-    S3 -->|"File Upload"| S3Upload["fa:fa-upload File Upload Trigger"]
-    S3 -->|"Object Deletion"| S3Delete["fa:fa-trash Object Deletion Trigger"]
-
-    Triggers -->|"HTTP"| API["fa:fa-globe API Gateway"]
-    API -->|"REST API"| RestAPI["fa:fa-network-wired REST API Gateway"]
-    API -->|"WebSockets"| WebSockets["fa:fa-comments WebSockets Support"]
-
-    Triggers -->|"Queue"| SQS["fa:fa-tasks SQS"]
-    SQS -->|"FIFO Queue"| FIFO["fa:fa-sort FIFO Queue"]
-    SQS -->|"Standard Queue"| StandardQueue["fa:fa-random Standard Queue"]
-
-    Triggers -->|"Schedule"| EventBridge["fa:fa-clock EventBridge"]
-    EventBridge -->|"Cron Jobs"| Cron["fa:fa-calendar-alt Cron Scheduling"]
-    EventBridge -->|"Event Patterns"| EventPattern["fa:fa-filter Event Filtering"]
-
-    Config["fa:fa-cogs Configuration"]
-    Config -->|"Resources"| Memory["fa:fa-memory Memory & CPU"]
-    Memory -->|"Min 128MB"| MinMemory["fa:fa-minus-circle 128MB RAM"]
-    Memory -->|"Max 10GB"| MaxMemory["fa:fa-plus-circle 10GB RAM"]
-
-    Config -->|"Time"| Timeout["fa:fa-hourglass-half Timeout"]
-    Timeout -->|"Max 15 Min"| MaxTimeout["fa:fa-clock 15 Min Limit"]
-    Timeout -->|"Customizable"| CustomTimeout["fa:fa-cog Adjustable"]
-
-    IAM["fa:fa-shield-alt IAM"]
-    IAM -->|"Role"| ExecRole["fa:fa-user-shield Execution Role"]
-    ExecRole -->|"Custom Policies"| CustomPolicy["fa:fa-lock Custom IAM Policies"]
-    ExecRole -->|"Least Privilege"| LeastPriv["fa:fa-user-lock Least Privilege Model"]
-
-    Monitor["fa:fa-chart-line Monitoring"]
-    Monitor -->|"Metrics"| CloudWatch["fa:fa-chart-bar CloudWatch"]
-    CloudWatch -->|"Invocations"| Invocations["fa:fa-chart-area Invocation Metrics"]
-    CloudWatch -->|"Errors"| Errors["fa:fa-exclamation-circle Error Tracking"]
-
-    Dev["fa:fa-laptop-code Development"]
-    Dev -->|"Local"| LocalDev["fa:fa-terminal SAM Local"]
-    LocalDev -->|"Docker"| Docker["fab:fa-docker Docker Runtime"]
-    LocalDev -->|"Emulator"| Emulator["fa:fa-play-circle Local Emulator"]
-
-    Practices["fa:fa-check-circle Best Practices"]
-    Practices -->|"Cold Start"| ColdStart["fa:fa-temperature-low Minimize Cold Starts"]
-    ColdStart -->|"Provisioned Concurrency"| ProvConc["fa:fa-bolt Keep Warm Strategies"]
-    ColdStart -->|"Optimized Dependencies"| OptimDeps["fa:fa-compress Reduce Dependency Size"]
-
-    Integration["fa:fa-plug Integrations"]
-    Integration -->|"Database"| DB["fa:fa-database DynamoDB/RDS"]
-    DB -->|"DynamoDB"| Dynamo["fa:fa-server DynamoDB Tables"]
-    DB -->|"RDS"| RDS["fa:fa-database RDS PostgreSQL/MySQL"]
-
-    Advanced["fa:fa-rocket Advanced Features"]
-    Advanced -->|"Concurrency"| Concur["fa:fa-random Concurrency Control"]
-    Concur -->|"Reserved Concurrency"| ReservedConc["fa:fa-tachometer-alt Reserved Limits"]
-    Concur -->|"Provisioned Concurrency"| ProvConcAdv["fa:fa-rocket Pre-Warmed Execution"]
-
-    Advanced -->|"Async"| Async["fa:fa-clock Asynchronous Invocation"]
-    Async -->|"Retry Policy"| RetryPolicy["fa:fa-sync Retry Logic"]
-    Async -->|"Dead Letter Queue"| DLQ["fa:fa-envelope Dead Letter Queue"]
+    %% CONNECTIONS TO LAMBDA
+    Before --> Lambda
+    Lambda --> After
 
                 </pre>
         </div>
