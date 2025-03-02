@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lambda</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.6.1/mermaid.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.4.0/mermaid.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.2/marked.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
@@ -186,8 +186,6 @@
         <div id="mermaid-container">
                 <pre class="mermaid">
                     graph TD
-                    %% Central Lambda Node
-                    Lambda["fa:fa-cube AWS Lambda Function"]
                     
                     %% BEFORE LAMBDA (Triggers)
                     subgraph Before["Triggers & Event Sources"]
@@ -216,18 +214,20 @@
                     subgraph LambdaDetails["Lambda Configuration & Execution"]
                         subgraph RuntimeEnv["Runtime Environment"]
                             Languages["fa:fa-language Node.js, Python, Java, .NET, Go, Ruby"]
+                            Package["fa:fa-file-archive Max 50MB zip/250MB uncompressed"]
                         end
                         
                         subgraph ConfigOptions["Configuration Options"]
                             Memory["fa:fa-memory Memory: 128MB-10GB"]
                             Timeout["fa:fa-hourglass-end Timeout: Max 15 Min"]
-                            Package["fa:fa-file-archive Max 50MB zip/250MB uncompressed"]
                             EnvVars["fa:fa-sliders-h Environment Variables"]
                             Concurrency["fa:fa-layer-group Concurrency: 1000 default"]
                         end
                         
                         subgraph Permissions["Security & Permissions"]
                             Policies["fa:fa-lock Policy Documents"]
+                            IAM["fa:fa-user-shield IAM Roles"]
+                            Secrets["fa:fa-key Secrets Manager"]
                         end
                         
                         subgraph ExecModel["Execution Model"]
@@ -281,8 +281,7 @@
                     end
                     
                     %% CONNECTIONS
-                    Before -->|"Event triggers function"| Lambda
-                    Lambda -->|"Function processes event"| LambdaDetails
+                    Before -->LambdaDetails
                     LambdaDetails -->|"Function completes"| After
                     LambdaDetails -->|"Extends functionality"| Extended
 
