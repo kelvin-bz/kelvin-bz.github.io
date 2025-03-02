@@ -147,9 +147,30 @@
         .language-bash {
             color: #f8f8f2;
         }
+
+        /* Splitter styling */
+        /* Mobile: horizontal splitter */
+        .splitter {
+            height: 8px;
+            width: 100%;
+            background: #ddd;
+            cursor: row-resize;
+            transition: background 0.3s;
+        }
+        .splitter:hover,
+        .splitter.dragging {
+            background: #999;
+        }
+
+        /* Desktop (min-width: 768px): side-by-side layout */
         @media (min-width: 768px) {
             .container {
                 flex-direction: row; /* Side by side on desktop */
+            }
+            .splitter {
+                width: 8px;
+                height: 100%;
+                cursor: col-resize;
             }
         }
     </style>
@@ -164,51 +185,111 @@
         </div>
         <div id="mermaid-container">
                 <pre class="mermaid">
-graph TD
-    %% Central Lambda Node
-    Lambda["fa:fa-cube AWS Lambda Function"]
-
-    %% BEFORE LAMBDA (Triggers)
-    subgraph Before[" "]
-        Triggers["fa:fa-play Triggers"]
-        Triggers -->|"Storage"| S3["fa:fa-database S3 Events"]
-        Triggers -->|"HTTP"| API["fa:fa-globe API Gateway"]
-        Triggers -->|"Queue"| SQS["fa:fa-tasks SQS"]
-        Triggers -->|"Schedule"| EventBridge["fa:fa-clock EventBridge"]
-    end
-
-    %% INSIDE LAMBDA (Runtime & Config)
-    subgraph Lambda["Lambda "]
-        Runtime["fa:fa-code Runtimes"]
-        Runtime -->|"Languages"| Languages["Node.js, Python, Java, .NET, Go"]
-
-        Config["fa:fa-cogs Configuration"]
-        Config -->|"Resources"| Memory["Memory: 128MB-10GB"]
-        Config -->|"Time"| Timeout["Timeout: Max 15 Min"]
-
-        IAM["fa:fa-shield-alt IAM Permissions"]
-    end
-
-    %% AFTER LAMBDA (Integrations & Monitoring)
-    subgraph After[" "]
-        Integration["fa:fa-plug Integrations"]
-        Integration -->|"Database"| DB["fa:fa-database DynamoDB/RDS"]
-
-        Response["fa:fa-reply Responses"]
-        Response -->|"Sync"| SyncResp["Synchronous Response"]
-        Response -->|"Async"| AsyncResp["Asynchronous Process"]
-
-        Monitor["fa:fa-chart-line Monitoring"]
-        Monitor -->|"Metrics"| CloudWatch["CloudWatch"]
-    end
-
-    %% CONNECTIONS TO LAMBDA
-    Before --> Lambda
-    Lambda --> After
+                    graph TD
+                    %% Central Lambda Node
+                    Lambda["fa:fa-cube AWS Lambda Function"]
+                    
+                    %% BEFORE LAMBDA (Triggers)
+                    subgraph Before["Triggers & Event Sources"]
+                        subgraph Storage["Storage Events"]
+                            S3["fa:fa-database S3 Events"]
+                            DynamoStream["fa:fa-table DynamoDB Streams"]
+                        end
+                        
+                        subgraph API_Events["API & HTTP"]
+                            API["fa:fa-globe API Gateway"]
+                            SDK["fa:fa-code AWS SDK"]
+                        end
+                        
+                        subgraph Messaging["Messaging Systems"]
+                            SQS["fa:fa-tasks SQS"]
+                            SNS["fa:fa-bell SNS Topics"]
+                            Kinesis["fa:fa-stream Kinesis"]
+                        end
+                        
+                        subgraph Schedulers["Scheduling"]
+                            EventBridge["fa:fa-clock EventBridge"]
+                        end
+                    end
+                    
+                    %% INSIDE LAMBDA (Runtime & Config)
+                    subgraph LambdaDetails["Lambda Configuration & Execution"]
+                        subgraph RuntimeEnv["Runtime Environment"]
+                            Languages["fa:fa-language Node.js, Python, Java, .NET, Go, Ruby"]
+                        end
+                        
+                        subgraph ConfigOptions["Configuration Options"]
+                            Memory["fa:fa-memory Memory: 128MB-10GB"]
+                            Timeout["fa:fa-hourglass-end Timeout: Max 15 Min"]
+                            Package["fa:fa-file-archive Max 50MB zip/250MB uncompressed"]
+                            EnvVars["fa:fa-sliders-h Environment Variables"]
+                            Concurrency["fa:fa-layer-group Concurrency: 1000 default"]
+                        end
+                        
+                        subgraph Permissions["Security & Permissions"]
+                            Policies["fa:fa-lock Policy Documents"]
+                        end
+                        
+                        subgraph ExecModel["Execution Model"]
+                            Cold["fa:fa-snowflake Cold Start"]
+                            Warm["fa:fa-fire Warm Start"]
+                            Stateless["fa:fa-recycle Ephemeral Runtime"]
+                        end
+                    end
+                    
+                    %% AFTER LAMBDA (Integrations & Monitoring)
+                    subgraph After["Output & Monitoring"]
+                        subgraph DataStores["Data Storage Options"]
+                            DocumentDB["fa:fa-file-alt DocumentDB"]
+                            DynamoDB["fa:fa-database DynamoDB"]
+                            RDS["fa:fa-server RDS"]
+                            S3out["fa:fa-hdd S3 Buckets"]
+                            ES["fa:fa-search Elasticsearch"]
+                        end
+                        
+                        subgraph ResponseTypes["Response Types"]
+                            SyncResp["fa:fa-exchange-alt Synchronous Response"]
+                            AsyncResp["fa:fa-tasks Asynchronous Process"]
+                            Step["fa:fa-project-diagram Step Functions"]
+                        end
+                        
+                        subgraph Monitoring["Monitoring & Logging"]
+                            CloudWatch["fa:fa-tachometer-alt CloudWatch Metrics"]
+                            CloudWatchLogs["fa:fa-list-alt CloudWatch Logs"]
+                            XRay["fa:fa-sitemap X-Ray"]
+                            Cost["fa:fa-coins Cost Explorer"]
+                        end
+                    end
+                    
+                    %% EXTENDED FEATURES
+                    subgraph Extended["Advanced Features"]
+                        subgraph CodeOrg["Code Organization"]
+                            CommonCode["fa:fa-layers Lambda Layers & Libraries"]
+                        end
+                        
+                        subgraph SecurityFeatures["Security Features"]
+                            VPC["fa:fa-network-wired VPC Integration"]
+                            SecretsManager["fa:fa-key Secrets Manager"]
+                            ResourcePolicy["fa:fa-shield Resource Policies"]
+                        end
+                        
+                        subgraph DeployOps["Deployment & Operations"]
+                            SAM["fa:fa-file-code SAM/CloudFormation"]
+                            CICD["fa:fa-sync CodePipeline/GitHub Actions"]
+                            Aliases["fa:fa-random Versions & Aliases"]
+                        end
+                    end
+                    
+                    %% CONNECTIONS
+                    Before -->|"Event triggers function"| Lambda
+                    Lambda -->|"Function processes event"| LambdaDetails
+                    LambdaDetails -->|"Function completes"| After
+                    LambdaDetails -->|"Extends functionality"| Extended
 
                 </pre>
         </div>
     </div>
+    <div class="splitter" id="splitter"></div>
     <div class="markdown-section" id="markdown-content">
     </div>
 </div>
@@ -386,6 +467,49 @@ sam local start-api
 
     // Trigger Prism highlighting
     Prism.highlightAll();
+
+    // Splitter functionality
+    const splitter = document.getElementById('splitter');
+    const containerElement = document.querySelector('.container');
+    let isDragging = false;
+
+    splitter.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        splitter.classList.add('dragging');
+        document.body.style.userSelect = 'none';
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+
+        const containerRect = containerElement.getBoundingClientRect();
+        // Check if we're in mobile (vertical layout) or desktop (horizontal layout)
+        if (window.innerWidth < 768) {
+            // Vertical resizing based on Y-coordinate
+            const percentage = ((e.clientY - containerRect.top) / containerRect.height) * 100;
+            if (percentage > 20 && percentage < 80) {
+                const mermaidSection = document.querySelector('.mermaid-section');
+                const markdownSection = document.querySelector('.markdown-section');
+                mermaidSection.style.flex = `${percentage}`;
+                markdownSection.style.flex = `${100 - percentage}`;
+            }
+        } else {
+            // Horizontal resizing based on X-coordinate
+            const percentage = ((e.clientX - containerRect.left) / containerRect.width) * 100;
+            if (percentage > 20 && percentage < 80) {
+                const mermaidSection = document.querySelector('.mermaid-section');
+                const markdownSection = document.querySelector('.markdown-section');
+                mermaidSection.style.flex = `${percentage}`;
+                markdownSection.style.flex = `${100 - percentage}`;
+            }
+        }
+    });
+
+    document.addEventListener('mouseup', () => {
+        isDragging = false;
+        splitter.classList.remove('dragging');
+        document.body.style.userSelect = '';
+    });
 </script>
 </body>
 </html>
