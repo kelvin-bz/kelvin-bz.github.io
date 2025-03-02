@@ -197,6 +197,7 @@
         // process event
         return { statusCode: 200, body: "Success" };
     } catch (error) {
+        console.error("Error processing event:", error);
         return {
             statusCode: 500,
             body: JSON.stringify({ error: error.message })
@@ -215,7 +216,7 @@
 }`
                     ],
                     correct: 1,
-                    explanation: "Best practice is to catch errors and return a proper HTTP response with status code and error message, rather than throwing or logging the error."
+                    explanation: "Best practice is to catch errors, log and return a proper HTTP response with status code and error message, rather than throwing or logging the error. Do not throw the error (causes API Gateway to return 502 Bad Gateway)."
                 },
                 // Kept original #5
                 {

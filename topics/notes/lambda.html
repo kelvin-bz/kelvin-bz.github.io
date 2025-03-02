@@ -136,16 +136,43 @@
         }
 
         /* Language-specific syntax highlighting adjustments */
-        .language-javascript {
-            color: #f8f8f2;
-        }
-
-        .language-yaml {
-            color: #f8f8f2;
-        }
-
+        .language-javascript,
+        .language-yaml,
         .language-bash {
             color: #f8f8f2;
+        }
+
+        /* Table of Contents styling */
+        .toc {
+            background-color: #f8f8f8;
+            border: 1px solid #e8e8e8;
+            border-radius: 5px;
+            padding: 15px 20px;
+            margin-bottom: 30px;
+        }
+
+        .toc h2 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 1.3em;
+        }
+
+        .toc ul {
+            list-style-type: none;
+            padding-left: 10px;
+        }
+
+        .toc li {
+            margin: 5px 0;
+        }
+
+        .toc a {
+            color: #0366d6;
+            text-decoration: none;
+        }
+
+        .toc a:hover {
+            text-decoration: underline;
         }
 
         /* Splitter styling */
@@ -288,10 +315,257 @@
                     LambdaDetails -->|"Extends functionality"| Extended
 
                 </pre>
+                <pre class="mermaid">
+                    graph TD
+    subgraph HandlerPatterns["Lambda Handler Code Patterns"]
+        subgraph BasicStructure["Basic Structure"]
+            ExportHandler["fa:fa-file-export exports.handler"]
+            AsyncFunction["fa:fa-tasks async function"]
+            TryCatch["fa:fa-shield-alt try/catch block"]
+            ReturnResponse["fa:fa-reply return response"]
+        end
+        
+        subgraph EventProcessing["Event Processing"]
+            ParseEvent["fa:fa-filter Parse event object"]
+            ExtractParams["fa:fa-code-branch Extract parameters"]
+            ValidateInput["fa:fa-check-circle Validate input"]
+            ProcessData["fa:fa-cogs Process data"]
+        end
+        
+        subgraph ResponsHandling["Response Formatting"]
+            StatusCode["fa:fa-hashtag statusCode"]
+            Headers["fa:fa-list headers"]
+            BodyContent["fa:fa-file-alt body content"]
+            Stringify["fa:fa-quote-right JSON.stringify()"]
+        end
+        
+        subgraph ErrorHandling["Error Handling"]
+            CatchBlock["fa:fa-bug catch(error)"]
+            LogError["fa:fa-exclamation console.error()"]
+            CustomErrors["fa:fa-exclamation-triangle Custom error classes"]
+            ErrorResponse["fa:fa-reply-all Error response format"]
+        end
+    end
+    
+    subgraph CommonPatterns["Common Code Patterns"]
+        subgraph AsyncOperations["Asynchronous Operations"]
+            PromiseAll["fa:fa-layer-group Promise.all()"]
+            AsyncAwait["fa:fa-hourglass async/await"]
+            Callbacks["fa:fa-phone-alt Callbacks"]
+        end
+        
+        subgraph Middleware["Middleware Pattern"]
+            RequestValidation["fa:fa-filter Input validation"]
+            Authentication["fa:fa-lock Authentication"]
+            DataTransformation["fa:fa-random Data transformation"]
+            ResponseFormat["fa:fa-file-export Response formatting"]
+        end
+        
+        subgraph StateManagement["State Management"]
+            GlobalVars["fa:fa-globe Global variables"]
+            DbConnections["fa:fa-database DB connections"]
+            HttpClients["fa:fa-server HTTP clients"]
+            ServiceInstances["fa:fa-cubes Service instances"]
+        end
+        
+        subgraph LambdaOptimizations["Performance Optimizations"]
+            LazyLoading["fa:fa-spinner Lazy loading"]
+            ConnectionPooling["fa:fa-network-wired Connection pooling"]
+            Memoization["fa:fa-memory Memoization"]
+            CodeSplitting["fa:fa-cut Code splitting"]
+        end
+    end
+    
+    
+    
+    %% CONNECTIONS
+    HandlerPatterns -->|"implements"| CommonPatterns
+    
+    %% Internal connections
+    BasicStructure -->|"includes"| EventProcessing
+    EventProcessing -->|"produces"| ResponsHandling
+    EventProcessing -->|"may trigger"| ErrorHandling
+                </pre>
         </div>
     </div>
     <div class="splitter" id="splitter"></div>
     <div class="markdown-section" id="markdown-content">
+        <pre id="markdown-source" style="display: none;">
+# AWS Lambda Reference
+
+## Table of Contents
+- [Basic Lambda Function](#basic-lambda-function)
+- [SQS Event Processing](#sqs-event-processing)
+- [Common Triggers](#common-triggers)
+- [Environment Variables](#environment-variables)
+- [AWS SDK Integration](#aws-sdk-integration)
+- [Error Handling](#error-handling)
+- [Best Practices](#best-practices)
+- [Cold Start Optimization](#cold-start-optimization)
+- [Local Testing](#local-testing)
+
+## **Basic Lambda Function** (Node.js):
+Handle parameters when invoked via API Gateway:
+```javascript
+exports.handler = async (event, context) => {
+    try {
+        // Log the full event object
+        console.log('Event:', JSON.stringify(event, null, 2));
+
+        // Extract query parameters (for HTTP GET requests)
+        const queryParams = event.queryStringParameters || {};
+
+        // Extract path parameters (if defined in API Gateway)
+        const pathParams = event.pathParameters || {};
+
+        // Extract request body (for HTTP POST/PUT requests)
+        let body = {};
+        if (event.body) {
+            body = JSON.parse(event.body);
+        }
+
+        // Response with received parameters
+        const response = {
+            statusCode: 200,
+            body: JSON.stringify({
+                message: 'Hello from Lambda!',
+                queryParams,
+                pathParams,
+                body
+            })
+        };
+
+        return response;
+    } catch (error) {
+        console.error('Error:', error);
+        return {
+            statusCode: 500,
+            body: JSON.stringify({ message: 'Internal Server Error' })
+        };
+    }
+};
+```
+
+## **SQS Event Processing**
+```js
+async function processSqsEvent(event) {
+    const results = [];
+    const errors = [];
+    
+    // Process each record individually
+    for (const record of event.Records) {
+        try {
+            // Parse the SQS message body
+            const body = JSON.parse(record.body);
+            
+            // Process the message
+            const result = await processMessage(body);
+            results.push(result);
+        } catch (error) {
+            // Track errors but continue processing other records
+            console.error(`Error processing SQS record ${record.messageId}:`, error);
+            errors.push({
+                messageId: record.messageId,
+                error: error.message
+            });
+        }
+    }
+    
+    // Return summary of processing
+    return {
+        processed: results.length,
+        failed: errors.length,
+        results,
+        errors
+    };
+}
+```
+
+## **Common Triggers**:
+   - API Gateway (HTTP/REST API):
+   ```yaml
+   Events:
+     ApiEvent:
+       Type: Api
+       Properties:
+         Path: /hello
+         Method: GET
+   ```
+   - S3 Event:
+   ```yaml
+   Events:
+     S3Event:
+       Type: S3
+       Properties:
+         Bucket: !Ref MyBucket
+         Events: s3:ObjectCreated:*
+   ```
+## **Environment Variables**:
+```javascript
+// Access environment variables
+const tableName = process.env.TABLE_NAME;
+const region = process.env.AWS_REGION;
+```
+## **AWS SDK Integration**:
+```javascript
+const AWS = require('aws-sdk');
+const s3 = new AWS.S3();
+const dynamodb = new AWS.DynamoDB.DocumentClient();
+exports.handler = async (event) => {
+    // Example: Write to DynamoDB
+    const params = {
+        TableName: process.env.TABLE_NAME,
+        Item: {
+            id: 'unique-id',
+            timestamp: Date.now()
+        }
+    };
+
+    await dynamodb.put(params).promise();
+};
+```
+## **Error Handling**:
+```javascript
+exports.handler = async (event) => {
+    try {
+        // Your logic here
+    } catch (error) {
+        console.error('Error:', error);
+        return {
+            statusCode: 500,
+            body: JSON.stringify({
+                error: 'Internal Server Error'
+            })
+        };
+    }
+};
+```
+## **Best Practices**:
+   - Keep dependencies minimal to reduce cold start time
+   - Reuse AWS SDK clients outside the handler
+   - Use environment variables for configuration
+   - Implement proper error handling and logging
+   - Use IAM roles with minimum required permissions
+## **Cold Start Optimization**:
+```javascript
+// Initialize clients outside handler
+const dynamodb = new AWS.DynamoDB.DocumentClient();
+const s3 = new AWS.S3();
+// Reuse connections
+exports.handler = async (event) => {
+    // Handler code using initialized clients
+};
+```
+## **Local Testing** (using AWS SAM):
+```bash
+# Initialize SAM project
+sam init
+# Local testing
+sam local invoke -e events/event.json
+# Start local API
+sam local start-api
+```
+        </pre>
     </div>
 </div>
 
@@ -335,139 +609,89 @@
         }
     });
 
-    // Markdown content
-    const markdownContent = `
-1. **Basic Lambda Function** (Node.js):
-Handle parameters when invoked via API Gateway:
-\`\`\`javascript
-exports.handler = async (event, context) => {
-    try {
-        // Log the full event object
-        console.log('Event:', JSON.stringify(event, null, 2));
-
-        // Extract query parameters (for HTTP GET requests)
-        const queryParams = event.queryStringParameters || {};
-
-        // Extract path parameters (if defined in API Gateway)
-        const pathParams = event.pathParameters || {};
-
-        // Extract request body (for HTTP POST/PUT requests)
-        let body = {};
-        if (event.body) {
-            body = JSON.parse(event.body);
-        }
-
-        // Response with received parameters
-        const response = {
-            statusCode: 200,
-            body: JSON.stringify({
-                message: 'Hello from Lambda!',
-                queryParams,
-                pathParams,
-                body
-            })
-        };
-
-        return response;
-    } catch (error) {
-        console.error('Error:', error);
-        return {
-            statusCode: 500,
-            body: JSON.stringify({ message: 'Internal Server Error' })
-        };
-    }
-};
-\`\`\`
-2. **Common Triggers**:
-   - API Gateway (HTTP/REST API):
-   \`\`\`yaml
-   Events:
-     ApiEvent:
-       Type: Api
-       Properties:
-         Path: /hello
-         Method: GET
-   \`\`\`
-   - S3 Event:
-   \`\`\`yaml
-   Events:
-     S3Event:
-       Type: S3
-       Properties:
-         Bucket: !Ref MyBucket
-         Events: s3:ObjectCreated:*
-   \`\`\`
-3. **Environment Variables**:
-\`\`\`javascript
-// Access environment variables
-const tableName = process.env.TABLE_NAME;
-const region = process.env.AWS_REGION;
-\`\`\`
-4. **AWS SDK Integration**:
-\`\`\`javascript
-const AWS = require('aws-sdk');
-const s3 = new AWS.S3();
-const dynamodb = new AWS.DynamoDB.DocumentClient();
-exports.handler = async (event) => {
-    // Example: Write to DynamoDB
-    const params = {
-        TableName: process.env.TABLE_NAME,
-        Item: {
-            id: 'unique-id',
-            timestamp: Date.now()
-        }
-    };
-
-    await dynamodb.put(params).promise();
-};
-\`\`\`
-5. **Error Handling**:
-\`\`\`javascript
-exports.handler = async (event) => {
-    try {
-        // Your logic here
-    } catch (error) {
-        console.error('Error:', error);
-        return {
-            statusCode: 500,
-            body: JSON.stringify({
-                error: 'Internal Server Error'
-            })
-        };
-    }
-};
-\`\`\`
-6. **Best Practices**:
-   - Keep dependencies minimal to reduce cold start time
-   - Reuse AWS SDK clients outside the handler
-   - Use environment variables for configuration
-   - Implement proper error handling and logging
-   - Use IAM roles with minimum required permissions
-7. **Cold Start Optimization**:
-\`\`\`javascript
-// Initialize clients outside handler
-const dynamodb = new AWS.DynamoDB.DocumentClient();
-const s3 = new AWS.S3();
-// Reuse connections
-exports.handler = async (event) => {
-    // Handler code using initialized clients
-};
-\`\`\`
-8. **Local Testing** (using AWS SAM):
-\`\`\`bash
-# Initialize SAM project
-sam init
-# Local testing
-sam local invoke -e events/event.json
-# Start local API
-sam local start-api
-\`\`\``;
+    // Get markdown content from the pre element
+    const markdownContent = document.getElementById('markdown-source').textContent;
 
     // Render markdown content
     document.getElementById('markdown-content').innerHTML = marked.parse(markdownContent);
 
+    // Add IDs to headings and style the table of contents
+    function processHeadingsAndTOC() {
+        const markdownSection = document.getElementById('markdown-content');
+        
+        // Find all h2 headings
+        const headings = markdownSection.querySelectorAll('h2');
+        
+        // Add IDs to headings based on their text content
+        headings.forEach(heading => {
+            if (!heading.id) {
+                // Create ID from heading text: lowercase, replace spaces with hyphens
+                const headingText = heading.textContent.replace(/\*\*/g, '').trim();
+                const headingId = headingText
+                    .toLowerCase()
+                    .replace(/[^\w\s-]/g, '') // Remove special characters
+                    .replace(/\s+/g, '-')     // Replace spaces with hyphens
+                    .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
+                
+                heading.id = headingId;
+            }
+        });
+        
+        // Style the table of contents
+        const tocHeading = Array.from(markdownSection.querySelectorAll('h2')).find(
+            heading => heading.textContent.includes('Table of Contents')
+        );
+        
+        if (tocHeading) {
+            const tocSection = document.createElement('div');
+            tocSection.className = 'toc';
+            
+            // Get the TOC heading and the following ul element
+            const ul = tocHeading.nextElementSibling;
+            if (ul && ul.tagName === 'UL') {
+                // Move the heading and list into the new div
+                tocHeading.parentNode.insertBefore(tocSection, tocHeading);
+                tocSection.appendChild(tocHeading);
+                tocSection.appendChild(ul);
+            }
+        }
+    }
+
+    // Process headings after the content is rendered
+    processHeadingsAndTOC();
+
     // Trigger Prism highlighting
     Prism.highlightAll();
+
+    // Add smooth scrolling for table of contents links
+    document.addEventListener('DOMContentLoaded', function() {
+        const markdownSection = document.getElementById('markdown-content');
+        
+        // Add click event listener to the markdown section
+        markdownSection.addEventListener('click', function(e) {
+            // Check if the clicked element is an anchor tag with a hash
+            if (e.target.tagName === 'A' && e.target.getAttribute('href') && e.target.getAttribute('href').startsWith('#')) {
+                e.preventDefault();
+                
+                // Get the target ID from the href
+                const targetId = e.target.getAttribute('href').substring(1);
+                
+                // Find the target heading element
+                const targetHeading = document.getElementById(targetId);
+                
+                if (targetHeading) {
+                    // Scroll to the target heading with smooth behavior
+                    targetHeading.scrollIntoView({ behavior: 'smooth' });
+                    
+                    // Add a temporary highlight effect
+                    targetHeading.classList.add('highlight-section');
+                    setTimeout(() => {
+                        targetHeading.classList.remove('highlight-section');
+                    }, 2000);
+                }
+            }
+        });
+    });
 
     // Splitter functionality
     const splitter = document.getElementById('splitter');
