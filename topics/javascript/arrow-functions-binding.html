@@ -358,7 +358,7 @@ class Person {
 
   sayHello() {
     setTimeout(() => {
-      console.log(\`Hello, my name is ${this.name}\`);
+      console.log(\`Hello, my name is \${this.name}\`);
     }, 1000);
   }
 }
@@ -378,7 +378,7 @@ class Person {
 
   sayHello() {
     setTimeout(function() {
-      console.log(\`Hello, my name is ${this.name}\`);
+      console.log(\`Hello, my name is \${this.name}\`);
     }, 1000);
   }
 }
@@ -389,7 +389,7 @@ p.sayHello(); // ❌ \`this\` is undefined or refers to \`window\` in non-strict
 To fix this with a regular function, you must explicitly bind \`this\`:
 \`\`\`javascript
 setTimeout(function() {
-  console.log(\`Hello, my name is ${this.name}\`);
+  console.log(\`Hello, my name is \${this.name}\`);
 }.bind(this), 1000);
 \`\`\`
 
