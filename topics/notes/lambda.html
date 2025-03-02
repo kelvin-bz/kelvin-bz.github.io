@@ -56,6 +56,101 @@
             min-width: 200px;
         }
 
+        /* Mermaid styling */
+        .mermaid {
+            font-size: 20px; /* Increase base font size further */
+        }
+        
+        /* Style subgraph backgrounds with different colors - TOP LEVEL */
+        .mermaid .cluster rect {
+            fill: #d4e6ff !important; /* Darker blue for top-level subgraphs */
+            stroke: #5c8db8 !important;
+            stroke-width: 3px !important;
+            rx: 8px !important; /* Rounded corners */
+            ry: 8px !important;
+        }
+        
+        /* Style nested subgraphs with different colors - SECOND LEVEL */
+        .mermaid .cluster .cluster rect {
+            fill: #ffe0e0 !important; /* Salmon pink for second-level subgraphs */
+            stroke: #d47f7f !important;
+            stroke-width: 2px !important;
+            rx: 6px !important;
+            ry: 6px !important;
+        }
+        
+        /* Style deeply nested subgraphs - THIRD LEVEL */
+        .mermaid .cluster .cluster .cluster rect {
+            fill: #d4ffda !important; /* Mint green for third-level subgraphs */
+            stroke: #7fbf87 !important;
+            stroke-width: 2px !important;
+            rx: 4px !important;
+            ry: 4px !important;
+        }
+        
+        /* Style fourth level subgraphs if needed */
+        .mermaid .cluster .cluster .cluster .cluster rect {
+            fill: #f9f0ff !important; /* Light purple for fourth-level */
+            stroke: #b07fcc !important;
+            stroke-width: 2px !important;
+            rx: 3px !important;
+            ry: 3px !important;
+        }
+        
+        /* Remove gradient attempts as they don't work well with Mermaid */
+        
+        /* Add specific styling for cluster labels based on level */
+        .mermaid .cluster .label {
+            font-size: 22px !important;
+            font-weight: bold !important;
+            color: #333 !important;
+        }
+        
+        .mermaid .cluster .cluster .label {
+            font-size: 20px !important;
+            font-weight: bold !important;
+            color: #444 !important;
+        }
+        
+        .mermaid .cluster .cluster .cluster .label {
+            font-size: 18px !important;
+            font-weight: bold !important;
+            color: #555 !important;
+        }
+        
+        /* Make node text bigger */
+        .mermaid .node text {
+            font-size: 18px !important;
+            font-weight: 600 !important;
+        }
+        
+        /* Make edge labels bigger */
+        .mermaid .edgeLabel {
+            font-size: 16px !important;
+            background-color: white !important;
+            padding: 4px 8px !important;
+            border-radius: 4px !important;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
+        }
+        
+        /* Style nodes with icons */
+        .mermaid .fa {
+            font-size: 18px !important;
+        }
+        
+        /* Style node boxes */
+        .mermaid .node rect, 
+        .mermaid .node circle, 
+        .mermaid .node ellipse, 
+        .mermaid .node polygon, 
+        .mermaid .node path {
+            fill: #ffffff !important;
+            stroke: #666 !important;
+            stroke-width: 2px !important;
+            rx: 5px !important;
+            ry: 5px !important;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2) !important;
+        }
 
         .markdown-section {
             background: white;
@@ -297,7 +392,29 @@
 
 <script>
     // Initialize Mermaid
-    mermaid.initialize({ startOnLoad: true });
+    mermaid.initialize({ 
+        startOnLoad: true,
+        theme: 'default',
+        themeVariables: {
+            primaryColor: '#d4e6ff',
+            primaryTextColor: '#333',
+            primaryBorderColor: '#5c8db8',
+            lineColor: '#444',
+            secondaryColor: '#ffe0e0',
+            tertiaryColor: '#d4ffda',
+            quaternaryColor: '#f9f0ff',
+            fontFamily: 'Arial, sans-serif',
+            fontSize: '25px'
+        },
+        flowchart: {
+            htmlLabels: true,
+            curve: 'basis',
+            diagramPadding: 30,
+            nodeSpacing: 70,
+            rankSpacing: 100
+        },
+        securityLevel: 'loose'
+    });
 
     // Zoom functionality
     let currentZoom = 1;
