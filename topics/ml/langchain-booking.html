@@ -408,6 +408,108 @@ const smartAgentExecutor = new AgentExecutor({
 });</code></pre>
     </div>
 
+    <div class="tutorial-section">
+        <h3>🔗 Step 4: Chain</h3>
+        <p>
+            In LangChain, a <strong>chain</strong> is a sequence of components—such as prompts, LLMs, and output parsers—connected together to process input and produce structured output. Chains let you build more complex workflows by composing simple building blocks.
+        </p>
+        <pre class="code-block"><code class="language-js">import { PromptTemplate } from "@langchain/core/prompts";
+import { ChatOpenAI } from "@langchain/openai";
+import { JsonOutputParser } from "@langchain/core/output_parsers";
+import { RunnableSequence } from "@langchain/core/runnables";
+
+// Step 1: Validate input data
+const validateInput = RunnableSequence.from([
+  (input) => {
+    if (!input.email || !input.date) {
+      throw new Error("Email and date are required");
+    }
+    return input;
+  }
+]);
+
+// Step 2: Format the prompt
+const formatPrompt = PromptTemplate.fromTemplate(
+  "Book a meeting for {email} on {date}. Check if the date is valid and return JSON with email, date, and status."
+);
+
+// Step 3: Call the LLM
+const llm = new ChatOpenAI({ temperature: 0 });
+
+// Step 4: Parse the response
+const parser = new JsonOutputParser();
+
+// Step 5: Validate the parsed response
+const validateResponse = (parsed) => {
+  if (!parsed.email || !parsed.date || !parsed.status) {
+    throw new Error("Invalid response format");
+  }
+  return parsed;
+};
+
+// Step 6: Check availability before booking
+const checkAvailability = async (validated) => {
+  try {
+    const availability = await bookingAPI.getAvailability(validated.date);
+    if (!availability.available || availability.slots.length === 0) {
+      return {
+        ...validated,
+        apiStatus: "failed",
+        error: `No available slots for ${validated.date}`
+      };
+    }
+    return { ...validated, availability, apiStatus: "available" };
+  } catch (error) {
+    return { ...validated, apiStatus: "failed", error: error.message };
+  }
+};
+
+// Step 7: Call the booking API (only if available)
+const callBookingAPI = async (result) => {
+  if (result.apiStatus !== "available") {
+    return result; // Pass through if availability check failed
+  }
+  try {
+    const bookingResult = await bookingAPI.createBooking(result.email, result.date);
+    return { ...result, bookingId: bookingResult.id, apiStatus: "success" };
+  } catch (error) {
+    return { ...result, apiStatus: "failed", error: error.message };
+  }
+};
+
+// Step 8: Format the final response
+const formatResponse = (result) => {
+  if (result.apiStatus === "success") {
+    return `Booking created successfully! ID: ${result.bookingId}`;
+  } else if (result.apiStatus === "available") {
+    return `Slot is available for ${result.date}. Proceeding to booking...`;
+  } else {
+    return `Booking failed: ${result.error}`;
+  }
+};
+
+// Compose the complex chain
+const bookingChain = validateInput
+  .pipe(formatPrompt)
+  .pipe(llm)
+  .pipe(parser)
+  .pipe(validateResponse)
+  .pipe(checkAvailability)
+  .pipe(callBookingAPI)
+  .pipe(formatResponse);
+
+// Usage
+const result = await bookingChain.invoke({
+  email: "user@email.com",
+  date: "2024-01-15"
+});
+// result = "Booking created successfully! ID: 12345" or error message
+</code></pre>
+        <p>
+            This complex chain demonstrates the real advantage of LangChain: you can compose multiple steps into a single, reusable workflow. Here, we check availability before booking, and only proceed if a slot is available. Each step handles a specific concern (validation, formatting, API calls, error handling), making the code modular and easy to test.
+        </p>
+    </div>
+
     <div id="questions"></div>
     <div id="score"></div>
 </div>
@@ -479,6 +581,91 @@ const agent = await createOpenAIFunctionsAgent({ llm, tools, prompt });
 
 const creativeLlm = new ChatOpenAI({ 
   temperature: 0.7   // More creative responses
+});`
+                }
+            },
+           {
+                type: "single",
+                question: { text: "Why is memory important in a LangChain-powered assistant?" },
+                options: [
+                    "It makes the LLM more creative",
+                    "It allows the assistant to remember previous conversation context and user preferences",
+                    "It stores all API responses",
+                    "It is required for every tool"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "Memory enables the assistant to remember previous topics, user preferences, and steps in a task, making conversations more natural and context-aware.",
+                    code: "const memory = new BufferMemory({ returnMessages: true, memoryKey: 'chat_history' });"
+                }
+            },
+            {
+                type: "fill",
+                question: { text: "Fill in the blank: In LangChain, a ________ is a sequence of prompts, tools, and logic that enables complex workflows." },
+                answer: "chain",
+                explanation: {
+                    text: "A chain in LangChain is a sequence of components (prompts, tools, logic) that work together to accomplish more complex tasks.",
+                    code: "const chain = prompt.pipe(llm).pipe(parser);"
+                }
+            },
+            {
+                type: "single",
+                question: { text: "Why is LangChain considered 'smart' even though it is not an LLM?" },
+                options: [
+                    "It can generate text on its own",
+                    "It structures and routes the flow of information between LLMs, tools, memory, and user input",
+                    "It stores all user data",
+                    "It replaces the need for LLMs"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "LangChain is 'smart' because it organizes and routes the flow of information, enabling LLMs to interact with tools, memory, and workflows in a structured way.",
+                    code: "// LangChain is the brainstem, not the brain!"
+                }
+            },
+            // New questions related to Step 4: Chain
+            {
+                type: "single",
+                question: { text: "Why would you add a checkAvailability step before booking in a LangChain chain?" },
+                options: [
+                    "To ensure a slot is available before attempting to book",
+                    "To make the chain run faster",
+                    "To skip user input validation",
+                    "To avoid using the LLM"
+                ],
+                correct: 0,
+                explanation: {
+                    text: "Adding a checkAvailability step ensures that the system only attempts to book if a slot is available, improving user experience and preventing unnecessary booking attempts.",
+                    code: "const bookingChain = validateInput.pipe(formatPrompt).pipe(llm).pipe(parser).pipe(validateResponse).pipe(checkAvailability).pipe(callBookingAPI).pipe(formatResponse);"
+                }
+            },
+            {
+                type: "fill",
+                question: { text: "Fill in the blank: In a LangChain chain, each step passes its ________ to the next step, enabling complex workflows." },
+                answer: "output",
+                explanation: {
+                    text: "Each step in a chain passes its output to the next step, allowing for sequential data processing and complex workflows.",
+                    code: "step1.pipe(step2).pipe(step3); // output flows through the chain"
+                }
+            },
+            {
+                type: "single",
+                question: { text: "If an error is thrown in the middle of a LangChain chain (e.g., in validateResponse), what is the best way to handle it for robust user experience?" },
+                options: [
+                    "Catch the error in a later .pipe() step and return a user-friendly message",
+                    "Let the error crash the application",
+                    "Ignore the error and continue the chain",
+                    "Automatically retry the entire chain without changes"
+                ],
+                correct: 0,
+                explanation: {
+                    text: "For robust user experience, you should catch errors in a later .pipe() step and return a user-friendly message. This prevents the app from crashing and gives the user clear feedback.",
+                    code: `const safeChain = chain.pipe(async (result) => {
+  try {
+    return await result;
+  } catch (err) {
+    return { error: 'Sorry, something went wrong: ' + err.message };
+  }
 });`
                 }
             }
