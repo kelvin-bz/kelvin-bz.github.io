@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>LangChain.js Booking Service Quiz</title>
+    <link href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-javascript.min.js"></script>
+    <script type="module">
+      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10.9.0/dist/mermaid.esm.min.mjs';
+      mermaid.initialize({ startOnLoad: true });
+    </script>
+    <style>
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            font-family: system-ui, -apple-system, sans-serif;
+            line-height: 1.6;
+            text-align: left;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .option {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .option:hover {
+            background-color: #f5f5f5;
+            transform: translateX(5px);
+        }
+        .selected {
+            background-color: #e3f2fd;
+        }
+        .correct {
+            background-color: #e8f5e9;
+            border-color: #81c784;
+        }
+        .incorrect {
+            background-color: #ffebee;
+            border-color: #e57373;
+        }
+        .input-answer {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            margin-top: 10px;
+            padding: 8px 16px;
+            background-color: #2196f3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #1976d2;
+        }
+        #score {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.2em;
+        }
+        .feedback {
+            margin-top: 10px;
+            padding: 15px;
+            border-radius: 4px;
+            display: none;
+            line-height: 1.6;
+            text-align: left;
+        }
+        .code-block {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre;
+            overflow-x: auto;
+            line-height: 1.5;
+            font-size: 14px;
+            border: 1px solid #ddd;
+        }
+
+        .question {
+            background-color: #fff;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .explanation-text, .question-inline {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .question-inline strong {
+            white-space: nowrap;
+        }
+
+        .source {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1em;
+        }
+        .source a {
+            color: #2196f3;
+            text-decoration: none;
+        }
+        .source a:hover {
+            text-decoration: underline;
+        }
+
+        .tutorial-section {
+            background-color: #f8f9fa;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 4px solid #2196f3;
+        }
+
+        .tutorial-section h3 {
+            margin-top: 0;
+            color: #1976d2;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>LangChain.js Booking Service Tutorial & Quiz</h1>
+    
+    <div class="tutorial-section" style="margin-bottom: 32px;">
+        <h2>🤖 What is LangChain? Why is it "Smart"?</h2>
+        <p> <strong>LangChain is not an LLM</strong>—it's a framework or orchestration layer that wraps around LLMs to help you use them more effectively, especially in complex applications like chatbots, agents, and workflows.</p>
+        <p><strong>So why is LangChain considered "smart"?</strong></p>
+        <p>It's not that LangChain itself is intelligent—it's that it enables smart behavior by:</p>
+        <ol>
+            <li>Leveraging the intelligence of LLMs (like OpenAI's GPT models), and</li>
+            <li>Structuring how those LLMs interact with functions, memory, tools, and user input.</li>
+        </ol>
+        <p>Here's what makes LangChain powerful or "smart" in practice:</p>
+        <div style="margin: 24px 0;">
+            <pre class="mermaid">
+graph LR
+    User["User Input<br/>(Natural Language)"]
+    subgraph LangChain Framework
+        LLM["LLM (e.g., GPT-4)"]
+        Tools["Tools<br/>(Functions/APIs)"]
+        Memory["Memory<br/>(Conversation History)"]
+        Chain["Chains & Workflows"]
+    end
+    User --> LLM
+    LLM -- "Intent & Reasoning" --> Tools
+    LLM -- "Uses" --> Memory
+    LLM -- "Drives" --> Chain
+    Tools -- "Results" --> LLM
+    Memory -- "Context" --> LLM
+    Chain -- "Orchestrates" --> LLM
+    LLM --> User
+            </pre>
+        </div>
+        <ul>
+            <li><strong>🔁 1. Function Calling Without Manual Parsing</strong><br>
+                Instead of writing fragile code like:
+                <pre class="code-block"><code class="language-js">if (input.includes("book") &amp;&amp; input.includes("email")) {
+  // etc
+}</code></pre>
+                LangChain uses LLMs to interpret user intent, and then routes to the correct function/tool:
+                <pre class="code-block"><code class="language-js">const agent = await createOpenAIFunctionsAgent({ llm, tools, prompt });</code></pre>
+                The LLM analyzes the user input and automatically selects the appropriate function with the correct arguments—no regex needed, no hand-coded logic trees.
+            </li>
+            <li><strong>🛠️ 2. Tool Integration</strong><br>
+                LangChain lets you define tools (functions) like:
+                <pre class="code-block"><code class="language-js">bookMeeting({ date, email })
+getWeather({ location })</code></pre>
+                You give these tools to LangChain. Then, the LLM decides when and how to call them, based on the user's natural language input.
+            </li>
+            <li><strong>🧠 3. Memory and Context</strong><br>
+                LangChain supports memory (e.g., conversation history), so your chatbot or app can remember:<br>
+                <ul>
+                    <li>Previous topics</li>
+                    <li>User preferences</li>
+                    <li>Steps in a task</li>
+                </ul>
+                This lets the LLM behave more like an assistant rather than a one-shot responder.
+            </li>
+            <li><strong>🔄 4. Chaining and Workflows</strong><br>
+                You can compose chains—a sequence of prompts, tools, and logic that build more complex behavior (e.g., extract info → call API → summarize result → send email).
+            </li>
+        </ul>
+        <p><strong>💡 Summary</strong></p>
+        <ul>
+            <li>Use LLMs to understand natural language and make decisions</li>
+            <li>Avoid manually writing brittle parsing logic</li>
+            <li>Build complex, stateful, and tool-using agents with relatively little code</li>
+        </ul>
+        <p>But again, LangChain isn't the brain—the LLM is. LangChain is the brainstem: it routes, structures, and organizes the flow of thought.</p>
+    </div>
+
+    <h2 style="margin-top: 40px; margin-bottom: 16px;">LangChain Booking Tutorial</h2>
+
+    <div class="tutorial-section">
+        <h3>🎯 What We'll Build</h3>
+        <p>In this tutorial, you'll build a smart booking assistant that can check availability, create bookings, reschedule, and cancel appointments—all powered by LangChain and LLMs. You'll see how to move from manual parsing to a flexible, AI-driven workflow that understands user intent and manages tasks using tools, memory, and chains.</p>
+       
+    </div>
+
+    <div class="tutorial-section">
+        <h3>📋 Step 1: Without LangChain - Basic Function Calling</h3>
+        <pre class="code-block"><code class="language-js">// Basic API functions
+const bookingAPI = {
+  getAvailability: async (date) => {
+    // Check if date is available
+    return { available: true, slots: ['09:00', '14:00', '16:00'] };
+  },
+  
+  createBooking: async (userEmail, date) => {
+    // Create booking
+    return { id: '12345', userEmail, date, status: 'confirmed' };
+  },
+  
+  rescheduleBooking: async (bookingId, newDate) => {
+    // Reschedule existing booking
+    return { id: bookingId, newDate, status: 'rescheduled' };
+  },
+  
+  cancelBooking: async (bookingId) => {
+    // Cancel booking
+    return { id: bookingId, status: 'cancelled' };
+  }
+};
+
+// Without LangChain - Manual parsing
+async function handleUserRequest(userInput) {
+  const input = userInput.toLowerCase();
+  
+  if (input.includes('available') || input.includes('free')) {
+    // Extract date manually
+    const dateMatch = input.match(/(\d{4}-\d{2}-\d{2})/);
+    if (dateMatch) {
+      const result = await bookingAPI.getAvailability(dateMatch[1]);
+      return `Available slots for ${dateMatch[1]}: ${result.slots.join(', ')}`;
+    }
+  }
+  
+  if (input.includes('book') || input.includes('schedule')) {
+    // Manual extraction of email and date
+    const emailMatch = input.match(/([^\s@]+@[^\s@]+\.[^\s@]+)/);
+    const dateMatch = input.match(/(\d{4}-\d{2}-\d{2})/);
+    
+    if (emailMatch && dateMatch) {
+      const result = await bookingAPI.createBooking(emailMatch[1], dateMatch[1]);
+      return `Booking created with ID: ${result.id}`;
+    }
+  }
+  
+  return "I couldn't understand your request.";
+}</code></pre>
+    </div>
+
+    <div class="tutorial-section">
+        <h3>🚀 Step 2: With LangChain - Structured Approach</h3>
+        <pre class="code-block"><code class="language-js">import { ChatOpenAI } from "@langchain/openai";
+import { DynamicTool } from "@langchain/core/tools";
+import { AgentExecutor, createOpenAIFunctionsAgent } from "langchain/agents";
+import { ChatPromptTemplate } from "@langchain/core/prompts";
+
+// Define tools for LangChain
+const availabilityTool = new DynamicTool({
+  name: "get_availability",
+  description: "Check available time slots for a specific date",
+  func: async (date) => {
+    const result = await bookingAPI.getAvailability(date);
+    return JSON.stringify(result);
+  }
+});
+
+const createBookingTool = new DynamicTool({
+  name: "create_booking",
+  description: "Create a new booking with user email and date",
+  func: async (input) => {
+    const { userEmail, date } = JSON.parse(input);
+    const result = await bookingAPI.createBooking(userEmail, date);
+    return JSON.stringify(result);
+  }
+});
+
+const rescheduleBookingTool = new DynamicTool({
+  name: "reschedule_booking",
+  description: "Reschedule an existing booking to a new date",
+  func: async (input) => {
+    const { bookingId, newDate } = JSON.parse(input);
+    const result = await bookingAPI.rescheduleBooking(bookingId, newDate);
+    return JSON.stringify(result);
+  }
+});
+
+const cancelBookingTool = new DynamicTool({
+  name: "cancel_booking",
+  description: "Cancel an existing booking",
+  func: async (bookingId) => {
+    const result = await bookingAPI.cancelBooking(bookingId);
+    return JSON.stringify(result);
+  }
+});
+
+// Create LangChain agent
+const tools = [availabilityTool, createBookingTool, rescheduleBookingTool, cancelBookingTool];
+const llm = new ChatOpenAI({ temperature: 0 });
+
+const prompt = ChatPromptTemplate.fromMessages([
+  ["system", "You are a booking assistant. Help users check availability, create, reschedule, or cancel bookings."],
+  ["human", "{input}"],
+  ["placeholder", "{agent_scratchpad}"]
+]);
+
+const agent = await createOpenAIFunctionsAgent({ llm, tools, prompt });
+const agentExecutor = new AgentExecutor({ agent, tools });
+
+// Usage
+const response = await agentExecutor.invoke({
+  input: "Check availability for 2024-03-15 and book a slot for john@email.com"
+});
+
+console.log(response.output);</code></pre>
+    </div>
+
+    <div class="tutorial-section">
+        <h3>🔧 Step 3: Advanced LangChain Features</h3>
+        <pre class="code-block"><code class="language-js">// Using Structured Output for better parsing
+import { z } from "zod";
+import { zodToJsonSchema } from "zod-to-json-schema";
+
+const BookingSchema = z.object({
+  action: z.enum(['check_availability', 'create_booking', 'reschedule_booking', 'cancel_booking']),
+  userEmail: z.string().email().optional(),
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+  bookingId: z.string().optional(),
+  newDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional()
+});
+
+// Memory for conversation context
+import { BufferMemory } from "langchain/memory";
+import { ConversationChain } from "langchain/chains";
+
+const memory = new BufferMemory({
+  returnMessages: true,
+  memoryKey: "chat_history"
+});
+
+const conversationChain = new ConversationChain({
+  llm,
+  memory,
+  prompt: new ChatPromptTemplate({
+    messages: [
+      ["system", "You are a booking assistant with access to previous conversation context."],
+      ["placeholder", "{chat_history}"],
+      ["human", "{input}"]
+    ]
+  })
+});
+
+// Multi-step booking process
+const multiStepPrompt = ChatPromptTemplate.fromMessages([
+  ["system", `You are a booking assistant. Follow these steps:
+1. If user wants to book, first check availability
+2. If slots available, ask for confirmation
+3. Create booking only after confirmation
+4. Always be helpful and clear`],
+  ["placeholder", "{chat_history}"],
+  ["human", "{input}"],
+  ["placeholder", "{agent_scratchpad}"]
+]);
+
+const smartAgent = await createOpenAIFunctionsAgent({
+  llm,
+  tools,
+  prompt: multiStepPrompt
+});
+
+const smartAgentExecutor = new AgentExecutor({
+  agent: smartAgent,
+  tools,
+  memory,
+  verbose: true
+});</code></pre>
+    </div>
+
+    <div id="questions"></div>
+    <div id="score"></div>
+</div>
+
+<script>
+    const quizData = {
+        questions: [
+            {
+                type: "single",
+                question: {
+                    text: "What is the main advantage of using LangChain over manual parsing for handling user requests?"
+                },
+                options: [
+                    "LangChain is faster than manual parsing",
+                    "LangChain automatically handles intent recognition and function calling",
+                    "LangChain requires less memory",
+                    "LangChain works offline"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "LangChain's main advantage is that it automatically handles intent recognition and function calling through AI. Instead of manually parsing user input with regex and if-statements, LangChain uses LLM to understand user intent and automatically call the appropriate functions with correct parameters.",
+                    code: `// Manual parsing (error-prone)
+if (input.includes('book') && input.includes('email')) {
+  const emailMatch = input.match(/([^\\s@]+@[^\\s@]+\\.[^\\s@]+)/);
+  // What if user says "I want to schedule" instead of "book"?
+}
+
+// LangChain (intelligent)
+const agent = await createOpenAIFunctionsAgent({ llm, tools, prompt });
+// AI understands "book", "schedule", "set up meeting", etc.`
+                }
+            },
+            {
+                type: "single",
+                question: {
+                    text: "In LangChain, what is a 'tool' used for?"
+                },
+                options: [
+                    "To store user preferences",
+                    "To connect the AI to external functions or APIs",
+                    "To validate user input",
+                    "To format the AI's response"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "A 'tool' in LangChain is a wrapper that connects the AI to external functions or APIs. It defines what the function does (description) and how to call it (func), allowing the AI to decide when and how to use these external capabilities.",
+                    code: `const availabilityTool = new DynamicTool({
+  name: "get_availability",
+  description: "Check available time slots for a specific date", // AI uses this to decide when to call
+  func: async (date) => {
+    // This is your actual API call
+    const result = await bookingAPI.getAvailability(date);
+    return JSON.stringify(result);
+  }
+});`
+                }
+            },
+            {
+                type: "fill",
+                question: {
+                    text: "What parameter in ChatOpenAI controls how creative or random the AI's responses are?"
+                },
+                answer: "temperature",
+                explanation: {
+                    text: "The 'temperature' parameter controls the randomness of the AI's responses. A temperature of 0 makes responses more deterministic and consistent, while higher values (up to 1.0) make responses more creative and varied. For booking systems, we typically use temperature: 0 for consistent, predictable behavior.",
+                    code: `const llm = new ChatOpenAI({ 
+  temperature: 0     // Deterministic responses
+});
+
+const creativeLlm = new ChatOpenAI({ 
+  temperature: 0.7   // More creative responses
+});`
+                }
+            }
+        ]
+    };
+
+    const questionsContainer = document.getElementById('questions');
+    const scoreContainer = document.getElementById('score');
+
+    function showFeedback(questionDiv, explanation, isCorrect) {
+        const feedbackDiv = questionDiv.querySelector('.feedback');
+        feedbackDiv.style.display = 'block';
+        const sanitizedCode = explanation.code ? explanation.code.replace(/`/g, '\`') : '';
+        feedbackDiv.innerHTML = `
+            <div class="explanation-text">
+                ${isCorrect ? '✅' : '❌'} ${explanation.text}
+            </div>
+            ${explanation.code && explanation.code.trim() ? `
+                <pre class="code-block"><code class="language-js">${sanitizedCode}</code></pre>
+            ` : ''}
+        `;
+        feedbackDiv.style.backgroundColor = isCorrect ? '#e8f5e9' : '#ffebee';
+    }
+
+    function checkAnswer(selected, correct, optionDiv, questionDiv, explanation) {
+        if (questionDiv.querySelector('.correct') || questionDiv.querySelector('.incorrect')) {
+            return;
+        }
+        const options = questionDiv.getElementsByClassName('option');
+        options[correct].classList.add('correct');
+        if (selected === correct) {
+            score++;
+            optionDiv.classList.add('correct');
+            showFeedback(questionDiv, explanation, true);
+        } else {
+            optionDiv.classList.add('incorrect');
+            showFeedback(questionDiv, explanation, false);
+        }
+        answeredQuestions++;
+        updateScore();
+    }
+
+    function checkFillAnswer(input, answer, questionDiv, explanation) {
+        if (questionDiv.querySelector('.feedback').style.display === 'block') {
+            return;
+        }
+        const inputElement = questionDiv.querySelector('.input-answer');
+        if (inputElement) {
+            inputElement.disabled = true;
+        }
+        if (input.toLowerCase().trim() === answer.toLowerCase().trim()) {
+            score++;
+            showFeedback(questionDiv, explanation, true);
+        } else {
+            showFeedback(questionDiv, {
+                text: `The correct answer is: ${answer}. ${explanation.text}`,
+                code: explanation.code
+            }, false);
+        }
+        answeredQuestions++;
+        updateScore();
+    }
+
+    function updateScore() {
+        const scoreDiv = document.getElementById('score');
+        const percentage = (score / quizData.questions.length) * 100;
+        scoreDiv.innerHTML = `
+            <h3>Your Score: ${score}/${quizData.questions.length}</h3>
+            <p>Percentage: ${percentage.toFixed(1)}%</p>
+            ${answeredQuestions === quizData.questions.length ?
+                `<p>${percentage >= 70 ? '🎉 Great job! You have a solid understanding of LangChain.js!' :
+                    'Keep practicing! Review the tutorial sections to strengthen your understanding of LangChain.js.'}</p>` : ''}
+        `;
+    }
+
+    function createMultipleChoice(q, container) {
+        const optionsDiv = document.createElement('div');
+        optionsDiv.className = 'options';
+        q.options.forEach((option, index) => {
+            const optionDiv = document.createElement('div');
+            optionDiv.className = 'option';
+            optionDiv.textContent = option;
+            optionDiv.onclick = () => checkAnswer(index, q.correct, optionDiv, container, q.explanation);
+            optionsDiv.appendChild(optionDiv);
+        });
+        container.appendChild(optionsDiv);
+    }
+
+    function createFillInBlank(q, container) {
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'input-answer';
+        input.placeholder = 'Enter your answer';
+        const submitBtn = document.createElement('button');
+        submitBtn.textContent = 'Submit';
+        submitBtn.onclick = () => checkFillAnswer(input.value, q.answer, container, q.explanation);
+        container.appendChild(input);
+        container.appendChild(submitBtn);
+    }
+
+    function createQuiz() {
+        const questionsContainer = document.getElementById('questions');
+        quizData.questions.forEach((q, index) => {
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'question';
+            questionDiv.innerHTML = `<div><strong>Question ${index + 1}:</strong> ${q.question.text}</div>`;
+            if (q.type === 'single') {
+                createMultipleChoice(q, questionDiv);
+            } else if (q.type === 'fill') {
+                createFillInBlank(q, questionDiv);
+            }
+            const feedbackDiv = document.createElement('div');
+            feedbackDiv.className = 'feedback';
+            questionDiv.appendChild(feedbackDiv);
+            questionsContainer.appendChild(questionDiv);
+        });
+    }
+
+    let score = 0;
+    let answeredQuestions = 0;
+    createQuiz();
+</script>
+</body>
+</html>
