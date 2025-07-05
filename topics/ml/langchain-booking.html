@@ -224,7 +224,30 @@ getWeather({ location })</code></pre>
     <div class="tutorial-section">
         <h3>🎯 What We'll Build</h3>
         <p>In this tutorial, you'll build a smart booking assistant that can check availability, create bookings, reschedule, and cancel appointments—all powered by LangChain and LLMs. You'll see how to move from manual parsing to a flexible, AI-driven workflow that understands user intent and manages tasks using tools, memory, and chains.</p>
-       
+        <p>Below is an architecture diagram showing how OpenAI, LangChain, tools, and APIs interact in this app:</p>
+        <pre class="mermaid">
+flowchart TD
+    User["User"]
+    UI["Web UI / Chatbot"]
+    LangChain["LangChain Framework"]
+    OpenAI["OpenAI LLM (GPT-4)"]
+    Tools["LangChain Tools"]
+    API["Booking API (Availability, Create, Reschedule, Cancel)"]
+    Memory["Conversation Memory"]
+
+    User -- "User input" --> UI
+    UI -- "Request (text)" --> LangChain
+    LangChain -- "Natural language understanding" --> OpenAI
+    LangChain -- "Function/tool call" --> Tools
+    LangChain -- "Context/memory" --> Memory
+    Tools -- "API request" --> API
+    OpenAI -- "LLM response" --> LangChain
+    Memory -- "History/context" --> LangChain
+    API -- "API response" --> Tools
+    LangChain -- "Response (text/result)" --> UI
+    UI -- "Display result" --> User
+        </pre>
+        <p style="font-size: 0.95em; color: #555;">The user interacts with the UI, which sends requests to LangChain. LangChain orchestrates the flow: it uses OpenAI for language understanding, tools for function calls, memory for context, and APIs for real-world actions. The results are returned to the user via the UI.</p>
     </div>
 
     <div class="tutorial-section">
