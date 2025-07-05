@@ -668,6 +668,80 @@ const creativeLlm = new ChatOpenAI({
   }
 });`
                 }
+            },
+            // Advanced questions
+            
+            {
+                type: "single",
+                question: { text: "What is the benefit of using output parsers (like JsonOutputParser) in a chain?" },
+                options: [
+                    "They convert raw LLM output into structured data",
+                    "They make the chain run faster",
+                    "They replace the need for prompts",
+                    "They store conversation history"
+                ],
+                correct: 0,
+                explanation: {
+                    text: "Output parsers like JsonOutputParser transform the raw text output from an LLM into structured data (e.g., JSON), making it easier to use in downstream steps.",
+                    code: "const parser = new JsonOutputParser();\nconst chain = prompt.pipe(llm).pipe(parser);"
+                }
+            },
+            {
+                type: "single",
+                question: { text: "If you want to add logging or monitoring to every step in a chain, what is a good approach?" },
+                options: [
+                    "Wrap each step in a function that logs input and output",
+                    "Only log the final output",
+                    "Add logging to the LLM step only",
+                    "Logging is not possible in chains"
+                ],
+                correct: 0,
+                explanation: {
+                    text: "Wrapping each step in a function that logs input and output allows you to monitor the flow of data and debug issues at any point in the chain.",
+                    code: "const logStep = (fn) => async (input) => {\n  console.log('Input:', input);\n  const output = await fn(input);\n  console.log('Output:', output);\n  return output;\n};\nconst chain = step1.pipe(logStep(step2)).pipe(logStep(step3));"
+                }
+            },
+            // New fill-in-the-blank questions related to the code
+            {
+                type: "fill",
+                question: { text: "Fill in the blank: To connect two steps in a LangChain workflow, use the ________ method." },
+                answer: "pipe",
+                explanation: {
+                    text: "The pipe method connects two steps in a LangChain chain, passing the output of one as the input to the next.",
+                    code: "const chain = step1.pipe(step2);"
+                }
+            },
+            {
+                type: "fill",
+                question: { text: "Fill in the blank: To handle errors gracefully in a chain, you can wrap a step in a try/catch block or add a ________ step at the end." },
+                answer: "catch",
+                explanation: {
+                    text: "You can add a catch step at the end of a chain to handle errors and return user-friendly messages.",
+                    code: "const safeChain = chain.pipe(async (result) => { try { return await result; } catch (err) { return { error: err.message }; } });"
+                }
+            },
+            {
+                type: "fill",
+                question: {
+                    text: "Complete the code to create a prompt template for booking:",
+                    code: `
+import { PromptTemplate } from "@langchain/core/prompts";
+
+const bookingPrompt = _______.fromTemplate(
+    "Create a booking for {email} on {date}. Return JSON with email, date, and status."
+);`
+                },
+                answer: "PromptTemplate",
+                explanation: {
+                    text: "PromptTemplate.fromTemplate() creates a reusable template that can be populated with variables using the invoke() method.",
+                    code: `
+import { PromptTemplate } from "@langchain/core/prompts";
+
+const bookingPrompt = PromptTemplate.fromTemplate(
+    "Create a booking for {email} on {date}. Return JSON with email, date, and status."
+);
+`
+                }
             }
         ]
     };
@@ -742,6 +816,12 @@ const creativeLlm = new ChatOpenAI({
     }
 
     function createMultipleChoice(q, container) {
+        if (q.question.code) {
+            const codeBlock = document.createElement('div');
+            codeBlock.className = 'code-block';
+            codeBlock.innerHTML = `<pre><code class=\"language-js\">${q.question.code.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</code></pre>`;
+            container.appendChild(codeBlock);
+        }
         const optionsDiv = document.createElement('div');
         optionsDiv.className = 'options';
         q.options.forEach((option, index) => {
@@ -755,6 +835,12 @@ const creativeLlm = new ChatOpenAI({
     }
 
     function createFillInBlank(q, container) {
+        if (q.question.code) {
+            const codeBlock = document.createElement('div');
+            codeBlock.className = 'code-block';
+            codeBlock.innerHTML = `<pre><code class="language-js">${q.question.code.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</code></pre>`;
+            container.appendChild(codeBlock);
+        }
         const input = document.createElement('input');
         input.type = 'text';
         input.className = 'input-answer';
