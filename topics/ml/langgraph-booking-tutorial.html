@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>LangGraph Booking Service Tutorial</title>
+    <link href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-javascript.min.js"></script>
+    <script type="module">
+      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10.9.0/dist/mermaid.esm.min.mjs';
+      mermaid.initialize({ startOnLoad: true });
+    </script>
+    <style>
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            font-family: system-ui, -apple-system, sans-serif;
+            line-height: 1.6;
+            text-align: left;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .option {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .option:hover {
+            background-color: #f5f5f5;
+            transform: translateX(5px);
+        }
+        .selected {
+            background-color: #e3f2fd;
+        }
+        .correct {
+            background-color: #e8f5e9;
+            border-color: #81c784;
+        }
+        .incorrect {
+            background-color: #ffebee;
+            border-color: #e57373;
+        }
+        .input-answer {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            margin-top: 10px;
+            padding: 8px 16px;
+            background-color: #2196f3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #1976d2;
+        }
+        #score {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.2em;
+        }
+        .feedback {
+            margin-top: 10px;
+            padding: 15px;
+            border-radius: 4px;
+            display: none;
+            line-height: 1.6;
+            text-align: left;
+        }
+        .code-block {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre;
+            overflow-x: auto;
+            line-height: 1.5;
+            font-size: 14px;
+            border: 1px solid #ddd;
+        }
+
+        .question {
+            background-color: #fff;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .explanation-text, .question-inline {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .question-inline strong {
+            white-space: nowrap;
+        }
+
+        .source {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1em;
+        }
+        .source a {
+            color: #2196f3;
+            text-decoration: none;
+        }
+        .source a:hover {
+            text-decoration: underline;
+        }
+
+        .tutorial-section {
+            background-color: #f8f9fa;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 4px solid #2196f3;
+        }
+
+        .tutorial-section h3 {
+            margin-top: 0;
+            color: #1976d2;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .comparison-table th, .comparison-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .comparison-table th {
+            background-color: #f5f5f5;
+            font-weight: bold;
+        }
+
+        .comparison-table tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        .highlight-box {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .highlight-box.success {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
+
+        .highlight-box.warning {
+            background-color: #fff3cd;
+            border-color: #ffeaa7;
+        }
+
+        .highlight-box.info {
+            background-color: #cce7ff;
+            border-color: #b3d9ff;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🔄 LangGraph Booking Service Tutorial & Quiz</h1>
+    
+    <div class="tutorial-section" style="margin-bottom: 32px;">
+        <h2>🤖 What is LangGraph?</h2>
+        <p><strong>LangGraph</strong> is LangChain's library for building stateful, multi-actor applications with graphs. Unlike simple chains that flow linearly, LangGraph allows you to create complex workflows with:</p>
+        <ul>
+            <li><strong>🔄 Conditional branching</strong> - Different paths based on conditions</li>
+            <li><strong>🔁 Loops and cycles</strong> - Retry logic, iterative processes</li>
+            <li><strong>📊 Shared state</strong> - Multiple agents can read/write to the same state</li>
+            <li><strong>👥 Multi-agent workflows</strong> - Different agents handling different tasks</li>
+            <li><strong>🎯 Human-in-the-loop</strong> - Pause for human approval or input</li>
+        </ul>
+
+        <div class="highlight-box info">
+            <strong>💡 Key Concept:</strong> While LangChain chains are like a straight assembly line, LangGraph is like a flexible workflow system where different specialists (nodes) can collaborate, make decisions, and even loop back to previous steps.
+        </div>
+
+        <h3>🆚 LangChain vs LangGraph</h3>
+        <table class="comparison-table">
+            <thead>
+                <tr>
+                    <th>Feature</th>
+                    <th>LangChain Chains</th>
+                    <th>LangGraph</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Flow Type</td>
+                    <td>Linear (A → B → C)</td>
+                    <td>Graph-based (A → B → C, but C can go back to A)</td>
+                </tr>
+                <tr>
+                    <td>Conditional Logic</td>
+                    <td>Limited, handled in code</td>
+                    <td>Built-in conditional edges</td>
+                </tr>
+                <tr>
+                    <td>Loops</td>
+                    <td>No native support</td>
+                    <td>Full loop support</td>
+                </tr>
+                <tr>
+                    <td>State Management</td>
+                    <td>Pass-through only</td>
+                    <td>Shared, persistent state</td>
+                </tr>
+                <tr>
+                    <td>Multi-agent</td>
+                    <td>Single agent focus</td>
+                    <td>Multiple agents naturally supported</td>
+                </tr>
+                <tr>
+                    <td>Human-in-the-loop</td>
+                    <td>Manual implementation</td>
+                    <td>Built-in interrupt support</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="tutorial-section">
+        <h3>📋 Our Booking System Architecture</h3>
+        <p>We'll build a smart booking system that can handle complex scenarios like:</p>
+        <ul>
+            <li>🔍 Check availability before booking</li>
+            <li>📧 Send confirmation emails</li>
+            <li>❌ Handle booking conflicts gracefully</li>
+            <li>🔄 Retry failed operations</li>
+            <li>👤 Ask for human approval on edge cases</li>
+        </ul>
+
+        <pre class="mermaid">
+graph TD
+    Start([User Request]) --> Parse[Parse Request]
+    Parse --> Check{Need to Check Availability?}
+    Check -->|Yes| Avail[Check Availability]
+    Check -->|No| Direct[Direct Action]
+    Avail --> AvailResult{Slots Available?}
+    AvailResult -->|Yes| Proceed[Proceed with Booking]
+    AvailResult -->|No| Suggest[Suggest Alternative]
+    Proceed --> Book[Create Booking]
+    Book --> BookResult{Booking Success?}
+    BookResult -->|Yes| Email[Send Confirmation]
+    BookResult -->|No| Retry{Retry?}
+    Retry -->|Yes| Book
+    Retry -->|No| Fail[Booking Failed]
+    Email --> Success[Success Response]
+    Suggest --> End([Response to User])
+    Direct --> End
+    Success --> End
+    Fail --> End
+        </pre>
+    </div>
+
+    <div class="tutorial-section">
+        <h3>🚀 Step 1: Setting up the Graph State</h3>
+        <p>First, we define the state that flows through our graph nodes:</p>
+        <pre class="code-block"><code class="language-js">import { StateGraph, START, END } from "@langchain/langgraph";
+import { ChatOpenAI } from "@langchain/openai";
+import { z } from "zod";
+
+// Define the state structure that flows through our graph
+const BookingState = z.object({
+  // User input
+  userInput: z.string(),
+  userEmail: z.string().optional(),
+  
+  // Parsed intent
+  intent: z.enum(['check_availability', 'create_booking', 'reschedule_booking', 'cancel_booking']).optional(),
+  
+  // Booking details
+  requestedDate: z.string().optional(),
+  bookingId: z.string().optional(),
+  newDate: z.string().optional(),
+  
+  // API responses
+  availability: z.any().optional(),
+  bookingResult: z.any().optional(),
+  
+  // Control flow
+  needsApproval: z.boolean().default(false),
+  retryCount: z.number().default(0),
+  maxRetries: z.number().default(3),
+  
+  // Final response
+  response: z.string().optional(),
+  error: z.string().optional(),
+});
+
+// Your existing booking API (from the previous tutorial)
+const bookingAPI = {
+  getAvailability: async (date) => {
+    // Simulate API call
+    const available = Math.random() > 0.3; // 70% chance of availability
+    return { 
+      available, 
+      slots: available ? ['09:00', '14:00', '16:00'] : [],
+      date 
+    };
+  },
+  
+  createBooking: async (userEmail, date) => {
+    // Simulate occasional failures
+    if (Math.random() < 0.2) {
+      throw new Error('Booking service temporarily unavailable');
+    }
+    return { 
+      id: 'booking_' + Date.now(), 
+      userEmail, 
+      date, 
+      status: 'confirmed' 
+    };
+  },
+  
+  rescheduleBooking: async (bookingId, newDate) => {
+    return { 
+      id: bookingId, 
+      newDate, 
+      status: 'rescheduled' 
+    };
+  },
+  
+  cancelBooking: async (bookingId) => {
+    return { 
+      id: bookingId, 
+      status: 'cancelled' 
+    };
+  }
+};</code></pre>
+    </div>
+
+    <div class="tutorial-section">
+        <h3>🧠 Step 2: Creating Graph Nodes</h3>
+        <p>Each node in our graph handles a specific task:</p>
+        <pre class="code-block"><code class="language-js">const llm = new ChatOpenAI({ temperature: 0 });
+
+// Node 1: Parse user intent
+async function parseIntent(state) {
+  const prompt = `
+    Parse this booking request and extract:
+    - intent: check_availability, create_booking, reschedule_booking, or cancel_booking
+    - userEmail: if mentioned
+    - requestedDate: if mentioned (format: YYYY-MM-DD)
+    - bookingId: if mentioned
+    - newDate: if rescheduling (format: YYYY-MM-DD)
+    
+    User input: "${state.userInput}"
+    
+    Return JSON only.
+  `;
+  
+  const response = await llm.invoke(prompt);
+  const parsed = JSON.parse(response.content);
+  
+  return {
+    ...state,
+    intent: parsed.intent,
+    userEmail: parsed.userEmail,
+    requestedDate: parsed.requestedDate,
+    bookingId: parsed.bookingId,
+    newDate: parsed.newDate
+  };
+}
+
+// Node 2: Check availability
+async function checkAvailability(state) {
+  if (!state.requestedDate) {
+    return {
+      ...state,
+      error: "Date is required to check availability"
+    };
+  }
+  
+  try {
+    const availability = await bookingAPI.getAvailability(state.requestedDate);
+    return {
+      ...state,
+      availability
+    };
+  } catch (error) {
+    return {
+      ...state,
+      error: error.message
+    };
+  }
+}
+
+// Node 3: Create booking
+async function createBooking(state) {
+  if (!state.userEmail || !state.requestedDate) {
+    return {
+      ...state,
+      error: "Email and date are required for booking"
+    };
+  }
+  
+  try {
+    const bookingResult = await bookingAPI.createBooking(
+      state.userEmail, 
+      state.requestedDate
+    );
+    
+    return {
+      ...state,
+      bookingResult,
+      response: `Booking created successfully! ID: ${bookingResult.id}`
+    };
+  } catch (error) {
+    // Increment retry count
+    const newRetryCount = state.retryCount + 1;
+    return {
+      ...state,
+      retryCount: newRetryCount,
+      error: error.message
+    };
+  }
+}
+
+// Node 4: Handle booking conflicts
+async function handleConflict(state) {
+  const { availability } = state;
+  
+  if (availability?.available) {
+    return {
+      ...state,
+      response: `Great! ${availability.date} is available. Slots: ${availability.slots.join(', ')}`
+    };
+  } else {
+    return {
+      ...state,
+      response: `Sorry, ${availability?.date} is not available. Please choose another date.`
+    };
+  }
+}
+
+// Node 5: Send confirmation email (simulated)
+async function sendConfirmation(state) {
+  // Simulate email sending
+  await new Promise(resolve => setTimeout(resolve, 500));
+  
+  return {
+    ...state,
+    response: `${state.response}\n📧 Confirmation email sent to ${state.userEmail}`
+  };
+}
+
+// Node 6: Handle errors and retries
+async function handleError(state) {
+  if (state.retryCount < state.maxRetries) {
+    return {
+      ...state,
+      response: `Attempt ${state.retryCount} failed. Retrying...`
+    };
+  } else {
+    return {
+      ...state,
+      response: `Booking failed after ${state.maxRetries} attempts: ${state.error}`
+    };
+  }
+}</code></pre>
+    </div>
+
+    <div class="tutorial-section">
+        <h3>🔄 Step 3: Building the Graph with Conditional Logic</h3>
+        <p>Now we connect our nodes with conditional edges:</p>
+        <pre class="code-block"><code class="language-js">// Create the graph
+const workflow = new StateGraph(BookingState)
+  .addNode("parseIntent", parseIntent)
+  .addNode("checkAvailability", checkAvailability)
+  .addNode("createBooking", createBooking)
+  .addNode("handleConflict", handleConflict)
+  .addNode("sendConfirmation", sendConfirmation)
+  .addNode("handleError", handleError);
+
+// Add edges with conditional logic
+workflow
+  .addEdge(START, "parseIntent")
+  .addConditionalEdges("parseIntent", (state) => {
+    switch (state.intent) {
+      case 'check_availability':
+        return 'checkAvailability';
+      case 'create_booking':
+        return 'checkAvailability'; // Always check availability first
+      case 'reschedule_booking':
+      case 'cancel_booking':
+        return 'handleConflict'; // Skip availability check for these
+      default:
+        return 'handleError';
+    }
+  })
+  .addConditionalEdges("checkAvailability", (state) => {
+    if (state.error) {
+      return 'handleError';
+    }
+    
+    if (state.intent === 'check_availability') {
+      return 'handleConflict'; // Just show availability
+    }
+    
+    if (state.availability?.available) {
+      return 'createBooking'; // Proceed with booking
+    } else {
+      return 'handleConflict'; // Show alternatives
+    }
+  })
+  .addConditionalEdges("createBooking", (state) => {
+    if (state.bookingResult) {
+      return 'sendConfirmation'; // Success
+    } else if (state.retryCount < state.maxRetries) {
+      return 'createBooking'; // Retry
+    } else {
+      return 'handleError'; // Give up
+    }
+  })
+  .addEdge("handleConflict", END)
+  .addEdge("sendConfirmation", END)
+  .addEdge("handleError", END);
+
+// Compile the graph
+const app = workflow.compile();</code></pre>
+    </div>
+
+    <div class="tutorial-section">
+        <h3>🎯 Step 4: Running the Graph</h3>
+        <pre class="code-block"><code class="language-js">// Example usage
+async function runBookingFlow(userInput) {
+  const initialState = {
+    userInput,
+    retryCount: 0,
+    maxRetries: 3,
+    needsApproval: false
+  };
+  
+  const result = await app.invoke(initialState);
+  return result.response || result.error;
+}
+
+// Test different scenarios
+console.log(await runBookingFlow("Check availability for 2024-03-15"));
+console.log(await runBookingFlow("Book a slot for john@email.com on 2024-03-15"));
+console.log(await runBookingFlow("Cancel booking booking_123"));</code></pre>
+    </div>
+
+    <div class="tutorial-section">
+        <h3>🔧 Step 5: Advanced Features - Human-in-the-Loop</h3>
+        <p>LangGraph supports interrupting the workflow for human approval:</p>
+        <pre class="code-block"><code class="language-js">// Add human approval node
+async function requireApproval(state) {
+  return {
+    ...state,
+    needsApproval: true,
+    response: "This booking requires manager approval. Please review and confirm."
+  };
+}
+
+// Add approval logic
+workflow
+  .addNode("requireApproval", requireApproval)
+  .addConditionalEdges("createBooking", (state) => {
+    if (state.bookingResult) {
+      // Check if high-value booking needs approval
+      if (state.bookingResult.amount > 1000) {
+        return 'requireApproval';
+      }
+      return 'sendConfirmation';
+    } else if (state.retryCount < state.maxRetries) {
+      return 'createBooking';
+    } else {
+      return 'handleError';
+    }
+  })
+  .addInterrupt("requireApproval"); // This will pause execution
+
+// Usage with human approval
+const appWithApproval = workflow.compile();
+
+// Run until interrupt
+const result = await appWithApproval.invoke(initialState);
+if (result.needsApproval) {
+  console.log("Waiting for approval...");
+  
+  // Simulate human approval
+  const approvedState = { ...result, needsApproval: false };
+  const finalResult = await appWithApproval.invoke(approvedState);
+  console.log(finalResult.response);
+}</code></pre>
+    </div>
+
+    <div class="tutorial-section">
+        <h3>📊 Step 6: Monitoring and Debugging</h3>
+        <p>LangGraph provides excellent debugging capabilities:</p>
+        <pre class="code-block"><code class="language-js">// Enable debugging
+const appWithDebug = workflow.compile({ 
+  debug: true,
+  checkpointer: new MemorySaver() // Saves state at each step
+});
+
+// Stream the execution to see each step
+async function runWithStreaming(userInput) {
+  const initialState = { userInput, retryCount: 0, maxRetries: 3 };
+  
+  for await (const step of appWithDebug.stream(initialState)) {
+    console.log("Step:", step);
+    console.log("Node:", Object.keys(step)[0]);
+    console.log("State:", Object.values(step)[0]);
+    console.log("---");
+  }
+}
+
+// Get the full execution trace
+const trace = await appWithDebug.getTrace(initialState);
+console.log("Execution path:", trace.map(step => step.node));</code></pre>
+    </div>
+
+    <div class="highlight-box success">
+        <h4>🎉 What You've Built</h4>
+        <p>You now have a sophisticated booking system that:</p>
+        <ul>
+            <li>✅ Understands natural language requests</li>
+            <li>✅ Handles complex conditional logic</li>
+            <li>✅ Automatically retries failed operations</li>
+            <li>✅ Provides human-in-the-loop capabilities</li>
+            <li>✅ Offers comprehensive debugging and monitoring</li>
+        </ul>
+        <p>This is the power of LangGraph - building complex, stateful applications with relatively simple code!</p>
+    </div>
+
+    <div id="questions"></div>
+    <div id="score"></div>
+</div>
+
+<script>
+    const quizData = {
+        questions: [
+            {
+                type: "single",
+                question: {
+                    text: "What is the main difference between LangChain chains and LangGraph?"
+                },
+                options: [
+                    "LangChain is faster than LangGraph",
+                    "LangGraph supports graph-based workflows with conditional branching and loops, while LangChain chains are linear",
+                    "LangGraph is only for booking systems",
+                    "LangChain chains are more complex than LangGraph"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "LangGraph allows for graph-based workflows with conditional branching, loops, and shared state, while LangChain chains follow a linear A → B → C pattern. LangGraph is like a flexible workflow system where different nodes can collaborate and make decisions.",
+                    code: `// LangChain Chain (Linear)
+const chain = step1.pipe(step2).pipe(step3);
+
+// LangGraph (Graph-based with conditions)
+workflow.addConditionalEdges("parseIntent", (state) => {
+ switch (state.intent) {
+   case 'check_availability': return 'checkAvailability';
+   case 'create_booking': return 'checkAvailability';
+   default: return 'handleError';
+ }
+});`
+                }
+            },
+            {
+                type: "single",
+                question: {
+                    text: "In LangGraph, what is the purpose of the state object?"
+                },
+                options: [
+                    "To store API keys",
+                    "To define the graph structure",
+                    "To hold shared data that flows through different nodes in the graph",
+                    "To configure the LLM settings"
+                ],
+                correct: 2,
+                explanation: {
+                    text: "The state object in LangGraph holds shared data that flows through different nodes, allowing multiple nodes to read and write to the same state. This enables complex workflows where each node can access and modify the accumulated information.",
+                    code: `const BookingState = z.object({
+ userInput: z.string(),
+ userEmail: z.string().optional(),
+ intent: z.enum(['check_availability', 'create_booking']).optional(),
+ availability: z.any().optional(),
+ bookingResult: z.any().optional(),
+ retryCount: z.number().default(0)
+});`
+                }
+            },
+            {
+                type: "fill",
+                question: {
+                    text: "What method is used to add decision-making logic between nodes in LangGraph?"
+                },
+                answer: "addConditionalEdges",
+                explanation: {
+                    text: "addConditionalEdges allows you to add decision-making logic between nodes, determining which node to go to next based on the current state. This enables complex branching workflows.",
+                    code: `workflow.addConditionalEdges("checkAvailability", (state) => {
+ if (state.error) {
+   return 'handleError';
+ }
+ if (state.availability?.available) {
+   return 'createBooking';
+ } else {
+   return 'handleConflict';
+ }
+});`
+                }
+            },
+            {
+                type: "single",
+                question: {
+                    text: "How does LangGraph handle retry logic for failed operations?"
+                },
+                options: [
+                    "It automatically retries forever",
+                    "It doesn't support retry logic",
+                    "You can implement retry logic using conditional edges and retry counters in the state",
+                    "Only through external libraries"
+                ],
+                correct: 2,
+                explanation: {
+                    text: "LangGraph supports retry logic through conditional edges and retry counters stored in the state. You can check the retry count and decide whether to retry the operation or handle the error.",
+                    code: `async function createBooking(state) {
+ try {
+   const bookingResult = await bookingAPI.createBooking(state.userEmail, state.requestedDate);
+   return { ...state, bookingResult };
+ } catch (error) {
+   const newRetryCount = state.retryCount + 1;
+   return { ...state, retryCount: newRetryCount, error: error.message };
+ }
+}
+
+// Conditional edge for retry logic
+.addConditionalEdges("createBooking", (state) => {
+ if (state.bookingResult) {
+   return 'sendConfirmation';
+ } else if (state.retryCount < state.maxRetries) {
+   return 'createBooking'; // Retry
+ } else {
+   return 'handleError'; // Give up
+ }
+})`
+                }
+            },
+            {
+                type: "fill",
+                question: {
+                    text: "Fill in the blank: To pause graph execution for human approval, you can use the ________ method."
+                },
+                answer: "addInterrupt",
+                explanation: {
+                    text: "addInterrupt pauses graph execution at a specific node, allowing for human-in-the-loop workflows where human approval or input is required before continuing.",
+                    code: `workflow
+ .addNode("requireApproval", requireApproval)
+ .addInterrupt("requireApproval"); // This will pause execution
+
+// Usage
+const result = await app.invoke(initialState);
+if (result.needsApproval) {
+ console.log("Waiting for approval...");
+ // Human approves, then continue
+ const finalResult = await app.invoke(approvedState);
+}`
+                }
+            },
+            {
+                type: "single",
+                question: {
+                    text: "What advantage does LangGraph provide for multi-agent workflows?"
+                },
+                options: [
+                    "It's faster than single-agent systems",
+                    "It naturally supports multiple agents sharing the same state and collaborating on tasks",
+                    "It requires less memory",
+                    "It only works with OpenAI models"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "LangGraph naturally supports multi-agent workflows where different agents (nodes) can share the same state and collaborate on tasks. Each agent can contribute to the shared state and make decisions based on the work of other agents.",
+                    code: `// Different agents working on the same booking task
+const workflow = new StateGraph(BookingState)
+ .addNode("parseAgent", parseIntent)        // Agent 1: Parse user intent
+ .addNode("availabilityAgent", checkAvailability) // Agent 2: Check availability
+ .addNode("bookingAgent", createBooking)    // Agent 3: Create booking
+ .addNode("emailAgent", sendConfirmation);  // Agent 4: Send confirmation`
+                }
+            },
+            {
+                type: "single",
+                question: {
+                    text: "How do you compile a LangGraph workflow into an executable application?"
+                },
+                options: [
+                    "Use the .run() method",
+                    "Use the .compile() method",
+                    "Use the .execute() method",
+                    "Use the .start() method"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "The .compile() method compiles a LangGraph workflow into an executable application that can be invoked with initial state.",
+                    code: `const workflow = new StateGraph(BookingState)
+ .addNode("parseIntent", parseIntent)
+ .addNode("checkAvailability", checkAvailability)
+ .addEdge(START, "parseIntent");
+
+const app = workflow.compile(); // Compile the workflow
+const result = await app.invoke(initialState); // Run it`
+                }
+            },
+            {
+                type: "fill",
+                question: {
+                    text: "Fill in the blank: To see the execution flow step by step, you can use the ________ method instead of invoke."
+                },
+                answer: "stream",
+                explanation: {
+                    text: "The stream method allows you to see the execution flow step by step, which is useful for debugging and monitoring the graph execution.",
+                    code: `// Stream the execution to see each step
+for await (const step of app.stream(initialState)) {
+ console.log("Step:", step);
+ console.log("Node:", Object.keys(step)[0]);
+ console.log("State:", Object.values(step)[0]);
+}`
+                }
+            },
+            {
+                type: "single",
+                question: {
+                    text: "What is the purpose of START and END constants in LangGraph?"
+                },
+                options: [
+                    "They are variable names",
+                    "They represent the entry and exit points of the graph workflow",
+                    "They are debugging tools",
+                    "They configure the LLM"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "START and END are special constants that represent the entry and exit points of the graph workflow. START indicates where the graph begins execution, and END indicates where it should terminate.",
+                    code: `const workflow = new StateGraph(BookingState)
+ .addNode("parseIntent", parseIntent)
+ .addNode("handleConflict", handleConflict)
+ .addEdge(START, "parseIntent")        // Graph starts here
+ .addEdge("handleConflict", END);      // Graph ends here`
+                }
+            },
+            {
+                type: "single",
+                question: {
+                    text: "How does LangGraph handle loops in workflows?"
+                },
+                options: [
+                    "Loops are not supported",
+                    "Through conditional edges that can route back to previous nodes",
+                    "Only through external libraries",
+                    "Loops happen automatically"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "LangGraph handles loops through conditional edges that can route back to previous nodes. This allows for retry logic, iterative processes, and complex workflow patterns.",
+                    code: `// Loop example: retry booking on failure
+.addConditionalEdges("createBooking", (state) => {
+ if (state.bookingResult) {
+   return 'sendConfirmation';
+ } else if (state.retryCount < state.maxRetries) {
+   return 'createBooking'; // Loop back to retry
+ } else {
+   return 'handleError';
+ }
+})`
+                }
+            },
+            {
+                type: "fill",
+                question: {
+                    text: "Complete the code to create a basic LangGraph workflow:",
+                    code: `const workflow = new _______(_______)
+ .addNode("parseIntent", parseIntent)
+ .addNode("checkAvailability", checkAvailability)
+ .addEdge(START, "parseIntent");`
+                },
+                answer: "StateGraph(BookingState)",
+                explanation: {
+                    text: "StateGraph is the main class for creating LangGraph workflows, and it requires a state schema (like BookingState) to define the structure of data that flows through the graph.",
+                    code: `const workflow = new StateGraph(BookingState)
+ .addNode("parseIntent", parseIntent)
+ .addNode("checkAvailability", checkAvailability)
+ .addEdge(START, "parseIntent");`
+                }
+            },
+            {
+                type: "single",
+                question: {
+                    text: "What is the main benefit of using Zod schemas for LangGraph state?"
+                },
+                options: [
+                    "It makes the code run faster",
+                    "It provides type safety and validation for the state structure",
+                    "It reduces memory usage",
+                    "It's required by OpenAI"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "Zod schemas provide type safety and validation for the state structure, ensuring that the data flowing through your graph nodes has the expected format and types.",
+                    code: `const BookingState = z.object({
+ userInput: z.string(),                    // Required string
+ userEmail: z.string().optional(),         // Optional string
+ intent: z.enum(['check_availability', 'create_booking']).optional(),
+ retryCount: z.number().default(0),        // Number with default value
+});`
+                }
+            },
+            {
+                type: "single",
+                question: {
+                    text: "How do you add debugging capabilities to a LangGraph workflow?"
+                },
+                options: [
+                    "Use console.log in each node",
+                    "Compile with debug: true and use a checkpointer",
+                    "Add a debug node",
+                    "Use a separate debugging library"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "You can add debugging capabilities by compiling the workflow with debug: true and using a checkpointer to save state at each step. This enables detailed monitoring and tracing of the execution.",
+                    code: `const appWithDebug = workflow.compile({
+ debug: true,
+ checkpointer: new MemorySaver() // Saves state at each step
+});
+
+// Get the full execution trace
+const trace = await appWithDebug.getTrace(initialState);
+console.log("Execution path:", trace.map(step => step.node));`
+                }
+            }
+        ]
+    };
+
+    const questionsContainer = document.getElementById('questions');
+    const scoreContainer = document.getElementById('score');
+
+    function showFeedback(questionDiv, explanation, isCorrect) {
+        const feedbackDiv = questionDiv.querySelector('.feedback');
+        feedbackDiv.style.display = 'block';
+        const sanitizedCode = explanation.code ? explanation.code.replace(/`/g, '\`') : '';
+        feedbackDiv.innerHTML = `
+            <div class="explanation-text">
+                ${isCorrect ? '✅' : '❌'} ${explanation.text}
+            </div>
+            ${explanation.code && explanation.code.trim() ? `
+                <pre class="code-block"><code class="language-js">${sanitizedCode}</code></pre>
+            ` : ''}
+        `;
+        feedbackDiv.style.backgroundColor = isCorrect ? '#e8f5e9' : '#ffebee';
+    }
+
+    function checkAnswer(selected, correct, optionDiv, questionDiv, explanation) {
+        if (questionDiv.querySelector('.correct') || questionDiv.querySelector('.incorrect')) {
+            return;
+        }
+        const options = questionDiv.getElementsByClassName('option');
+        options[correct].classList.add('correct');
+        if (selected === correct) {
+            score++;
+            optionDiv.classList.add('correct');
+            showFeedback(questionDiv, explanation, true);
+        } else {
+            optionDiv.classList.add('incorrect');
+            showFeedback(questionDiv, explanation, false);
+        }
+        answeredQuestions++;
+        updateScore();
+    }
+
+    function checkFillAnswer(input, answer, questionDiv, explanation) {
+        if (questionDiv.querySelector('.feedback').style.display === 'block') {
+            return;
+        }
+        const inputElement = questionDiv.querySelector('.input-answer');
+        if (inputElement) {
+            inputElement.disabled = true;
+        }
+        if (input.toLowerCase().trim() === answer.toLowerCase().trim()) {
+            score++;
+            showFeedback(questionDiv, explanation, true);
+        } else {
+            showFeedback(questionDiv, {
+                text: `The correct answer is: ${answer}. ${explanation.text}`,
+                code: explanation.code
+            }, false);
+        }
+        answeredQuestions++;
+        updateScore();
+    }
+
+    function updateScore() {
+        const scoreDiv = document.getElementById('score');
+        const percentage = (score / quizData.questions.length) * 100;
+        scoreDiv.innerHTML = `
+            <h3>Your Score: ${score}/${quizData.questions.length}</h3>
+            <p>Percentage: ${percentage.toFixed(1)}%</p>
+            ${answeredQuestions === quizData.questions.length ?
+            `<p>${percentage >= 70 ? '🎉 Great job! You have a solid understanding of LangChain.js!' :
+                'Keep practicing! Review the tutorial sections to strengthen your understanding of LangChain.js.'}</p>` : ''}
+        `;
+    }
+
+    function createMultipleChoice(q, container) {
+        if (q.question.code) {
+            const codeBlock = document.createElement('div');
+            codeBlock.className = 'code-block';
+            codeBlock.innerHTML = `<pre><code class=\"language-js\">${q.question.code.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</code></pre>`;
+            container.appendChild(codeBlock);
+        }
+        const optionsDiv = document.createElement('div');
+        optionsDiv.className = 'options';
+        q.options.forEach((option, index) => {
+            const optionDiv = document.createElement('div');
+            optionDiv.className = 'option';
+            optionDiv.textContent = option;
+            optionDiv.onclick = () => checkAnswer(index, q.correct, optionDiv, container, q.explanation);
+            optionsDiv.appendChild(optionDiv);
+        });
+        container.appendChild(optionsDiv);
+    }
+
+    function createFillInBlank(q, container) {
+        if (q.question.code) {
+            const codeBlock = document.createElement('div');
+            codeBlock.className = 'code-block';
+            codeBlock.innerHTML = `<pre><code class="language-js">${q.question.code.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</code></pre>`;
+            container.appendChild(codeBlock);
+        }
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'input-answer';
+        input.placeholder = 'Enter your answer';
+        const submitBtn = document.createElement('button');
+        submitBtn.textContent = 'Submit';
+        submitBtn.onclick = () => checkFillAnswer(input.value, q.answer, container, q.explanation);
+        container.appendChild(input);
+        container.appendChild(submitBtn);
+    }
+
+    function createQuiz() {
+        const questionsContainer = document.getElementById('questions');
+        quizData.questions.forEach((q, index) => {
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'question';
+            questionDiv.innerHTML = `<div><strong>Question ${index + 1}:</strong> ${q.question.text}</div>`;
+            if (q.type === 'single') {
+                createMultipleChoice(q, questionDiv);
+            } else if (q.type === 'fill') {
+                createFillInBlank(q, questionDiv);
+            }
+            const feedbackDiv = document.createElement('div');
+            feedbackDiv.className = 'feedback';
+            questionDiv.appendChild(feedbackDiv);
+            questionsContainer.appendChild(questionDiv);
+        });
+    }
+
+    let score = 0;
+    let answeredQuestions = 0;
+    createQuiz();
+</script>

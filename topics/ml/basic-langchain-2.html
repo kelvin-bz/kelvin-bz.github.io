@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-javascript.min.js"></script>
+    <style>
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            font-family: system-ui, -apple-system, sans-serif;
+            line-height: 1.6;
+        }
+        .question {
+            background-color: #fff;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .option {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .option:hover {
+            background-color: #f5f5f5;
+            transform: translateX(5px);
+        }
+        .selected {
+            background-color: #e3f2fd;
+        }
+        .correct {
+            background-color: #e8f5e9;
+            border-color: #81c784;
+        }
+        .incorrect {
+            background-color: #ffebee;
+            border-color: #e57373;
+        }
+        .input-answer {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            margin-top: 10px;
+            padding: 8px 16px;
+            background-color: #2196f3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #1976d2;
+        }
+        #score {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.2em;
+        }
+        .feedback {
+            margin-top: 10px;
+            padding: 15px;
+            border-radius: 4px;
+            display: none;
+            line-height: 1.6;
+        }
+        .code-block {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre;
+            overflow-x: auto;
+            line-height: 1.5;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            position: relative;
+        }
+        .copy-button {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .explanation-text {
+            margin-bottom: 10px;
+        }
+        .code-comment {
+            color: #6a737d;
+        }
+        .code-output {
+            color: #0a3069;
+            border-left: 3px solid #2196f3;
+            margin-left: 10px;
+            padding-left: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>�� NestJS Controllers Quiz</h1>
+    <p>Test your knowledge of NestJS controllers, decorators, and request handling patterns!</p>
+    <div id="questions"></div>
+    <div id="score"></div>
+</div>
+
+
+<script>
+    const quizData = {
+        questions: [
+            {
+                type: "single",
+                question: {
+                    text: "What is LangChain's main purpose?",
+                    code: `
+// Without LangChain - manual prompt handling
+const prompt = "Book a meeting for user@email.com on 2024-01-15";
+const response = await openai.chat.completions.create({
+    model: "gpt-4",
+    messages: [{ role: "user", content: prompt }]
+});
+
+// With LangChain - structured approach
+const chain = prompt | llm | parser;
+const result = await chain.invoke({ email: "user@email.com", date: "2024-01-15" });`
+                },
+                options: [
+                    "To replace OpenAI API completely",
+                    "To build applications with LLMs using composable components",
+                    "To create chatbots only",
+                    "To store conversation history"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "LangChain provides a framework for building LLM-powered applications using composable components like prompts, models, and parsers that can be chained together.",
+                    code: `
+// LangChain's composable approach
+import { ChatOpenAI } from "@langchain/openai";
+import { PromptTemplate } from "@langchain/core/prompts";
+
+const prompt = PromptTemplate.fromTemplate("Book meeting for {email} on {date}");
+const llm = new ChatOpenAI();
+const chain = prompt.pipe(llm);`
+                }
+            },
+            {
+                type: "single",
+                question: {
+                    text: "What happens when you chain components with the pipe operator?",
+                    code: `
+const bookingChain = promptTemplate
+    .pipe(llm)
+    .pipe(outputParser);
+
+const result = await bookingChain.invoke({
+    email: "user@email.com",
+    date: "2024-01-15"
+});`
+                },
+                options: [
+                    "Components run in parallel",
+                    "Only the last component executes",
+                    "Output of each component becomes input of the next",
+                    "Components are stored for later use"
+                ],
+                correct: 2,
+                explanation: {
+                    text: "The pipe operator creates a chain where each component's output becomes the input for the next component, enabling data flow through the pipeline.",
+                    code: `
+// Data flows through the chain:
+// promptTemplate -> formatted prompt string
+// llm -> AI response
+// outputParser -> structured data
+
+const chain = promptTemplate.pipe(llm).pipe(parser);
+// input -> prompt -> response -> parsed output`
+                }
+            },
+            {
+                type: "single",
+                question: {
+                    text: "What's the benefit of using tools in LangChain?",
+                    code: `
+// Without tools - LLM can only generate text
+const response = await llm.invoke("Check if 2024-01-15 is available");
+// Response: "I cannot check availability as I don't have access to your calendar"
+
+// With tools - LLM can call functions
+const availabilityTool = new DynamicTool({
+    name: "check_availability",
+    description: "Check if a date is available for booking",
+    func: async (date) => await checkAvailability(date)
+});`
+                },
+                options: [
+                    "Tools make LLMs faster",
+                    "Tools allow LLMs to perform actions and access external data",
+                    "Tools replace the need for prompts",
+                    "Tools only work with OpenAI models"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "Tools extend LLM capabilities by allowing them to call functions, access APIs, and interact with external systems rather than just generating text.",
+                    code: `
+import { DynamicTool } from "@langchain/core/tools";
+
+const bookingTool = new DynamicTool({
+    name: "create_booking",
+    description: "Create a new booking with email and date",
+    func: async (input) => {
+        const { email, date } = JSON.parse(input);
+        return await createBooking(email, date);
+    }
+});`
+                }
+            },
+            {
+                type: "single",
+                question: {
+                    text: "What is the purpose of an output parser in LangChain?",
+                    code: `
+// Without parser - raw string response
+const response = "Booking created for user@email.com on 2024-01-15";
+
+// With parser - structured data
+const parser = new JsonOutputParser();
+const parsed = await parser.parse('{"email": "user@email.com", "date": "2024-01-15", "status": "confirmed"}');`
+                },
+                options: [
+                    "To make responses faster",
+                    "To convert LLM text output into structured data formats",
+                    "To compress response data",
+                    "To translate responses to different languages"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "Output parsers transform raw LLM text responses into structured formats like JSON, making the data easier to work with programmatically.",
+                    code: `
+import { JsonOutputParser } from "@langchain/core/output_parsers";
+
+const parser = new JsonOutputParser();
+const chain = prompt.pipe(llm).pipe(parser);
+
+// Returns parsed JSON object instead of string
+const result = await chain.invoke({ email: "user@email.com" });
+// result = { email: "user@email.com", status: "booked" }`
+                }
+            },
+            {
+                type: "single",
+                question: {
+                    text: "What's the main advantage of using agents in LangChain?",
+                    code: `
+// Without agent - fixed sequence
+const availability = await checkAvailability(date);
+if (availability) {
+    await createBooking(email, date);
+}
+
+// With agent - dynamic decision making
+const agent = createToolCallingAgent({
+    llm,
+    tools: [availabilityTool, bookingTool, rescheduleTool],
+    prompt: systemPrompt
+});`
+                },
+                options: [
+                    "Agents are faster than regular chains",
+                    "Agents can dynamically decide which tools to use based on context",
+                    "Agents don't require prompts",
+                    "Agents work offline"
+                ],
+                correct: 1,
+                explanation: {
+                    text: "Agents can analyze user input and dynamically choose which tools to use and in what order, making them more flexible than fixed chains.",
+                    code: `
+// Agent can decide:
+// User: "Reschedule my meeting to next week"
+// Agent thinks: Need to cancel existing booking, check availability, create new booking
+
+const agent = createToolCallingAgent({
+    llm,
+    tools: [cancelTool, availabilityTool, bookingTool],
+    prompt: "You are a booking assistant. Use tools as needed."
+});`
+                }
+            },
+            {
+                type: "fill",
+                question: {
+                    text: "Complete the code to create a prompt template for booking:",
+                    code: `
+import { PromptTemplate } from "@langchain/core/prompts";
+
+const bookingPrompt = _______.fromTemplate(
+    "Create a booking for {email} on {date}. Return JSON with email, date, and status."
+);`
+                },
+                answer: "PromptTemplate",
+                explanation: {
+                    text: "PromptTemplate.fromTemplate() creates a reusable template that can be populated with variables using the invoke() method.",
+                    code: `
+import { PromptTemplate } from "@langchain/core/prompts";
+
+const bookingPrompt = PromptTemplate.fromTemplate(
+    "Create a booking for {email} on {date}. Return JSON with email, date, and status."
+);
+
+const formatted = await bookingPrompt.invoke({
+    email: "user@email.com",
+    date: "2024-01-15"
+});`
+                }
+            },
+            {
+                type: "fill",
+                question: {
+                    text: "Complete the code to create a simple chain:",
+                    code: `
+const bookingChain = bookingPrompt
+    .______(llm)
+    .______(jsonParser);
+
+const result = await bookingChain.invoke({
+    email: "user@email.com",
+    date: "2024-01-15"
+});`
+                },
+                answer: "pipe pipe",
+                explanation: {
+                    text: "The pipe() method connects components in a chain, allowing data to flow from one component to the next in sequence.",
+                    code: `
+const bookingChain = bookingPrompt
+    .pipe(llm)
+    .pipe(jsonParser);
+
+// Data flow: input -> prompt -> LLM -> parser -> output
+const result = await bookingChain.invoke({
+    email: "user@email.com",
+    date: "2024-01-15"
+});`
+                }
+            },
+            {
+                type: "fill",
+                question: {
+                    text: "Complete the code to create a tool for checking availability:",
+                    code: `
+import { DynamicTool } from "@langchain/core/tools";
+
+const availabilityTool = new _______({
+    name: "check_availability",
+    description: "Check if a date is available for booking",
+    func: async (date) => {
+        return await _______(date);
+    }
+});`
+                },
+                answer: "DynamicTool getAvailability",
+                explanation: {
+                    text: "DynamicTool allows you to wrap existing functions as tools that LLMs can call. The func parameter defines the actual function to execute.",
+                    code: `
+import { DynamicTool } from "@langchain/core/tools";
+
+const availabilityTool = new DynamicTool({
+    name: "check_availability",
+    description: "Check if a date is available for booking",
+    func: async (date) => {
+        return await getAvailability(date);
+    }
+});`
+                }
+            },
+            {
+                type: "fill",
+                question: {
+                    text: "Complete the code to create an agent executor:",
+                    code: `
+import { createToolCallingAgent } from "langchain/agents";
+import { AgentExecutor } from "langchain/agents";
+
+const agent = createToolCallingAgent({
+    llm,
+    tools: [availabilityTool, bookingTool],
+    prompt: systemPrompt
+});
+
+const executor = new _______({
+    agent,
+    tools: [availabilityTool, bookingTool],
+    verbose: _____
+});`
+                },
+                answer: "AgentExecutor true",
+                explanation: {
+                    text: "AgentExecutor manages the execution of an agent, handling the conversation loop and tool calling. Setting verbose to true helps debug the agent's decision-making process.",
+                    code: `
+import { AgentExecutor } from "langchain/agents";
+
+const executor = new AgentExecutor({
+    agent,
+    tools: [availabilityTool, bookingTool],
+    verbose: true  // Shows agent's thinking process
+});
+
+const result = await executor.invoke({
+    input: "Book a meeting for user@email.com on 2024-01-15"
+});`
+                }
+            },
+            {
+                type: "fill",
+                question: {
+                    text: "Complete the code to handle booking with proper error handling:",
+                    code: `
+const bookingTool = new DynamicTool({
+    name: "create_booking",
+    description: "Create a booking with email and date",
+    func: async (input) => {
+        try {
+            const { email, date } = JSON.______(input);
+            const result = await createBooking(email, date);
+            return JSON.______(result);
+        } catch (error) {
+            return \`Error: \${error.message}\`;
+        }
+    }
+});`
+                },
+                answer: "parse stringify",
+                explanation: {
+                    text: "Tools often receive JSON strings as input and should return JSON strings as output. Proper error handling ensures the agent can respond appropriately to failures.",
+                    code: `
+const bookingTool = new DynamicTool({
+    name: "create_booking",
+    description: "Create a booking with email and date",
+    func: async (input) => {
+        try {
+            const { email, date } = JSON.parse(input);
+            const result = await createBooking(email, date);
+            return JSON.stringify(result);
+        } catch (error) {
+            return \`Error: \${error.message}\`;
+        }
+    }
+});`
+                }
+            }
+        ]
+    };
+
+    window.copyToClipboard = function(text, button) {
+        navigator.clipboard.writeText(text).then(() => {
+            const originalText = button.textContent;
+            button.textContent = 'Copied!';
+            setTimeout(() => {
+                button.textContent = originalText;
+            }, 2000);
+        });
+    }
+
+    function formatCodeExample(code) {
+        // Escape HTML special characters
+        const escaped = code
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+        return `<pre class="code-block"><code class="language-js">${escaped}</code></pre>`;
+    }
+
+    function createQuiz() {
+        const questionsContainer = document.getElementById('questions');
+
+        quizData.questions.forEach((q, index) => {
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'question';
+            questionDiv.innerHTML = `<div><strong>Question ${index + 1}:</strong> ${q.question.text}</div>
+                ${q.question.code ? `<div class="code-block">${formatCodeExample(q.question.code)}</div>` : ''}`;
+
+            if (q.type === 'single') {
+                const optionsDiv = document.createElement('div');
+                optionsDiv.className = 'options';
+
+                q.options.forEach((option, optIndex) => {
+                    const optionDiv = document.createElement('div');
+                    optionDiv.className = 'option';
+                    optionDiv.textContent = option;
+                    optionDiv.onclick = () => checkAnswer(optIndex, q.correct, optionDiv, questionDiv, q.explanation);
+                    optionsDiv.appendChild(optionDiv);
+                });
+
+                questionDiv.appendChild(optionsDiv);
+            } else {
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.className = 'input-answer';
+                input.placeholder = 'Type your answer here';
+
+                const submitBtn = document.createElement('button');
+                submitBtn.textContent = 'Submit';
+                submitBtn.onclick = () => checkFillAnswer(input.value, q.answer, questionDiv, q.explanation);
+
+                questionDiv.appendChild(input);
+                questionDiv.appendChild(submitBtn);
+            }
+
+            const feedbackDiv = document.createElement('div');
+            feedbackDiv.className = 'feedback';
+            questionDiv.appendChild(feedbackDiv);
+
+            questionsContainer.appendChild(questionDiv);
+        });
+
+        updateScore();
+        // Highlight all code blocks after rendering
+        if (window.Prism) {
+            Prism.highlightAll();
+        }
+    }
+
+    function checkFillAnswer(input, answer, questionDiv, explanation) {
+        // Check if question has already been answered
+        if (questionDiv.querySelector('.feedback').style.display === 'block') {
+            return; // Already answered
+        }
+
+        // Get or create input element
+        const inputElement = questionDiv.querySelector('.input-answer');
+        if (inputElement) {
+            inputElement.disabled = true; // Disable input after submission
+        }
+
+        // Compare answer (case-insensitive)
+        if (input.toLowerCase().trim() === answer.toLowerCase().trim()) {
+            score++;
+            showFeedback(questionDiv, explanation, true);
+        } else {
+            showFeedback(questionDiv, {
+                text: `The correct answer is: ${answer}. ${explanation.text}`,
+                code: explanation.code
+            }, false);
+        }
+
+        answeredQuestions++;
+        updateScore();
+    }
+    function showFeedback(questionDiv, explanation, isCorrect) {
+        const feedbackDiv = questionDiv.querySelector('.feedback');
+        feedbackDiv.style.display = 'block';
+
+        const codeId = 'code-' + Math.random().toString(36).substr(2, 9);
+
+        feedbackDiv.innerHTML = `
+                <div class="explanation-text">
+                    ${isCorrect ? '✅' : '❌'} ${explanation.text}
+                </div>
+                ${explanation.code ? `
+                    <div class="code-block" id="${codeId}">
+                        ${formatCodeExample(explanation.code)}
+                        <button class="copy-button" onclick="copyToClipboard(\`${explanation.code}\`, this)">Copy</button>
+                    </div>
+                ` : ''}
+            `;
+
+        feedbackDiv.style.backgroundColor = isCorrect ? '#e8f5e9' : '#ffebee';
+    }
+
+    function checkAnswer(selected, correct, optionDiv, questionDiv, explanation) {
+        if (questionDiv.querySelector('.correct') || questionDiv.querySelector('.incorrect')) {
+            return;
+        }
+
+        const options = questionDiv.getElementsByClassName('option');
+        options[correct].classList.add('correct');
+
+        if (selected === correct) {
+            score++;
+            optionDiv.classList.add('correct');
+            showFeedback(questionDiv, explanation, true);
+        } else {
+            optionDiv.classList.add('incorrect');
+            showFeedback(questionDiv, explanation, false);
+        }
+
+        answeredQuestions++;
+        updateScore();
+    }
+
+    function updateScore() {
+        const scoreDiv = document.getElementById('score');
+        const percentage = (score / quizData.questions.length) * 100;
+        scoreDiv.innerHTML = `
+                <h3>Your Score: ${score}/${quizData.questions.length}</h3>
+                <p>Percentage: ${percentage.toFixed(1)}%</p>
+                ${answeredQuestions === quizData.questions.length ?
+            `<p>${percentage >= 70 ? '🎉 Great job! You have a solid understanding of Node.js core modules!' :
+                'Keep learning! Review the explanations to strengthen your knowledge of Node.js core modules.'}</p>` : ''}
+            `;
+    }
+
+    let score = 0;
+    let answeredQuestions = 0;
+    createQuiz();
+</script>
+</body>
+</html>
